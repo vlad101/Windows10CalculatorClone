@@ -8,13 +8,5 @@ namespace Calculator.Mode
 {
     class ScientificMode
     {
-        public bool EqualsOperation()
-        {
-            return true;
-        }
     }
 }
-
-/*
-
- */

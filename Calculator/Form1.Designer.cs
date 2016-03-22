@@ -313,7 +313,7 @@
             this.button22.TabIndex = 24;
             this.button22.Text = ".";
             this.button22.UseVisualStyleBackColor = true;
-            this.button22.Click += new System.EventHandler(this.operation_button_Click);
+            this.button22.Click += new System.EventHandler(this.number_button_Click);
             // 
             // button23
             // 
@@ -368,7 +368,7 @@
             // flowLayoutPanelHistory
             // 
             this.flowLayoutPanelHistory.AutoScroll = true;
-            this.flowLayoutPanelHistory.Location = new System.Drawing.Point(496, 38);
+            this.flowLayoutPanelHistory.Location = new System.Drawing.Point(496, 27);
             this.flowLayoutPanelHistory.Name = "flowLayoutPanelHistory";
             this.flowLayoutPanelHistory.Size = new System.Drawing.Size(256, 301);
             this.flowLayoutPanelHistory.TabIndex = 29;
@@ -378,12 +378,13 @@
             this.textBoxEntry.BackColor = System.Drawing.SystemColors.InactiveBorder;
             this.textBoxEntry.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBoxEntry.Enabled = false;
-            this.textBoxEntry.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxEntry.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxEntry.Location = new System.Drawing.Point(12, 62);
             this.textBoxEntry.Name = "textBoxEntry";
-            this.textBoxEntry.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.textBoxEntry.Size = new System.Drawing.Size(449, 24);
+            this.textBoxEntry.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.textBoxEntry.Size = new System.Drawing.Size(449, 31);
             this.textBoxEntry.TabIndex = 30;
+            this.textBoxEntry.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // labelCalculatorMode
             // 

@@ -8,5 +8,9 @@ namespace Calculator.Mode
 {
     class StandardMode
     {
+        public bool EqualsOperation()
+        {
+            return true;
+        }
     }
 }
