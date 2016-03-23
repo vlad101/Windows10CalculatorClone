@@ -40,6 +40,12 @@ namespace Calculator
             this.standardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scietificToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.programmerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyCtrlCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pasteCtrlVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewHelpF1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutCalculatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.labelMode = new System.Windows.Forms.Label();
             this.button21 = new Calculator.Controls.NonFocusButton();
             this.button22 = new Calculator.Controls.NonFocusButton();
@@ -80,6 +86,7 @@ namespace Calculator
             this.textBoxResult.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.textBoxResult.Size = new System.Drawing.Size(371, 24);
             this.textBoxResult.TabIndex = 0;
+            this.textBoxResult.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // label1
             // 
@@ -101,10 +108,12 @@ namespace Calculator
             // flowLayoutPanelHistory
             // 
             this.flowLayoutPanelHistory.AutoScroll = true;
+            this.flowLayoutPanelHistory.Cursor = System.Windows.Forms.Cursors.Default;
             this.flowLayoutPanelHistory.Location = new System.Drawing.Point(423, 28);
             this.flowLayoutPanelHistory.Name = "flowLayoutPanelHistory";
             this.flowLayoutPanelHistory.Size = new System.Drawing.Size(211, 233);
             this.flowLayoutPanelHistory.TabIndex = 29;
+            this.flowLayoutPanelHistory.Paint += new System.Windows.Forms.PaintEventHandler(this.flowLayoutPanelHistory_Paint);
             // 
             // textBoxEntry
             // 
@@ -122,7 +131,9 @@ namespace Calculator
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.modeToolStripMenuItem});
+            this.modeToolStripMenuItem,
+            this.editToolStripMenuItem,
+            this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(646, 24);
@@ -135,39 +146,84 @@ namespace Calculator
             this.standardToolStripMenuItem,
             this.scietificToolStripMenuItem,
             this.programmerToolStripMenuItem});
-            this.modeToolStripMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.modeToolStripMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.modeToolStripMenuItem.Name = "modeToolStripMenuItem";
-            this.modeToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
+            this.modeToolStripMenuItem.Size = new System.Drawing.Size(51, 20);
             this.modeToolStripMenuItem.Text = "Mode";
             // 
             // standardToolStripMenuItem
             // 
             this.standardToolStripMenuItem.Name = "standardToolStripMenuItem";
-            this.standardToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.standardToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.standardToolStripMenuItem.Text = "Standard";
             this.standardToolStripMenuItem.Click += new System.EventHandler(this.standardToolStripMenuItem_Click);
             // 
             // scietificToolStripMenuItem
             // 
             this.scietificToolStripMenuItem.Name = "scietificToolStripMenuItem";
-            this.scietificToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.scietificToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.scietificToolStripMenuItem.Text = "Scietific";
             this.scietificToolStripMenuItem.Click += new System.EventHandler(this.scietificToolStripMenuItem_Click);
             // 
             // programmerToolStripMenuItem
             // 
             this.programmerToolStripMenuItem.Name = "programmerToolStripMenuItem";
-            this.programmerToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.programmerToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.programmerToolStripMenuItem.Text = "Programmer";
             this.programmerToolStripMenuItem.Click += new System.EventHandler(this.programmerToolStripMenuItem_Click);
             // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyCtrlCToolStripMenuItem,
+            this.pasteCtrlVToolStripMenuItem});
+            this.editToolStripMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
+            this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // copyCtrlCToolStripMenuItem
+            // 
+            this.copyCtrlCToolStripMenuItem.Name = "copyCtrlCToolStripMenuItem";
+            this.copyCtrlCToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.copyCtrlCToolStripMenuItem.Text = "Copy                          Ctrl+C";
+            // 
+            // pasteCtrlVToolStripMenuItem
+            // 
+            this.pasteCtrlVToolStripMenuItem.Name = "pasteCtrlVToolStripMenuItem";
+            this.pasteCtrlVToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.pasteCtrlVToolStripMenuItem.Text = "Paste                         Ctrl+V";
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.viewHelpF1ToolStripMenuItem,
+            this.aboutCalculatorToolStripMenuItem});
+            this.helpToolStripMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(45, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // viewHelpF1ToolStripMenuItem
+            // 
+            this.viewHelpF1ToolStripMenuItem.Name = "viewHelpF1ToolStripMenuItem";
+            this.viewHelpF1ToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.viewHelpF1ToolStripMenuItem.Text = "View Help                         F1";
+            this.viewHelpF1ToolStripMenuItem.Click += new System.EventHandler(this.viewHelpF1ToolStripMenuItem_Click);
+            // 
+            // aboutCalculatorToolStripMenuItem
+            // 
+            this.aboutCalculatorToolStripMenuItem.Name = "aboutCalculatorToolStripMenuItem";
+            this.aboutCalculatorToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.aboutCalculatorToolStripMenuItem.Text = "About Calculator";
+            // 
             // labelMode
             // 
-            this.labelMode.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelMode.AutoSize = true;
+            this.labelMode.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelMode.Location = new System.Drawing.Point(280, 3);
             this.labelMode.Name = "labelMode";
-            this.labelMode.Size = new System.Drawing.Size(0, 13);
+            this.labelMode.Size = new System.Drawing.Size(0, 17);
             this.labelMode.TabIndex = 32;
             // 
             // button21
@@ -531,6 +587,12 @@ namespace Calculator
         private System.Windows.Forms.ToolStripMenuItem scietificToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem programmerToolStripMenuItem;
         private System.Windows.Forms.Label labelMode;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewHelpF1ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutCalculatorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyCtrlCToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem pasteCtrlVToolStripMenuItem;
     }
 }
 

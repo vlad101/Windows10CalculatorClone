@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Calculator.Mode
 {
-    class ProgrammerMode
+    class ProgrammerMode : StandardMode
     {
     }
 }

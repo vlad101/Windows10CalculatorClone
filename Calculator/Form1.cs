@@ -38,45 +38,20 @@ namespace Calculator
             Button numBtn = (Button)sender;
 
             // Append value to an input entry
-            this.entryText = this.textBoxEntry.Text;
+            stMode.EntryText = this.textBoxEntry.Text;
 
             // Allow one decimal point
             if (numBtn.Text.Equals("."))
             {
-                if(!this.entryText.Contains("."))
-                    this.entryText = this.entryText + numBtn.Text;
+                if(!stMode.EntryText.Contains("."))
+                    stMode.EntryText = stMode.EntryText + numBtn.Text;
             }
             else
             {
-                this.entryText = this.entryText + numBtn.Text;
-            }
-           
-            // Allow the number start with a single zero
-            // Do not allow "00..."
-            if (this.entryText.StartsWith("00"))
-            {
-                this.entryText = "0";
+                stMode.EntryText = stMode.EntryText + numBtn.Text;
             }
 
-            // Allow leading "0.", and trim all other leading zero combination
-            if (this.entryText.Length > 1)
-            {
-                if (this.entryText.StartsWith("0."))
-                {
-                    if (this.entryText.Length == 2)
-                        this.entryText = "0.";
-                }
-                else 
-                {
-                    this.entryText = this.entryText.TrimStart('0');
-                }
-            }
-
-            // Always keep zero positive
-            if (this.entryText.Equals("-0"))
-            {
-                this.entryText = "0";
-            }
+            this.clearZero();
 
             // Refresgh entry
             this.refreshEntryText();
@@ -91,24 +66,24 @@ namespace Calculator
             string operation = operBtn.Text;
             
             // Do the action
-            if (this.entryText != null)
+            if (stMode.EntryText != null)
             {
                 switch (operation)
                 {
                     case "±":
 
                         // Do now allow "-0"
-                        if (!this.entryText.Equals("0"))
+                        if (!stMode.EntryText.Equals("0"))
                         {
                             // If entry text contains "-", remove "-" from entry text
                             // If entry text does not contain "-", add "-" to entry text
-                            if (this.entryText.Contains("-"))
+                            if (stMode.EntryText.Contains("-"))
                             {
-                                this.entryText = this.entryText.Substring(1);
+                                stMode.EntryText = stMode.EntryText.Substring(1);
                             }
                             else
                             {
-                                this.entryText = "-" + this.entryText;
+                                stMode.EntryText = "-" + stMode.EntryText;
                             }
                         }
                         break;
@@ -118,23 +93,23 @@ namespace Calculator
                         break;
                     case "<-":
 
-                        if (!this.entryText.Equals("0"))
+                        if (!stMode.EntryText.Equals("0"))
                         {
-                            if (this.entryText.Length <= 1 || (this.entryText.Length == 2 && this.entryText.Contains("-")))
+                            if (stMode.EntryText.Length <= 1 || (stMode.EntryText.Length == 2 && stMode.EntryText.Contains("-")))
                             {
-                                this.entryText = "0";
+                                stMode.EntryText = "0";
                             }
                             else
                             {
-                                this.entryText = this.entryText.Remove((entryText.Length - 1), 1);
+                                stMode.EntryText = stMode.EntryText.Remove((stMode.EntryText.Length - 1), 1);
 
-                                if (this.entryText.Length == 0)
-                                    this.entryText = "0";
+                                if (stMode.EntryText.Length == 0)
+                                    stMode.EntryText = "0";
                             }
                         }
                         break;
                     case "CE":
-                        this.entryText = "0";
+                        stMode.EntryText = "0";
                         break;
                     default:
                         MessageBox.Show("Wrong operation");
@@ -143,29 +118,59 @@ namespace Calculator
             }
             else
             {
-                this.entryText = "0";
+                stMode.EntryText = "0";
             }
 
             this.refreshEntryText();
         }
 
+        private void clearZero()
+        {
+            // Allow the number start with a single zero
+            // Do not allow "00..."
+            if (stMode.EntryText.StartsWith("00"))
+            {
+                stMode.EntryText = "0";
+            }
+
+            // Allow leading "0.", and trim all other leading zero combination
+            if (stMode.EntryText.Length > 1)
+            {
+                if (stMode.EntryText.StartsWith("0."))
+                {
+                    if (stMode.EntryText.Length == 2)
+                        stMode.EntryText = "0.";
+                }
+                else
+                {
+                    stMode.EntryText = stMode.EntryText.TrimStart('0');
+                }
+            }
+
+            // Always keep zero positive
+            if (stMode.EntryText.Equals("-0"))
+            {
+                stMode.EntryText = "0";
+            }
+        }
+
         private void refreshEntryText()
         {
-            if(!this.entryText.EndsWith(".") || !this.entryText.Equals("0"))
+            if(!stMode.EntryText.EndsWith(".") || !stMode.EntryText.Equals("0"))
                 this.formatText();
-            this.textBoxEntry.Text = this.entryText;
+            this.textBoxEntry.Text = stMode.EntryText;
         }
 
         private void formatText()
         {
-            if(this.entryText != null)
+            if(stMode.EntryText != null)
             {
                 String formatStr;
-                int decPlaces = this.entryText.Substring(this.entryText.LastIndexOf('.') + 1).Length;
+                int decPlaces = stMode.EntryText.Substring(stMode.EntryText.LastIndexOf('.') + 1).Length;
 
-                if (!this.entryText.EndsWith("."))
+                if (!stMode.EntryText.EndsWith("."))
                 {
-                    if (this.entryText.Contains("."))
+                    if (stMode.EntryText.Contains("."))
                     {
                         formatStr = "#,##0.";
                         for (int i = 0; i < decPlaces; i++)
@@ -175,7 +180,7 @@ namespace Calculator
                     {
                         formatStr = "#,##0";
                     }
-                    this.entryText = Convert.ToDecimal(this.entryText).ToString(formatStr);
+                    stMode.EntryText = Convert.ToDecimal(stMode.EntryText).ToString(formatStr);
                 }
             }
         }
@@ -197,7 +202,7 @@ namespace Calculator
 
         private void CreateLogStyle(Button buttonLog)
         {
-            buttonLog.Width = 245;
+            buttonLog.Width = 183;
             buttonLog.Height = 60;
             buttonLog.Margin = new Padding(0, 0, 0, 0);
             buttonLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -234,6 +239,17 @@ namespace Calculator
             this.standardToolStripMenuItem.Checked = false;
             this.scietificToolStripMenuItem.Checked = false;
             this.programmerToolStripMenuItem.Checked = true;
+        }
+
+        // Allow scrolling flow layout panel history using mousewheel
+        private void flowLayoutPanelHistory_Paint(object sender, PaintEventArgs e)
+        {
+            this.flowLayoutPanelHistory.Focus();
+        }
+
+        private void viewHelpF1ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
