@@ -15,7 +15,10 @@ namespace Calculator
     public partial class FormCalculator : Form
     {
         private StandardMode stMode;
+        private ScientificMode scMode;
+        private ProgrammerMode prMode;
 
+        // Current user entry
         private string entryText;
 
         public FormCalculator()
@@ -23,8 +26,7 @@ namespace Calculator
             InitializeComponent();
 
             // Set calculator scientific mode
-            stMode = new StandardMode();
-            this.labelCalculatorMode.Text = "STANDARD";
+            this.standardToolStripMenuItem_Click(null, null);
 
             // Set initial input to 0
             this.textBoxEntry.Text = "0";
@@ -115,18 +117,19 @@ namespace Calculator
                             this.CreateHistoryLog("15.00000 + 9=\n24.0000");
                         break;
                     case "<-":
-                        if(!this.entryText.Equals("0"))
+
+                        if (!this.entryText.Equals("0"))
                         {
-                            if (this.entryText.Length == 2 && this.entryText.Contains("-"))
+                            if (this.entryText.Length <= 1 || (this.entryText.Length == 2 && this.entryText.Contains("-")))
+                            {
                                 this.entryText = "0";
+                            }
                             else
                             {
                                 this.entryText = this.entryText.Remove((entryText.Length - 1), 1);
-                            }
 
-                            if (this.entryText.Length == 1)
-                            {
-                                this.entryText = "0";
+                                if (this.entryText.Length == 0)
+                                    this.entryText = "0";
                             }
                         }
                         break;
@@ -148,27 +151,33 @@ namespace Calculator
 
         private void refreshEntryText()
         {
-            String formatStr;
-            int decPlaces = this.entryText.Substring(this.entryText.LastIndexOf('.') + 1).Length;
-
-            if (this.entryText.Contains("."))
-            {
-                formatStr = "#,##0";
-                for (int i = 0; i < decPlaces; i++)
-                    if (i == 0)
-                        formatStr += ".0";
-                    else
-                        formatStr += "0";
-            }
-            else
-            {
-                formatStr = "#,##";
-            }
-
-            MessageBox.Show("Curent Text: " + this.entryText + "\n" + "Format String: " + formatStr);
-
-            this.entryText = Convert.ToDecimal(this.entryText).ToString(formatStr);
+            if(!this.entryText.EndsWith(".") || !this.entryText.Equals("0"))
+                this.formatText();
             this.textBoxEntry.Text = this.entryText;
+        }
+
+        private void formatText()
+        {
+            if(this.entryText != null)
+            {
+                String formatStr;
+                int decPlaces = this.entryText.Substring(this.entryText.LastIndexOf('.') + 1).Length;
+
+                if (!this.entryText.EndsWith("."))
+                {
+                    if (this.entryText.Contains("."))
+                    {
+                        formatStr = "#,##0.";
+                        for (int i = 0; i < decPlaces; i++)
+                            formatStr += "0";
+                    }
+                    else
+                    {
+                        formatStr = "#,##0";
+                    }
+                    this.entryText = Convert.ToDecimal(this.entryText).ToString(formatStr);
+                }
+            }
         }
 
         private void CreateHistoryLog(String entry)
@@ -198,6 +207,33 @@ namespace Calculator
             //else
             //button.BackColor = Color.LightPink;
             //button.Tag = i;
+        }
+
+        private void standardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            stMode = new StandardMode();
+            this.labelMode.Text = "STANDARD";
+            this.standardToolStripMenuItem.Checked = true;
+            this.scietificToolStripMenuItem.Checked = false;
+            this.programmerToolStripMenuItem.Checked = false;
+        }
+
+        private void scietificToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            scMode = new ScientificMode();
+            this.labelMode.Text = "SCIENTIFIC";
+            this.standardToolStripMenuItem.Checked = false;
+            this.scietificToolStripMenuItem.Checked = true;
+            this.programmerToolStripMenuItem.Checked = false;
+        }
+
+        private void programmerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            prMode = new ProgrammerMode();
+            this.labelMode.Text = "PROGRAMMER";
+            this.standardToolStripMenuItem.Checked = false;
+            this.scietificToolStripMenuItem.Checked = false;
+            this.programmerToolStripMenuItem.Checked = true;
         }
     }
 }
