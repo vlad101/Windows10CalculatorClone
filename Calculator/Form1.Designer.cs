@@ -35,7 +35,7 @@ namespace Calculator
             this.label2 = new System.Windows.Forms.Label();
             this.flowLayoutPanelHistory = new System.Windows.Forms.FlowLayoutPanel();
             this.textBoxEntry = new System.Windows.Forms.TextBox();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.menuStripMode = new System.Windows.Forms.MenuStrip();
             this.modeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.standardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scietificToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,7 +72,7 @@ namespace Calculator
             this.button3 = new Calculator.Controls.NonFocusButton();
             this.button2 = new Calculator.Controls.NonFocusButton();
             this.button1 = new Calculator.Controls.NonFocusButton();
-            this.menuStrip1.SuspendLayout();
+            this.menuStripMode.SuspendLayout();
             this.SuspendLayout();
             // 
             // textBoxResult
@@ -128,17 +128,17 @@ namespace Calculator
             this.textBoxEntry.TabIndex = 30;
             this.textBoxEntry.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
-            // menuStrip1
+            // menuStripMode
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuStripMode.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.modeToolStripMenuItem,
             this.editToolStripMenuItem,
             this.helpToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(646, 24);
-            this.menuStrip1.TabIndex = 31;
-            this.menuStrip1.Text = "menuStrip1";
+            this.menuStripMode.Location = new System.Drawing.Point(0, 0);
+            this.menuStripMode.Name = "menuStripMode";
+            this.menuStripMode.Size = new System.Drawing.Size(646, 24);
+            this.menuStripMode.TabIndex = 31;
+            this.menuStripMode.Text = "menuStripMode";
             // 
             // modeToolStripMenuItem
             // 
@@ -209,7 +209,6 @@ namespace Calculator
             this.viewHelpF1ToolStripMenuItem.Name = "viewHelpF1ToolStripMenuItem";
             this.viewHelpF1ToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.viewHelpF1ToolStripMenuItem.Text = "View Help                         F1";
-            this.viewHelpF1ToolStripMenuItem.Click += new System.EventHandler(this.viewHelpF1ToolStripMenuItem_Click);
             // 
             // aboutCalculatorToolStripMenuItem
             // 
@@ -538,12 +537,15 @@ namespace Calculator
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBoxResult);
-            this.Controls.Add(this.menuStrip1);
-            this.MainMenuStrip = this.menuStrip1;
+            this.Controls.Add(this.menuStripMode);
+            this.MainMenuStrip = this.menuStripMode;
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(662, 311);
+            this.MinimumSize = new System.Drawing.Size(662, 311);
             this.Name = "FormCalculator";
             this.Text = "Calculator";
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
+            this.menuStripMode.ResumeLayout(false);
+            this.menuStripMode.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -581,7 +583,7 @@ namespace Calculator
         private NonFocusButton button23;
         private NonFocusButton button24;
         private NonFocusButton button25;
-        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.MenuStrip menuStripMode;
         private System.Windows.Forms.ToolStripMenuItem modeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem standardToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scietificToolStripMenuItem;

@@ -7,22 +7,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Calculator.Controllers;
 using Calculator.Mode;
+using Calculator.Operations;
 using System.Windows.Forms;
 
 namespace Calculator
 {
     public partial class FormCalculator : Form
     {
+        // Declare calculator modes
         private StandardMode stMode;
         private ScientificMode scMode;
         private ProgrammerMode prMode;
 
-        // Current user entry
-        private string entryText;
-
+        // Load calculator main form
         public FormCalculator()
         {
+            // Initialize main form
             InitializeComponent();
 
             // Set calculator scientific mode
@@ -32,6 +34,9 @@ namespace Calculator
             this.textBoxEntry.Text = "0";
         }
 
+        #region Button Events
+
+        // Button number click event
         private void number_button_Click(object sender, EventArgs e)
         {
             // Get the number when the number button is pressed
@@ -40,16 +45,8 @@ namespace Calculator
             // Append value to an input entry
             stMode.EntryText = this.textBoxEntry.Text;
 
-            // Allow one decimal point
-            if (numBtn.Text.Equals("."))
-            {
-                if(!stMode.EntryText.Contains("."))
-                    stMode.EntryText = stMode.EntryText + numBtn.Text;
-            }
-            else
-            {
-                stMode.EntryText = stMode.EntryText + numBtn.Text;
-            }
+            // Update entry text
+            this.updateEntryText(numBtn.Text);
 
             this.clearZero();
 
@@ -57,6 +54,7 @@ namespace Calculator
             this.refreshEntryText();
         }
 
+        // Perform an ariphmetic operation
         private void operation_button_Click(object sender, EventArgs e)
         {
             // Get the number when the number button is pressed
@@ -70,49 +68,30 @@ namespace Calculator
             {
                 switch (operation)
                 {
-                    case "±":
-
-                        // Do now allow "-0"
-                        if (!stMode.EntryText.Equals("0"))
-                        {
-                            // If entry text contains "-", remove "-" from entry text
-                            // If entry text does not contain "-", add "-" to entry text
-                            if (stMode.EntryText.Contains("-"))
-                            {
-                                stMode.EntryText = stMode.EntryText.Substring(1);
-                            }
-                            else
-                            {
-                                stMode.EntryText = "-" + stMode.EntryText;
-                            }
-                        }
+                    // Ariphmetic operation
+                    case "+":
+                        stMode.ArithmeticOperation(OperationType.Addition);
                         break;
                     case "=":
-                        if (stMode.EqualsOperation())
-                            this.CreateHistoryLog("15.00000 + 9=\n24.0000");
+                        stMode.EqualsOperation();
+                        //this.CreateHistoryLog("15.00000 + 9=\n24.0000");
                         break;
+                    // Sign change operation
+                    case "±":
+                        this.setSignedValue();
+                        break;
+                    // Clear operations
                     case "<-":
-
-                        if (!stMode.EntryText.Equals("0"))
-                        {
-                            if (stMode.EntryText.Length <= 1 || (stMode.EntryText.Length == 2 && stMode.EntryText.Contains("-")))
-                            {
-                                stMode.EntryText = "0";
-                            }
-                            else
-                            {
-                                stMode.EntryText = stMode.EntryText.Remove((stMode.EntryText.Length - 1), 1);
-
-                                if (stMode.EntryText.Length == 0)
-                                    stMode.EntryText = "0";
-                            }
-                        }
+                        this.removeLastChar();
                         break;
                     case "CE":
-                        stMode.EntryText = "0";
+                        stMode.ClearEntryOperation();
+                        break;
+                    case "C":
+                        stMode.ClearOperation();
                         break;
                     default:
-                        MessageBox.Show("Wrong operation");
+                        MessageBox.Show(operation);
                         break;
                 }
             }
@@ -124,6 +103,54 @@ namespace Calculator
             this.refreshEntryText();
         }
 
+        #endregion
+
+        #region Button (Set signal, clear, remove last char) Methods
+
+        // Remove the last entry text character on "<-" button press
+        private void removeLastChar()
+        {
+
+            if (!stMode.EntryText.Equals("0"))
+            {
+                if (stMode.EntryText.Length <= 1 || (stMode.EntryText.Length == 2 && stMode.EntryText.Contains("-")))
+                {
+                    stMode.EntryText = "0";
+                }
+                else
+                {
+                    stMode.EntryText = stMode.EntryText.Remove((stMode.EntryText.Length - 1), 1);
+
+                    if (stMode.EntryText.Length == 0)
+                        stMode.EntryText = "0";
+                }
+            }
+        }
+
+        // Set sign of the entry textbox value
+        private void setSignedValue()
+        {
+            // Do now allow "-0"
+            if (!stMode.EntryText.Equals("0"))
+            {
+                // If entry text contains "-", remove "-" from entry text
+                // If entry text does not contain "-", add "-" to entry text
+                if (stMode.EntryText.Contains("-"))
+                {
+                    stMode.EntryText = stMode.EntryText.Substring(1);
+                }
+                else
+                {
+                    stMode.EntryText = "-" + stMode.EntryText;
+                }
+            }
+        }
+
+        #endregion
+
+        #region UI entry textbox Methods
+
+        // Clear leading zeros
         private void clearZero()
         {
             // Allow the number start with a single zero
@@ -154,36 +181,41 @@ namespace Calculator
             }
         }
 
+        // Append a value to the entry textbox
+        private void updateEntryText(String numVal)
+        {
+            // Operation is not defined
+            if (stMode.operationType == OperationType.None)
+            {
+                // Allow one decimal point
+                if (numVal.Equals("."))
+                {
+                    if (!stMode.EntryText.Contains("."))
+                        stMode.EntryText = stMode.EntryText + numVal;
+                }
+                else
+                {
+                    stMode.EntryText = stMode.EntryText + numVal;
+                }
+            }
+            else
+            {
+                // Operation is defined
+                stMode.EntryText = numVal;
+            }
+        }
+
+        // Update the entry text box value
         private void refreshEntryText()
         {
             if(!stMode.EntryText.EndsWith(".") || !stMode.EntryText.Equals("0"))
-                this.formatText();
+                Utils.formatText(stMode.EntryText);
             this.textBoxEntry.Text = stMode.EntryText;
         }
 
-        private void formatText()
-        {
-            if(stMode.EntryText != null)
-            {
-                String formatStr;
-                int decPlaces = stMode.EntryText.Substring(stMode.EntryText.LastIndexOf('.') + 1).Length;
+        #endregion
 
-                if (!stMode.EntryText.EndsWith("."))
-                {
-                    if (stMode.EntryText.Contains("."))
-                    {
-                        formatStr = "#,##0.";
-                        for (int i = 0; i < decPlaces; i++)
-                            formatStr += "0";
-                    }
-                    else
-                    {
-                        formatStr = "#,##0";
-                    }
-                    stMode.EntryText = Convert.ToDecimal(stMode.EntryText).ToString(formatStr);
-                }
-            }
-        }
+        #region History Log Methods
 
         private void CreateHistoryLog(String entry)
         {
@@ -194,13 +226,14 @@ namespace Calculator
             button.Text = entry;
 
             // Add style
-            this.CreateLogStyle(button);
+            this.CreateHistoryLogStyle(button);
 
             // Attach button to a layout panel
             this.flowLayoutPanelHistory.Controls.Add(button);
         }
 
-        private void CreateLogStyle(Button buttonLog)
+        // History log style
+        private void CreateHistoryLogStyle(Button buttonLog)
         {
             buttonLog.Width = 183;
             buttonLog.Height = 60;
@@ -213,6 +246,15 @@ namespace Calculator
             //button.BackColor = Color.LightPink;
             //button.Tag = i;
         }
+
+        private void flowLayoutPanelHistory_Paint(object sender, PaintEventArgs e)
+        {
+             this.flowLayoutPanelHistory.Focus();
+        }
+
+        #endregion
+
+        #region Set calculator mode methods
 
         private void standardToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -241,15 +283,6 @@ namespace Calculator
             this.programmerToolStripMenuItem.Checked = true;
         }
 
-        // Allow scrolling flow layout panel history using mousewheel
-        private void flowLayoutPanelHistory_Paint(object sender, PaintEventArgs e)
-        {
-            this.flowLayoutPanelHistory.Focus();
-        }
-
-        private void viewHelpF1ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
+        #endregion
     }
 }

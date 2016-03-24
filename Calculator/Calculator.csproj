@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\Enums.cs" />
     <Compile Include="Controls\NonFocusButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -57,6 +58,7 @@
     <Compile Include="Mode\ProgrammerMode.cs" />
     <Compile Include="Mode\ScientificMode.cs" />
     <Compile Include="Mode\StandardMode.cs" />
+    <Compile Include="Operations\Utils.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
