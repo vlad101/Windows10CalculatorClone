@@ -209,7 +209,7 @@ namespace Calculator
         private void refreshEntryText()
         {
             if(!stMode.EntryText.EndsWith(".") || !stMode.EntryText.Equals("0"))
-                Utils.formatText(stMode.EntryText);
+                stMode.EntryText = Utils.formatText(stMode.EntryText);
             this.textBoxEntry.Text = stMode.EntryText;
         }
 

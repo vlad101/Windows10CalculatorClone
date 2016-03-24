@@ -9,7 +9,7 @@ namespace Calculator.Operations
     class Utils
     {
         // Format the text with commas
-        public static void formatText(String entryText)
+        public static String formatText(String entryText)
         {
             if (entryText != null)
             {
@@ -31,6 +31,7 @@ namespace Calculator.Operations
                     entryText = Convert.ToDecimal(entryText).ToString(formatStr);
                 }
             }
+            return entryText;
         }
     }
 }
