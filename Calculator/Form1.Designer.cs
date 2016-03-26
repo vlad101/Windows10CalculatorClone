@@ -83,7 +83,7 @@ namespace Calculator
             this.textBoxResult.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxResult.Location = new System.Drawing.Point(13, 29);
             this.textBoxResult.Name = "textBoxResult";
-            this.textBoxResult.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.textBoxResult.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.textBoxResult.Size = new System.Drawing.Size(371, 24);
             this.textBoxResult.TabIndex = 0;
             this.textBoxResult.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -154,21 +154,21 @@ namespace Calculator
             // standardToolStripMenuItem
             // 
             this.standardToolStripMenuItem.Name = "standardToolStripMenuItem";
-            this.standardToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.standardToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.standardToolStripMenuItem.Text = "Standard";
             this.standardToolStripMenuItem.Click += new System.EventHandler(this.standardToolStripMenuItem_Click);
             // 
             // scietificToolStripMenuItem
             // 
             this.scietificToolStripMenuItem.Name = "scietificToolStripMenuItem";
-            this.scietificToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.scietificToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.scietificToolStripMenuItem.Text = "Scietific";
             this.scietificToolStripMenuItem.Click += new System.EventHandler(this.scietificToolStripMenuItem_Click);
             // 
             // programmerToolStripMenuItem
             // 
             this.programmerToolStripMenuItem.Name = "programmerToolStripMenuItem";
-            this.programmerToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.programmerToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.programmerToolStripMenuItem.Text = "Programmer";
             this.programmerToolStripMenuItem.Click += new System.EventHandler(this.programmerToolStripMenuItem_Click);
             // 
@@ -505,7 +505,7 @@ namespace Calculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(646, 273);
+            this.ClientSize = new System.Drawing.Size(646, 272);
             this.Controls.Add(this.labelMode);
             this.Controls.Add(this.textBoxEntry);
             this.Controls.Add(this.flowLayoutPanelHistory);

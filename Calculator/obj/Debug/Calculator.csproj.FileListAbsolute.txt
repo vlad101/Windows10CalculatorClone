@@ -14,3 +14,4 @@ C:\Users\ANKIT\Desktop\Windows10CalculatorClone\Calculator\obj\Debug\Calculator.
 C:\Users\ANKIT\Desktop\Windows10CalculatorClone\Calculator\obj\Debug\Calculator.csproj.GenerateResource.Cache
 C:\Users\ANKIT\Desktop\Windows10CalculatorClone\Calculator\obj\Debug\Calculator.exe
 C:\Users\ANKIT\Desktop\Windows10CalculatorClone\Calculator\obj\Debug\Calculator.pdb
+C:\Users\Vladimir\documents\visual studio 2013\Projects\Calculator\Calculator\obj\Debug\Calculator.csprojResolveAssemblyReference.cache

@@ -43,12 +43,25 @@ namespace Calculator
             Button numBtn = (Button)sender;
 
             // Append value to an input entry
-            stMode.EntryText = this.textBoxEntry.Text;
+            // If ariphmetic operation is used, clear the entry text box
+            if (stMode.PrevButtonSender.Equals("+") || stMode.PrevButtonSender.Equals("-") ||
+                stMode.PrevButtonSender.Equals("X") || stMode.PrevButtonSender.Equals("÷"))
+            {
+                stMode.EntryText = "";
+            }
+            else
+            {
+                stMode.EntryText = this.textBoxEntry.Text;
+            }
 
             // Update entry text
             this.updateEntryText(numBtn.Text);
 
+            // Clear leading zero
             this.clearZero();
+
+            // Store previous button sender
+            stMode.PrevButtonSender = numBtn.Text;
 
             // Refresgh entry
             this.refreshEntryText();
@@ -62,6 +75,9 @@ namespace Calculator
 
             // Get operation key
             string operation = operBtn.Text;
+
+            // Store previous button sender
+            stMode.PrevButtonSender = operBtn.Text;
             
             // Do the action
             if (stMode.EntryText != null)
@@ -73,8 +89,11 @@ namespace Calculator
                         stMode.ArithmeticOperation(OperationType.Addition);
                         break;
                     case "=":
-                        stMode.EqualsOperation();
-                        //this.CreateHistoryLog("15.00000 + 9=\n24.0000");
+                        if(stMode.EqualsOperation())
+                        {
+                            this.refreshResultText();
+                            //this.CreateHistoryLog("15.00000 + 9=\n24.0000");
+                        }
                         break;
                     // Sign change operation
                     case "±":
@@ -184,24 +203,15 @@ namespace Calculator
         // Append a value to the entry textbox
         private void updateEntryText(String numVal)
         {
-            // Operation is not defined
-            if (stMode.operationType == OperationType.None)
+            // Allow one decimal point
+            if (numVal.Equals("."))
             {
-                // Allow one decimal point
-                if (numVal.Equals("."))
-                {
-                    if (!stMode.EntryText.Contains("."))
-                        stMode.EntryText = stMode.EntryText + numVal;
-                }
-                else
-                {
+                if (!stMode.EntryText.Contains("."))
                     stMode.EntryText = stMode.EntryText + numVal;
-                }
             }
             else
             {
-                // Operation is defined
-                stMode.EntryText = numVal;
+                stMode.EntryText = stMode.EntryText + numVal;
             }
         }
 
@@ -211,6 +221,18 @@ namespace Calculator
             if(!stMode.EntryText.EndsWith(".") || !stMode.EntryText.Equals("0"))
                 stMode.EntryText = Utils.formatText(stMode.EntryText);
             this.textBoxEntry.Text = stMode.EntryText;
+        }
+
+        #endregion
+
+        #region UI entry result Methods
+
+        // Update the result text box value
+        private void refreshResultText()
+        {
+            //if (!stMode.EntryText.EndsWith(".") || !stMode.EntryText.Equals("0"))
+            //    stMode.EntryText = Utils.formatText(stMode.EntryText);
+            this.textBoxResult.Text = stMode.ResultText;
         }
 
         #endregion

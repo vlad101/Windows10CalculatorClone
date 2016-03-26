@@ -19,6 +19,9 @@ namespace Calculator.Mode
         // Current result text
         public string ResultText { get; set; }
 
+        // Store button sender
+        public string PrevButtonSender { get; set; }
+
         // Addition (summand1 + summand2 = sum)
         private string summand1 { get; set; }
         private string summand2 { get; set; }
@@ -34,6 +37,11 @@ namespace Calculator.Mode
         // Division (divident/divisor = quotient)
         private string divident { get; set; }
         private string divisor { get; set; }
+
+        public StandardMode()
+        {
+            this.PrevButtonSender = "";
+        }
 
         public bool ArithmeticOperation(OperationType operation)
         {
@@ -59,6 +67,7 @@ namespace Calculator.Mode
                     MessageBox.Show("Something went wrong.");
                     return false;
             }
+
             return true;
         }
 
@@ -72,20 +81,27 @@ namespace Calculator.Mode
                 case OperationType.Addition:
                     this.summand2 = this.EntryText;
                     this.EntryText = this.summand1 + this.summand2;
+                    this.ResultText = this.summand1 + " + " + this.summand2 + " =";
                     this.summand1 = "";
                     this.summand2 = "";
                     break;
                 case OperationType.Subtraction:
                     this.subtrahend = this.EntryText;
-                    // minuend - subtrahend = difference
+                    this.ResultText = this.minuend + " - " + this.subtrahend + " =";
+                    this.minuend = "";
+                    this.subtrahend = "";
                     break;
                 case OperationType.Multiplication:
                     this.multiplicand = this.EntryText;
-                    // multiplier x multiplicand = product
+                    this.ResultText = this.multiplier + " X " + this.multiplicand + " =";
+                    this.multiplier = "";
+                    this.multiplicand = "";
                     break;
                 case OperationType.Division:
                     this.divisor = this.EntryText;
-                    // divident/divisor = quotient
+                    this.ResultText = this.divident + " / " + this.divisor + " =";
+                    this.divident = "";
+                    this.divisor = "";
                     break;
                 case OperationType.None:
                     // Do nothing
@@ -94,9 +110,7 @@ namespace Calculator.Mode
                     MessageBox.Show("Something went wrong.");
                     return false;
             }
-
-            this.operationType = OperationType.Equals;
-
+            
             return true;
         }
 
