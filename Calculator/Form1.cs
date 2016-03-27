@@ -44,8 +44,7 @@ namespace Calculator
 
             // Append value to an input entry
             // If ariphmetic operation is used, clear the entry text box
-            if (stMode.PrevButtonSender.Equals("+") || stMode.PrevButtonSender.Equals("-") ||
-                stMode.PrevButtonSender.Equals("X") || stMode.PrevButtonSender.Equals("÷"))
+            if (this.isAriphmeticOperation())
             {
                 stMode.EntryText = "";
             }
@@ -88,6 +87,15 @@ namespace Calculator
                     case "+":
                         stMode.ArithmeticOperation(OperationType.Addition);
                         break;
+                    case "-":
+                        stMode.ArithmeticOperation(OperationType.Subtraction);
+                        break;
+                    case "X":
+                        stMode.ArithmeticOperation(OperationType.Multiplication);
+                        break;
+                    case "÷":
+                        stMode.ArithmeticOperation(OperationType.Division);
+                        break;
                     case "=":
                         if(stMode.EqualsOperation())
                         {
@@ -108,6 +116,7 @@ namespace Calculator
                         break;
                     case "C":
                         stMode.ClearOperation();
+                        this.refreshResultText();
                         break;
                     default:
                         MessageBox.Show(operation);
@@ -119,6 +128,7 @@ namespace Calculator
                 stMode.EntryText = "0";
             }
 
+            this.refreshResultText();
             this.refreshEntryText();
         }
 
@@ -303,6 +313,17 @@ namespace Calculator
             this.standardToolStripMenuItem.Checked = false;
             this.scietificToolStripMenuItem.Checked = false;
             this.programmerToolStripMenuItem.Checked = true;
+        }
+
+        #endregion
+
+        #region Utility Methods
+
+        private bool isAriphmeticOperation()
+        {
+            return stMode.PrevButtonSender.Equals("+") || stMode.PrevButtonSender.Equals("-") ||
+            stMode.PrevButtonSender.Equals("X") || stMode.PrevButtonSender.Equals("÷") ||
+            stMode.PrevButtonSender.Equals("=");
         }
 
         #endregion
