@@ -86,6 +86,7 @@ namespace Calculator.Mode
             {
                 case OperationType.Addition:
                     this.summand2 = this.EntryText;
+                    //this.ResultText = this.minuend + " - " + this.subtrahend + " =";
                     break;
                 case OperationType.Subtraction:
                     this.subtrahend = this.EntryText;
@@ -154,6 +155,10 @@ namespace Calculator.Mode
 
             // Update result textbox
             this.ResultText = this.summand1 + " + " + this.summand2 + " =";
+
+            // Clear data
+            this.summand1 = "";
+            this.summand2 = "";
         }
 
         private void subtract()
@@ -176,6 +181,10 @@ namespace Calculator.Mode
 
             // Update result textbox
             this.ResultText = this.minuend + " - " + this.subtrahend + " =";
+
+            // Clear data
+            this.minuend = "";
+            this.subtrahend = "";
         }
 
         private void multiply()
@@ -198,6 +207,10 @@ namespace Calculator.Mode
 
             // Update result textbox
             this.ResultText = this.multiplier + " X " + this.multiplicand + " =";
+
+            // Clear data
+            this.multiplier = "";
+            this.multiplicand = "";
         }
 
         private void divide()
@@ -220,6 +233,10 @@ namespace Calculator.Mode
 
             // Update result textbox
             this.ResultText = this.divident + " ÷ " + this.divisor + " =";
+
+            // Clear data
+            this.divident = "";
+            this.divisor = "";
         }
 
         #endregion
