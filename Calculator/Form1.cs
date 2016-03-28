@@ -99,8 +99,9 @@ namespace Calculator
                     case "=":
                         if(stMode.EqualsOperation())
                         {
-                            this.refreshResultText();
-                            //this.CreateHistoryLog("15.00000 + 9=\n24.0000");
+                            this.CreateHistoryLog(stMode.HistoryLogEntry);
+                            this.refreshEntryText();
+                            stMode.ResultText = "";
                         }
                         break;
                     // Sign change operation
@@ -108,7 +109,7 @@ namespace Calculator
                         this.setSignedValue();
                         break;
                     // Clear operations
-                    case "<-":
+                    case "\u2190": // Leftward arrow
                         this.removeLastChar();
                         break;
                     case "CE":
@@ -136,7 +137,7 @@ namespace Calculator
 
         #region Button (Set signal, clear, remove last char) Methods
 
-        // Remove the last entry text character on "<-" button press
+        // Remove the last entry text character on "<-" ("\u2190") button press
         private void removeLastChar()
         {
 

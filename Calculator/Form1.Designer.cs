@@ -463,7 +463,7 @@ namespace Calculator
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 35);
             this.button4.TabIndex = 4;
-            this.button4.Text = "<-";
+            this.button4.Text = "\u2190";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.operation_button_Click);
             // 
