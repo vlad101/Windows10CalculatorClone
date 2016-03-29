@@ -35,6 +35,16 @@ namespace Calculator.Mode
 
         public bool ArithmeticOperation(OperationType operation)
         {
+            // Evaluate expression if it contains more than one ariphmetic operator
+            if (this.PerformOperation())
+            {
+                // Create an expression
+                String expression = (this.ResultText + this.EntryText).Trim().Replace(",", "");
+
+                // Evaluate an expression
+                this.EntryText = this.EvaluateExpression(expression).ToString();
+            }
+            
             switch(operation)
             {
                 case OperationType.Addition:
@@ -56,31 +66,6 @@ namespace Calculator.Mode
                 default:
                     MessageBox.Show("Something went wrong.");
                     return false;
-            }
-
-            // Create an expression
-            String expression = this.ResultText.Trim().Replace(",", "");
-
-            int count = 0;
-            for (int i = 0; i < this.ResultText.Length; i++)
-            {
-                if (this.ResultText[i].Equals("+"))
-                    count++;
-                if (this.ResultText[i].Equals("-"))
-                    count++;
-                if (this.ResultText[0].Equals("*"))
-                    count++;
-                if (this.ResultText[0].Equals("/"))
-                    count++;
-            }
-
-                // Evaluate expression
-            MessageBox.Show("12345");
-
-            if (count > 1)
-            {
-                MessageBox.Show(this.ResultText);
-                //this.EntryText = this.EvaluateExpression(expression).ToString();
             }
 
             return true;
@@ -146,6 +131,22 @@ namespace Calculator.Mode
             {
                 return "Error";
             }
+        }
+
+        // Get operation count from the result text text box
+        private bool PerformOperation()
+        {
+            if(this.ResultText != null)
+            {
+                int count = 0;
+                foreach (char c in this.ResultText)
+                {
+                    if (c == '+' || c == '-'|| c == '*'|| c == '/')
+                        count++;
+                }
+                return (count > 1) ? true : false;
+            }
+            return false;
         }
 
         #endregion

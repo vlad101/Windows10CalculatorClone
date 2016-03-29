@@ -74,9 +74,6 @@ namespace Calculator
 
             // Get operation key
             string operation = operBtn.Text;
-
-            // Store previous button sender
-            stMode.PrevButtonSender = operBtn.Text;
             
             // Do the action
             if (stMode.EntryText != null)
@@ -129,8 +126,12 @@ namespace Calculator
                 stMode.EntryText = "0";
             }
 
+            // Clear text entry
             this.refreshResultText();
             this.refreshEntryText();
+
+            // Store previous button sender
+            stMode.PrevButtonSender = operBtn.Text;
         }
 
         #endregion
