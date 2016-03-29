@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Calculator.Controllers;
+using Calculator.Operations;
 
 namespace Calculator.Mode
 {
@@ -23,11 +23,12 @@ namespace Calculator.Mode
         // Store button sender
         public string PrevButtonSender { get; set; }
 
-        // HistoryLogEntry
+        // History Log Entry
         public string HistoryLogEntry { get; set; }
         
         public StandardMode()
         {
+            // Declare previous button sender
             this.PrevButtonSender = "";
         }
 
@@ -35,6 +36,12 @@ namespace Calculator.Mode
 
         public bool ArithmeticOperation(OperationType operation)
         {
+            // Get the current expression
+            String currResultText = this.ResultText + Utils.TrimDouble(this.EntryText);
+
+            // Declare ariphmetic sign
+            String operationSign = "";
+
             // Evaluate expression if it contains more than one ariphmetic operator
             if (this.PerformOperation())
             {
@@ -42,31 +49,46 @@ namespace Calculator.Mode
                 String expression = (this.ResultText + this.EntryText).Trim().Replace(",", "");
 
                 // Evaluate an expression
-                this.EntryText = this.EvaluateExpression(expression).ToString();
+                this.EntryText = Utils.EvaluateExpression(expression).ToString();
             }
             
             switch(operation)
             {
                 case OperationType.Addition:
+                    // Set operation
                     this.operationType = OperationType.Addition;
-                    this.ResultText += this.EntryText + " + ";
+                    // Set operation sign
+                    operationSign = " + ";
                     break;
                 case OperationType.Subtraction:
+                    // Set operation
                     this.operationType = OperationType.Subtraction;
-                    this.ResultText += this.EntryText + " - ";
+                    // Set operation sign
+                    operationSign = " - ";
                     break;
                 case OperationType.Multiplication:
+                    // Set operation
                     this.operationType = OperationType.Multiplication;
-                    this.ResultText += this.EntryText + " * ";
+                    // Set operation sign
+                    operationSign = " * ";
                     break;
                 case OperationType.Division:
+                    // Set operation
                     this.operationType = OperationType.Division;
-                    this.ResultText += this.EntryText + " / ";
+                    // Set operation sign
+                    operationSign = " / ";
                     break;
                 default:
                     MessageBox.Show("Something went wrong.");
                     return false;
             }
+
+            // If previous operation was an ariphmetic operation, update an operation
+            // Otherwise append a new operation to an expression
+            currResultText = this.UpdateOperation(currResultText, operationSign);
+
+            // Update result entry text box
+            this.ResultText = currResultText;
 
             return true;
         }
@@ -80,7 +102,7 @@ namespace Calculator.Mode
             String expression = (this.ResultText + this.EntryText).Trim().Replace(",","");
 
             // Evaluate expression
-            this.EntryText = this.EvaluateExpression(expression).ToString();
+            this.EntryText = Utils.EvaluateExpression(expression).ToString();
             
             // Create a histofy log entry
             this.CreateHistoryLogEntry(expression);
@@ -115,24 +137,6 @@ namespace Calculator.Mode
 
         #region Expression Parser Methods
 
-        // Evaluate C# string with math operators
-        // No 3rd party libraries required
-        private String EvaluateExpression(string expression)
-        {
-            try
-            {
-                DataTable table = new DataTable();
-                table.Columns.Add("expression", typeof(string), expression);
-                DataRow row = table.NewRow();
-                table.Rows.Add(row);
-                return (string)row["expression"];
-            }
-            catch (Exception exc)
-            {
-                return "Error";
-            }
-        }
-
         // Get operation count from the result text text box
         private bool PerformOperation()
         {
@@ -144,9 +148,27 @@ namespace Calculator.Mode
                     if (c == '+' || c == '-'|| c == '*'|| c == '/')
                         count++;
                 }
-                return (count > 1) ? true : false;
+                return (count >= 1) ? true : false;
             }
             return false;
+        }
+
+        // If previous button sender was an ariphmetic operation, update an ariphmetic operation
+        // Remove a previous operation sign and update it with the new one
+        // If previous button sender was not an ariphmetic operation, append a new ariphmetic sign
+        private String UpdateOperation(String expression, String operationSign)
+        {
+            if(this.ResultText != null)
+            {
+                if (this.PrevButtonSender.Equals("+") || this.PrevButtonSender.Equals("-") ||
+                    this.PrevButtonSender.Equals("X") || this.PrevButtonSender.Equals("÷"))
+                {
+                    expression = expression.Remove(expression.Length - 3) + operationSign;
+                    return expression;
+                }
+               
+            }
+            return expression + operationSign;
         }
 
         #endregion

@@ -126,9 +126,12 @@ namespace Calculator
                 stMode.EntryText = "0";
             }
 
-            // Clear text entry
+            // Refresh entry and result text box
             this.refreshResultText();
             this.refreshEntryText();
+
+            // Clear entry text box
+            stMode.EntryText = "";
 
             // Store previous button sender
             stMode.PrevButtonSender = operBtn.Text;
@@ -230,9 +233,12 @@ namespace Calculator
         // Update the entry text box value
         private void refreshEntryText()
         {
-            if(!stMode.EntryText.EndsWith(".") || !stMode.EntryText.Equals("0"))
-                stMode.EntryText = Utils.formatText(stMode.EntryText);
-            this.textBoxEntry.Text = stMode.EntryText;
+            if(stMode.EntryText != null && stMode.EntryText.Length > 0)
+            {
+                if(!stMode.EntryText.EndsWith(".") || !stMode.EntryText.Equals("0"))
+                    stMode.EntryText = Utils.formatText(stMode.EntryText);
+                this.textBoxEntry.Text = stMode.EntryText;
+            }
         }
 
         #endregion
@@ -274,6 +280,7 @@ namespace Calculator
             buttonLog.Margin = new Padding(0, 0, 0, 0);
             buttonLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             buttonLog.TextAlign = ContentAlignment.MiddleRight;
+            // Color control
             //buttonLog.BackColor = Color.LightBlue;
             //if (i % 2 == 0)
             //else
