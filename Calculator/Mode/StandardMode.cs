@@ -25,6 +25,11 @@ namespace Calculator.Mode
 
         // History Log Entry
         public string HistoryLogEntry { get; set; }
+
+        // Store last operation after equals operation is used
+        public string PrevOperatorOnEquals { get; set; }
+        public string PrevEntryTextOnEquals { get; set; }
+
         
         public StandardMode()
         {
@@ -46,7 +51,7 @@ namespace Calculator.Mode
             if (this.PerformOperation())
             {
                 // Create an expression
-                String expression = (this.ResultText + this.EntryText).Trim().Replace(",", "");
+                String expression = (this.ResultText + Utils.TrimDouble(this.EntryText)).Trim().Replace(",", "");
 
                 // Evaluate an expression
                 this.EntryText = Utils.EvaluateExpression(expression).ToString();
@@ -83,6 +88,9 @@ namespace Calculator.Mode
                     return false;
             }
 
+            // Set last operator being used
+            this.PrevOperatorOnEquals = operationSign;
+
             // If previous operation was an ariphmetic operation, update an operation
             // Otherwise append a new operation to an expression
             currResultText = this.UpdateOperation(currResultText, operationSign);
@@ -98,16 +106,32 @@ namespace Calculator.Mode
             if (this.EntryText.Length == 0)
                 return false;
 
+            // Set last entry text being used
+            this.PrevEntryTextOnEquals = Utils.TrimDouble(this.EntryText);
+
             // Create an expression
-            String expression = (this.ResultText + this.EntryText).Trim().Replace(",","");
+            String expression = (this.ResultText + Utils.TrimDouble(this.EntryText));
 
             // Evaluate expression
-            this.EntryText = Utils.EvaluateExpression(expression).ToString();
+            this.EntryText = Utils.EvaluateExpression(expression.Trim().Replace(",", "")).ToString();
             
             // Create a histofy log entry
             this.CreateHistoryLogEntry(expression);
             
             return true;
+        }
+
+        // If equals operator used more than once, repeat the action
+        public bool RepeatCalcOnEqualsOperator()
+        {
+            if (this.PrevOperatorOnEquals != null && this.PrevEntryTextOnEquals != null)
+            {
+                String expression = this.EntryText + " " + this.PrevOperatorOnEquals + " " + this.PrevEntryTextOnEquals;
+                this.EntryText = Utils.EvaluateExpression(expression.Trim().Replace(",", ""));
+                this.CreateHistoryLogEntry(expression);
+                return true;
+            }
+            return false;
         }
 
         #endregion
@@ -129,6 +153,10 @@ namespace Calculator.Mode
             // Clear entry and result text
             this.ResultText = "";
             this.EntryText = "0";
+
+            // Clear previous operator and entry text
+            this.PrevOperatorOnEquals = "";
+            this.PrevEntryTextOnEquals = "";
 
             return true;
         }
@@ -160,15 +188,25 @@ namespace Calculator.Mode
         {
             if(this.ResultText != null)
             {
-                if (this.PrevButtonSender.Equals("+") || this.PrevButtonSender.Equals("-") ||
-                    this.PrevButtonSender.Equals("X") || this.PrevButtonSender.Equals("÷"))
+                if (this.IsPrevSenderOperationSign())
                 {
-                    expression = expression.Remove(expression.Length - 3) + operationSign;
+                    expression = expression.Remove(expression.Length - 4) + operationSign;
                     return expression;
                 }
                
             }
             return expression + operationSign;
+        }
+
+        // Check if previous button sender was an ariphmetic operation
+        public bool IsPrevSenderOperationSign()
+        {
+            if (this.PrevButtonSender.Equals("+") || this.PrevButtonSender.Equals("-") ||
+                    this.PrevButtonSender.Equals("X") || this.PrevButtonSender.Equals("÷"))
+            {
+                return true;
+            }
+            return false;
         }
 
         #endregion
@@ -177,7 +215,7 @@ namespace Calculator.Mode
 
         private void CreateHistoryLogEntry(String expression)
         {
-            this.HistoryLogEntry = expression + " =\n" + this.EntryText;
+            this.HistoryLogEntry = expression + " =\n" + Utils.FormatText(this.EntryText);
         }
 
         #endregion

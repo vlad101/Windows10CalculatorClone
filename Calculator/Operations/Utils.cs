@@ -11,9 +11,9 @@ namespace Calculator.Operations
     class Utils
     {
         // Format the text with commas
-        public static String formatText(String entryText)
+        public static String FormatText(String entryText)
         {
-            if (entryText != null)
+            if (entryText != null && entryText.Length > 0)
             {
                 String formatStr;
                 int decPlaces = entryText.Substring(entryText.LastIndexOf('.') + 1).Length;
@@ -30,6 +30,7 @@ namespace Calculator.Operations
                     {
                         formatStr = "#,##0";
                     }
+                    
                     entryText = Convert.ToDecimal(entryText).ToString(formatStr);
                 }
             }
@@ -59,6 +60,26 @@ namespace Calculator.Operations
             {
                 return "";
             }
+        }
+
+        // Set sign of the entry textbox value
+        public static String SetSignedValue(String entryText)
+        {
+            // Do now allow "-0"
+            if (!entryText.Equals("0"))
+            {
+                // If entry text contains "-", remove "-" from entry text
+                // If entry text does not contain "-", add "-" to entry text
+                if (entryText.Contains("-"))
+                {
+                    return entryText.Substring(1);
+                }
+                else
+                {
+                    return "-" + entryText;
+                }
+            }
+            return entryText;
         }
     }
 }

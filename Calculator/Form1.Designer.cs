@@ -187,12 +187,14 @@ namespace Calculator
             this.copyCtrlCToolStripMenuItem.Name = "copyCtrlCToolStripMenuItem";
             this.copyCtrlCToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.copyCtrlCToolStripMenuItem.Text = "Copy                          Ctrl+C";
+            this.copyCtrlCToolStripMenuItem.Click += new System.EventHandler(this.copyCtrlCToolStripMenuItem_Click);
             // 
             // pasteCtrlVToolStripMenuItem
             // 
             this.pasteCtrlVToolStripMenuItem.Name = "pasteCtrlVToolStripMenuItem";
             this.pasteCtrlVToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.pasteCtrlVToolStripMenuItem.Text = "Paste                         Ctrl+V";
+            this.pasteCtrlVToolStripMenuItem.Click += new System.EventHandler(this.pasteCtrlVToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -463,7 +465,7 @@ namespace Calculator
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 35);
             this.button4.TabIndex = 4;
-            this.button4.Text = "\u2190";
+            this.button4.Text = "←";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.operation_button_Click);
             // 
@@ -505,7 +507,7 @@ namespace Calculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(646, 272);
+            this.ClientSize = new System.Drawing.Size(646, 273);
             this.Controls.Add(this.labelMode);
             this.Controls.Add(this.textBoxEntry);
             this.Controls.Add(this.flowLayoutPanelHistory);

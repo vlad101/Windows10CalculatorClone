@@ -82,38 +82,39 @@ namespace Calculator
                 {
                     // Ariphmetic operation
                     case "+":
-                        stMode.ArithmeticOperation(OperationType.Addition);
+                        this.PerformAriphmeticOperation(OperationType.Addition);
                         break;
                     case "-":
-                        stMode.ArithmeticOperation(OperationType.Subtraction);
+                        this.PerformAriphmeticOperation(OperationType.Subtraction);
                         break;
                     case "X":
-                        stMode.ArithmeticOperation(OperationType.Multiplication);
+                        this.PerformAriphmeticOperation(OperationType.Multiplication);
                         break;
                     case "÷":
-                        stMode.ArithmeticOperation(OperationType.Division);
+                        this.PerformAriphmeticOperation(OperationType.Division);
                         break;
                     case "=":
-                        if(stMode.EqualsOperation())
-                        {
-                            this.CreateHistoryLog(stMode.HistoryLogEntry);
-                            this.refreshEntryText();
-                            stMode.ResultText = "";
-                        }
+                        this.PerformEqualsOperation();
                         break;
                     // Sign change operation
                     case "±":
-                        this.setSignedValue();
+                        this.PerformChangeSign();
                         break;
                     // Clear operations
                     case "\u2190": // Leftward arrow
+                        // Remove a last character
                         this.removeLastChar();
+                        this.refreshEntryText();
                         break;
                     case "CE":
                         stMode.ClearEntryOperation();
+                        // Refresh entry textbox
+                        this.refreshEntryText();
                         break;
                     case "C":
                         stMode.ClearOperation();
+                        // Refresh entry and result textboxes
+                        this.refreshEntryText();
                         this.refreshResultText();
                         break;
                     default:
@@ -126,12 +127,8 @@ namespace Calculator
                 stMode.EntryText = "0";
             }
 
-            // Refresh entry and result text box
-            this.refreshResultText();
-            this.refreshEntryText();
-
-            // Clear entry text box
-            stMode.EntryText = "";
+            // Check entry text box
+            this.CheckInputOnOperation(operation);
 
             // Store previous button sender
             stMode.PrevButtonSender = operBtn.Text;
@@ -156,26 +153,9 @@ namespace Calculator
                     stMode.EntryText = stMode.EntryText.Remove((stMode.EntryText.Length - 1), 1);
 
                     if (stMode.EntryText.Length == 0)
+                    {
                         stMode.EntryText = "0";
-                }
-            }
-        }
-
-        // Set sign of the entry textbox value
-        private void setSignedValue()
-        {
-            // Do now allow "-0"
-            if (!stMode.EntryText.Equals("0"))
-            {
-                // If entry text contains "-", remove "-" from entry text
-                // If entry text does not contain "-", add "-" to entry text
-                if (stMode.EntryText.Contains("-"))
-                {
-                    stMode.EntryText = stMode.EntryText.Substring(1);
-                }
-                else
-                {
-                    stMode.EntryText = "-" + stMode.EntryText;
+                    }
                 }
             }
         }
@@ -184,6 +164,26 @@ namespace Calculator
 
         #region UI entry textbox Methods
 
+        private void CheckInputOnOperation(String operation)
+        {
+            // If no entry text value, use zero followed by an operation sign
+            if (stMode.EntryText.Equals("0") && this.textBoxEntry.Text.Length != 0)
+            {
+                if (operation.Equals("+") || operation.Equals("-") ||
+                    operation.Equals("X")  || operation.Equals("÷"))
+                {
+                    stMode.ResultText = "0 " + operation + " ";
+                }
+                this.refreshResultText();
+            }
+
+            // If entry text value equals ".", prepend it with a "0"
+            if (stMode.EntryText.Equals("."))
+            {
+                stMode.ResultText = "0.";
+            }
+        }
+
         // Clear leading zeros
         private void clearZero()
         {
@@ -191,12 +191,12 @@ namespace Calculator
             // Do not allow "00..."
             if (stMode.EntryText.StartsWith("00"))
             {
-                stMode.EntryText = "0";
-            }
+                // Allow leading "0.", and trim all other leading zero combination
+                if (stMode.EntryText.Length > 1)
+                {
+                    stMode.EntryText = "0";
+                }
 
-            // Allow leading "0.", and trim all other leading zero combination
-            if (stMode.EntryText.Length > 1)
-            {
                 if (stMode.EntryText.StartsWith("0."))
                 {
                     if (stMode.EntryText.Length == 2)
@@ -236,7 +236,7 @@ namespace Calculator
             if(stMode.EntryText != null && stMode.EntryText.Length > 0)
             {
                 if(!stMode.EntryText.EndsWith(".") || !stMode.EntryText.Equals("0"))
-                    stMode.EntryText = Utils.formatText(stMode.EntryText);
+                    stMode.EntryText = Utils.FormatText(stMode.EntryText);
                 this.textBoxEntry.Text = stMode.EntryText;
             }
         }
@@ -248,8 +248,6 @@ namespace Calculator
         // Update the result text box value
         private void refreshResultText()
         {
-            //if (!stMode.EntryText.EndsWith(".") || !stMode.EntryText.Equals("0"))
-            //    stMode.EntryText = Utils.formatText(stMode.EntryText);
             this.textBoxResult.Text = stMode.ResultText;
         }
 
@@ -295,6 +293,74 @@ namespace Calculator
 
         #endregion
 
+        #region Perfom Ariphmetic and Equals Operations
+
+        // Perform ariphmetic operation
+        private void PerformAriphmeticOperation(OperationType operation)
+        {
+            stMode.ArithmeticOperation(operation);
+            // Refresh entry and result textboxes
+            this.refreshEntryText();
+            this.refreshResultText();
+            // Clear entry text value
+            stMode.EntryText = "";
+        }
+
+        // Perform equals operation
+        private void PerformEqualsOperation()
+        {
+            // If the last operator was equals operation, repeat the computattion
+            if(stMode.PrevButtonSender.Equals("="))
+            {
+                if (stMode.EntryText != null && stMode.EntryText.Trim().Length != 0)
+                {
+                    // Repeat a previous operation
+                    if(stMode.RepeatCalcOnEqualsOperator())
+                    {
+                        // Refresh entry textbox
+                        this.refreshEntryText();
+                        // Create a history log
+                        this.CreateHistoryLog(stMode.HistoryLogEntry);
+                    }
+                }
+            }
+            else
+            {
+                // Calculate expression
+                if (stMode.ResultText != null && stMode.ResultText.Trim().Length != 0)
+                {
+                    if(stMode.EqualsOperation())
+                    {
+                        // Create a history log
+                        this.CreateHistoryLog(stMode.HistoryLogEntry);
+                        // Clear result text value
+                        stMode.ResultText = "";
+                        // Refresh entry and result textboxes
+                        this.refreshEntryText();
+                        // Refresh result textbox
+                        this.refreshResultText();
+                    }
+                }
+            }
+        }
+
+
+        // Change sign of the entry text box
+        private void PerformChangeSign()
+        {
+            // Change the sign only if the button was non opeartion sign
+            if (!stMode.IsPrevSenderOperationSign())
+            {
+                // Change the sign of the entry textbox
+                stMode.EntryText = Utils.SetSignedValue(stMode.EntryText);
+
+                // Refresh entry textbox
+                this.refreshEntryText();
+            }
+        }
+
+        #endregion
+
         #region Set calculator mode methods
 
         private void standardToolStripMenuItem_Click(object sender, EventArgs e)
@@ -333,6 +399,20 @@ namespace Calculator
             return stMode.PrevButtonSender.Equals("+") || stMode.PrevButtonSender.Equals("-") ||
             stMode.PrevButtonSender.Equals("X") || stMode.PrevButtonSender.Equals("÷") ||
             stMode.PrevButtonSender.Equals("=");
+        }
+
+        #endregion
+
+        #region Copy/Paste Methods
+
+        private void copyCtrlCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(this.textBoxEntry.Text);
+        }
+
+        private void pasteCtrlVToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.textBoxEntry.Text = Clipboard.GetText();
         }
 
         #endregion
