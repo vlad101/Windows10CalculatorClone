@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Calculator.History
 {
-    class Log
+    class HistoryLog
     {
     }
 }

@@ -255,19 +255,35 @@ namespace Calculator
 
         #region History Log Methods
 
+        private int i = 0;
         private void CreateHistoryLog(String entry)
         {
             // Create new log
             Button button = new Button();
-            
+
             // Add text
             button.Text = entry;
-
+            
             // Add style
             this.CreateHistoryLogStyle(button);
 
+            button.FlatStyle = FlatStyle.Flat;
+
+            button.Name = "pic" + i.ToString();
+            i++;
+
             // Attach button to a layout panel
             this.flowLayoutPanelHistory.Controls.Add(button);
+
+            button.Click += btnNew_Click;
+
+            button.Tag = entry;
+        }
+        // http://stackoverflow.com/questions/23443901/click-event-in-flowlayoutpanel
+        private void btnNew_Click(object sender, EventArgs e)
+        {
+            Button clickedButton = (Button)sender;
+            MessageBox.Show((string)clickedButton.Tag);
         }
 
         // History log style
@@ -278,6 +294,13 @@ namespace Calculator
             buttonLog.Margin = new Padding(0, 0, 0, 0);
             buttonLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             buttonLog.TextAlign = ContentAlignment.MiddleRight;
+            buttonLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            buttonLog.Location = new System.Drawing.Point(308, 226);
+            buttonLog.Name = "button21";
+            buttonLog.Size = new System.Drawing.Size(75, 35);
+            buttonLog.TabIndex = 25;
+            buttonLog.UseVisualStyleBackColor = true;
+            buttonLog.Click += new System.EventHandler(this.operation_button_Click);
             // Color control
             //buttonLog.BackColor = Color.LightBlue;
             //if (i % 2 == 0)
@@ -288,7 +311,7 @@ namespace Calculator
 
         private void flowLayoutPanelHistory_Paint(object sender, PaintEventArgs e)
         {
-             this.flowLayoutPanelHistory.Focus();
+            this.flowLayoutPanelHistory.Focus();
         }
 
         #endregion

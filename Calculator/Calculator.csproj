@@ -54,7 +54,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="History\Log.cs" />
+    <Compile Include="History\HistoryLog.cs" />
     <Compile Include="Mode\ProgrammerMode.cs" />
     <Compile Include="Mode\ScientificMode.cs" />
     <Compile Include="Mode\StandardMode.cs" />

@@ -58,6 +58,7 @@ namespace Calculator.Operations
             }
             catch (Exception exc)
             {
+                exc.GetBaseException();
                 return "";
             }
         }
