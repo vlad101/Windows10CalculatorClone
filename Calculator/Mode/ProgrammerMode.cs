@@ -8,5 +8,9 @@ namespace Calculator.Mode
 {
     class ProgrammerMode : StandardMode
     {
+        public bool ClearOperation(StandardMode stMode)
+        {
+            return stMode.ClearOperation();
+        }
     }
 }

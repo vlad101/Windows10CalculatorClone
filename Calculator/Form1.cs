@@ -365,7 +365,13 @@ namespace Calculator
 
         private void standardToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Create new Standard Mode instance
             stMode = new StandardMode();
+            // Clear operation and refresh text
+            stMode.ClearOperation();
+            this.refreshEntryText();
+            this.refreshResultText();
+            // Define Standard Mode
             this.labelMode.Text = "STANDARD";
             this.standardToolStripMenuItem.Checked = true;
             this.scietificToolStripMenuItem.Checked = false;
@@ -374,7 +380,13 @@ namespace Calculator
 
         private void scietificToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Create new Scientific Mode instance
             scMode = new ScientificMode();
+            // Clear operation and refresh text
+            scMode.ClearOperation(this.stMode);
+            this.refreshEntryText();
+            this.refreshResultText();
+            // Define Scientific Mode
             this.labelMode.Text = "SCIENTIFIC";
             this.standardToolStripMenuItem.Checked = false;
             this.scietificToolStripMenuItem.Checked = true;
@@ -383,7 +395,13 @@ namespace Calculator
 
         private void programmerToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Create new Programmer Mode instance
             prMode = new ProgrammerMode();
+            // Clear operation and refresh text
+            prMode.ClearOperation(this.stMode);
+            this.refreshEntryText();
+            this.refreshResultText();
+            // Define Programmer Mode
             this.labelMode.Text = "PROGRAMMER";
             this.standardToolStripMenuItem.Checked = false;
             this.scietificToolStripMenuItem.Checked = false;
@@ -403,16 +421,54 @@ namespace Calculator
 
         #endregion
 
+        #region UI Main Form Load Methods
+
+        //Load main form
+        private void FormCalculator_Load(object sender, EventArgs e)
+        {
+            this.KeyPreview = true;
+            this.KeyDown += OnKeyDown;
+        }
+
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            // Set copy shortcut
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                this.copyCtrlCToolStripMenuItem_Click(null, null);
+            }
+
+            // Set paste shortcut
+            if (e.Control && e.KeyCode == Keys.V)
+            {
+                this.pasteCtrlVToolStripMenuItem_Click(null, null);
+            }
+        }
+
+        #endregion
+
         #region Copy/Paste Methods
 
+        // Copy data to Clipboard
         private void copyCtrlCToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Clipboard.SetText(this.textBoxEntry.Text);
         }
 
+        // Paste data from Clipboard
         private void pasteCtrlVToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.textBoxEntry.Text = Clipboard.GetText();
+            String clipBoardText = Clipboard.GetText();
+            double number;
+
+            if (clipBoardText != null && clipBoardText.Length > 0)
+            {
+                if (Double.TryParse(clipBoardText, out number))
+                {
+                    this.textBoxEntry.Text = Utils.FormatText(number.ToString());
+                    stMode.EntryText = Utils.FormatText(number.ToString());
+                }
+            }
         }
 
         #endregion

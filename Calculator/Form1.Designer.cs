@@ -546,6 +546,7 @@ namespace Calculator
             this.MinimumSize = new System.Drawing.Size(662, 311);
             this.Name = "FormCalculator";
             this.Text = "Calculator";
+            this.Load += new System.EventHandler(this.FormCalculator_Load);
             this.menuStripMode.ResumeLayout(false);
             this.menuStripMode.PerformLayout();
             this.ResumeLayout(false);
