@@ -19,9 +19,7 @@ namespace Calculator
     public partial class FormCalculator : Form
     {
         // Declare calculator modes
-        private StandardMode stMode;
-        private ScientificMode scMode;
-        private ProgrammerMode prMode;
+        private StandardMode Mode;
 
         // Load calculator main form
         public FormCalculator()
@@ -48,11 +46,11 @@ namespace Calculator
             // If ariphmetic operation is used, clear the entry text box
             if (this.isAriphmeticOperation())
             {
-                stMode.EntryText = "";
+               this.Mode.EntryText = "";
             }
             else
             {
-                stMode.EntryText = this.textBoxEntry.Text;
+               this.Mode.EntryText = this.textBoxEntry.Text;
             }
 
             // Update entry text
@@ -62,7 +60,7 @@ namespace Calculator
             this.clearZero();
 
             // Store previous button sender
-            stMode.PrevButtonSender = numBtn.Text;
+           this.Mode.PrevButtonSender = numBtn.Text;
 
             // Refresgh entry
             this.refreshEntryText();
@@ -78,7 +76,7 @@ namespace Calculator
             string operation = operBtn.Text;
             
             // Do the action
-            if (stMode.EntryText != null)
+            if (Mode.EntryText != null)
             {
                 switch (operation)
                 {
@@ -109,12 +107,12 @@ namespace Calculator
                         this.refreshEntryText();
                         break;
                     case "CE":
-                        stMode.ClearEntryOperation();
+                       this.Mode.ClearEntryOperation();
                         // Refresh entry textbox
                         this.refreshEntryText();
                         break;
                     case "C":
-                        stMode.ClearOperation();
+                       this.Mode.ClearOperation();
                         // Refresh entry and result textboxes
                         this.refreshEntryText();
                         this.refreshResultText();
@@ -126,14 +124,14 @@ namespace Calculator
             }
             else
             {
-                stMode.EntryText = "0";
+               this.Mode.EntryText = "0";
             }
 
             // Check entry text box
             this.CheckInputOnOperation(operation);
 
             // Store previous button sender
-            stMode.PrevButtonSender = operBtn.Text;
+           this.Mode.PrevButtonSender = operBtn.Text;
         }
 
         #endregion
@@ -144,19 +142,19 @@ namespace Calculator
         private void removeLastChar()
         {
 
-            if (!stMode.EntryText.Equals("0"))
+            if (!Mode.EntryText.Equals("0"))
             {
-                if (stMode.EntryText.Length <= 1 || (stMode.EntryText.Length == 2 && stMode.EntryText.Contains("-")))
+                if (Mode.EntryText.Length <= 1 || (Mode.EntryText.Length == 2 &&this.Mode.EntryText.Contains("-")))
                 {
-                    stMode.EntryText = "0";
+                   this.Mode.EntryText = "0";
                 }
                 else
                 {
-                    stMode.EntryText = stMode.EntryText.Remove((stMode.EntryText.Length - 1), 1);
+                   this.Mode.EntryText =this.Mode.EntryText.Remove((Mode.EntryText.Length - 1), 1);
 
-                    if (stMode.EntryText.Length == 0)
+                    if (Mode.EntryText.Length == 0)
                     {
-                        stMode.EntryText = "0";
+                       this.Mode.EntryText = "0";
                     }
                 }
             }
@@ -169,20 +167,20 @@ namespace Calculator
         private void CheckInputOnOperation(String operation)
         {
             // If no entry text value, use zero followed by an operation sign
-            if (stMode.EntryText.Equals("0") && this.textBoxEntry.Text.Length != 0)
+            if (Mode.EntryText.Equals("0") && this.textBoxEntry.Text.Length != 0)
             {
                 if (operation.Equals("+") || operation.Equals("-") ||
                     operation.Equals("X")  || operation.Equals("÷"))
                 {
-                    stMode.ResultText = "0 " + operation + " ";
+                   this.Mode.ResultText = "0 " + operation + " ";
                 }
                 this.refreshResultText();
             }
 
             // If entry text value equals ".", prepend it with a "0"
-            if (stMode.EntryText.Equals("."))
+            if (Mode.EntryText.Equals("."))
             {
-                stMode.ResultText = "0.";
+               this.Mode.ResultText = "0.";
             }
         }
 
@@ -191,29 +189,29 @@ namespace Calculator
         {
             // Allow the number start with a single zero
             // Do not allow "00..."
-            if (stMode.EntryText.StartsWith("00"))
+            if (Mode.EntryText.StartsWith("00"))
             {
                 // Allow leading "0.", and trim all other leading zero combination
-                if (stMode.EntryText.Length > 1)
+                if (Mode.EntryText.Length > 1)
                 {
-                    stMode.EntryText = "0";
+                   this.Mode.EntryText = "0";
                 }
 
-                if (stMode.EntryText.StartsWith("0."))
+                if (Mode.EntryText.StartsWith("0."))
                 {
-                    if (stMode.EntryText.Length == 2)
-                        stMode.EntryText = "0.";
+                    if (Mode.EntryText.Length == 2)
+                       this.Mode.EntryText = "0.";
                 }
                 else
                 {
-                    stMode.EntryText = stMode.EntryText.TrimStart('0');
+                   this.Mode.EntryText =this.Mode.EntryText.TrimStart('0');
                 }
             }
 
             // Always keep zero positive
-            if (stMode.EntryText.Equals("-0"))
+            if (Mode.EntryText.Equals("-0"))
             {
-                stMode.EntryText = "0";
+               this.Mode.EntryText = "0";
             }
         }
 
@@ -223,23 +221,23 @@ namespace Calculator
             // Allow one decimal point
             if (numVal.Equals("."))
             {
-                if (!stMode.EntryText.Contains("."))
-                    stMode.EntryText = stMode.EntryText + numVal;
+                if (!Mode.EntryText.Contains("."))
+                   this.Mode.EntryText =this.Mode.EntryText + numVal;
             }
             else
             {
-                stMode.EntryText = stMode.EntryText + numVal;
+               this.Mode.EntryText =this.Mode.EntryText + numVal;
             }
         }
 
         // Update the entry text box value
         private void refreshEntryText()
         {
-            if(stMode.EntryText != null && stMode.EntryText.Length > 0)
+            if(Mode.EntryText != null &&this.Mode.EntryText.Length > 0)
             {
-                if(!stMode.EntryText.EndsWith(".") || !stMode.EntryText.Equals("0"))
-                    stMode.EntryText = Utils.FormatText(stMode.EntryText);
-                this.textBoxEntry.Text = stMode.EntryText;
+                if(!Mode.EntryText.EndsWith(".") || !Mode.EntryText.Equals("0"))
+                   this.Mode.EntryText = Utils.FormatText(Mode.EntryText);
+                this.textBoxEntry.Text =this.Mode.EntryText;
             }
         }
 
@@ -250,7 +248,7 @@ namespace Calculator
         // Update the result text box value
         private void refreshResultText()
         {
-            this.textBoxResult.Text = stMode.ResultText;
+            this.textBoxResult.Text =this.Mode.ResultText;
         }
 
         #endregion
@@ -290,7 +288,7 @@ namespace Calculator
                     String entry = historyLogArr[1].Trim();
                     if (Double.TryParse(entry, out number))
                     {
-                        stMode.EntryText = number.ToString();
+                       this.Mode.EntryText = number.ToString();
                         this.refreshEntryText();
                     }
                 }
@@ -323,43 +321,43 @@ namespace Calculator
         // Perform ariphmetic operation
         private void PerformAriphmeticOperation(OperationType operation)
         {
-            stMode.ArithmeticOperation(operation);
+           this.Mode.ArithmeticOperation(operation);
             // Refresh entry and result textboxes
             this.refreshEntryText();
             this.refreshResultText();
             // Clear entry text value
-            stMode.EntryText = "";
+           this.Mode.EntryText = "";
         }
 
         // Perform equals operation
         private void PerformEqualsOperation()
         {
             // If the last operator was equals operation, repeat the computattion
-            if(stMode.PrevButtonSender.Equals("="))
+            if(Mode.PrevButtonSender.Equals("="))
             {
-                if (stMode.EntryText != null && stMode.EntryText.Trim().Length != 0)
+                if (Mode.EntryText != null &&this.Mode.EntryText.Trim().Length != 0)
                 {
                     // Repeat a previous operation
-                    if(stMode.RepeatCalcOnEqualsOperator())
+                    if(Mode.RepeatCalcOnEqualsOperator())
                     {
                         // Refresh entry textbox
                         this.refreshEntryText();
                         // Create a history log
-                        this.CreateHistoryLog(stMode.HistoryLog.HistoryLogEntry);
+                        this.CreateHistoryLog(Mode.HistoryLog.HistoryLogEntry);
                     }
                 }
             }
             else
             {
                 // Calculate expression
-                if (stMode.ResultText != null && stMode.ResultText.Trim().Length != 0)
+                if (Mode.ResultText != null &&this.Mode.ResultText.Trim().Length != 0)
                 {
-                    if(stMode.EqualsOperation())
+                    if(Mode.EqualsOperation())
                     {
                         // Create a history log
-                        this.CreateHistoryLog(stMode.HistoryLog.HistoryLogEntry);
+                        this.CreateHistoryLog(Mode.HistoryLog.HistoryLogEntry);
                         // Clear result text value
-                        stMode.ResultText = "";
+                       this.Mode.ResultText = "";
                         // Refresh entry and result textboxes
                         this.refreshEntryText();
                         // Refresh result textbox
@@ -374,10 +372,10 @@ namespace Calculator
         private void PerformChangeSign()
         {
             // Change the sign only if the button was non opeartion sign
-            if (!stMode.IsPrevSenderOperationSign())
+            if (!Mode.IsPrevSenderOperationSign())
             {
                 // Change the sign of the entry textbox
-                stMode.EntryText = Utils.SetSignedValue(stMode.EntryText);
+               this.Mode.EntryText = Utils.SetSignedValue(Mode.EntryText);
 
                 // Refresh entry textbox
                 this.refreshEntryText();
@@ -388,49 +386,63 @@ namespace Calculator
 
         #region Set calculator mode methods
 
+        // Set Standard Mode
         private void standardToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // Create new Standard Mode instance
-            stMode = new StandardMode();
-            // Clear operation and refresh text
-            stMode.ClearOperation();
-            this.refreshEntryText();
-            this.refreshResultText();
-            // Define Standard Mode
-            this.labelMode.Text = "STANDARD";
-            this.standardToolStripMenuItem.Checked = true;
-            this.scietificToolStripMenuItem.Checked = false;
-            this.programmerToolStripMenuItem.Checked = false;
+            this.SetCalculatorMode("STANDARD");
         }
 
+        // Set Scientific Mode
         private void scietificToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // Create new Scientific Mode instance
-            scMode = new ScientificMode();
-            // Clear operation and refresh text
-            scMode.ClearOperation(this.stMode);
-            this.refreshEntryText();
-            this.refreshResultText();
-            // Define Scientific Mode
-            this.labelMode.Text = "SCIENTIFIC";
-            this.standardToolStripMenuItem.Checked = false;
-            this.scietificToolStripMenuItem.Checked = true;
-            this.programmerToolStripMenuItem.Checked = false;
+            this.SetCalculatorMode("SCIENTIFIC");
         }
 
+        // Set Programmer Mode
         private void programmerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // Create new Programmer Mode instance
-            prMode = new ProgrammerMode();
-            // Clear operation and refresh text
-            prMode.ClearOperation(this.stMode);
-            this.refreshEntryText();
-            this.refreshResultText();
-            // Define Programmer Mode
-            this.labelMode.Text = "PROGRAMMER";
+
+            this.SetCalculatorMode("PROGRAMMER");
+        }
+
+
+        // Set calculator mode to standard, scientific, programmer
+        private void SetCalculatorMode(String modeStr)
+        {
+            // Set menu tool strip to false
             this.standardToolStripMenuItem.Checked = false;
             this.scietificToolStripMenuItem.Checked = false;
-            this.programmerToolStripMenuItem.Checked = true;
+            this.programmerToolStripMenuItem.Checked = false;
+
+            // Clear operation and refresh text
+            if(this.Mode != null)
+            {
+                this.Mode.ClearOperation();
+                this.refreshEntryText();
+                this.refreshResultText();
+            }
+
+            switch(modeStr)
+            {
+                case "STANDARD":
+                    Mode = new StandardMode();
+                    this.labelMode.Text = modeStr;
+                    this.standardToolStripMenuItem.Checked = true;
+                    break;
+                case "SCIENTIFIC":
+                    this.Mode = new ScientificMode();
+                    this.labelMode.Text = modeStr;
+                    this.scietificToolStripMenuItem.Checked = true;
+                    break;
+                case "PROGRAMMER":
+                    this.Mode = new ProgrammerMode();
+                    this.labelMode.Text = modeStr;
+                    this.programmerToolStripMenuItem.Checked = true;
+                    break;
+                default:
+                    Console.WriteLine("Invalid Mode");
+                    break;
+            }
         }
 
         #endregion
@@ -439,9 +451,9 @@ namespace Calculator
 
         private bool isAriphmeticOperation()
         {
-            return stMode.PrevButtonSender.Equals("+") || stMode.PrevButtonSender.Equals("-") ||
-            stMode.PrevButtonSender.Equals("X") || stMode.PrevButtonSender.Equals("÷") ||
-            stMode.PrevButtonSender.Equals("=");
+           return this.Mode.PrevButtonSender.Equals("+") ||this.Mode.PrevButtonSender.Equals("-") ||
+           this.Mode.PrevButtonSender.Equals("X") ||this.Mode.PrevButtonSender.Equals("÷") ||
+           this.Mode.PrevButtonSender.Equals("=");
         }
 
         #endregion
@@ -567,7 +579,7 @@ namespace Calculator
                 if (Double.TryParse(clipBoardText, out number))
                 {
                     this.textBoxEntry.Text = Utils.FormatText(number.ToString());
-                    stMode.EntryText = Utils.FormatText(number.ToString());
+                   this.Mode.EntryText = Utils.FormatText(number.ToString());
                 }
             }
         }
