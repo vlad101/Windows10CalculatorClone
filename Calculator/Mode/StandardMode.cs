@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Calculator.Controllers;
+using Calculator.History;
 using Calculator.Operations;
 
 namespace Calculator.Mode
@@ -23,8 +24,7 @@ namespace Calculator.Mode
         // Store button sender
         public string PrevButtonSender { get; set; }
 
-        // History Log Entry
-        public string HistoryLogEntry { get; set; }
+        public HistoryLog HistoryLog { get; set; }
 
         // Store last operation after equals operation is used
         public string PrevOperatorOnEquals { get; set; }
@@ -215,7 +215,7 @@ namespace Calculator.Mode
 
         private void CreateHistoryLogEntry(String expression)
         {
-            this.HistoryLogEntry = expression + " =\n" + Utils.FormatText(this.EntryText);
+            HistoryLog = new HistoryLog(expression + " =\n" + Utils.FormatText(this.EntryText));
         }
 
         #endregion

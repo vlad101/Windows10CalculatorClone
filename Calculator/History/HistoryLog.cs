@@ -8,5 +8,11 @@ namespace Calculator.History
 {
     class HistoryLog
     {
+        public string HistoryLogEntry { get; set; }
+
+        public HistoryLog(String HistoryLogEntry)
+        {
+            this.HistoryLogEntry = HistoryLogEntry;
+        }
     }
 }

@@ -7,7 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Calculator.Controls;
 using Calculator.Controllers;
+using Calculator.History;
 using Calculator.Mode;
 using Calculator.Operations;
 using System.Windows.Forms;
@@ -255,20 +257,16 @@ namespace Calculator
 
         #region History Log Methods
 
-        private int i = 0;
         private void CreateHistoryLog(String entry)
         {
             // Create new log
-            Button button = new Button();
+            NonFocusButton button = new NonFocusButton();
 
             // Add text
             button.Text = entry;
             
             // Add style
             this.CreateHistoryLogStyle(button);
-
-            // Set button flat style
-            button.FlatStyle = FlatStyle.Flat;
 
             // Attach button to a layout panel
             this.flowLayoutPanelHistory.Controls.Add(button);
@@ -277,30 +275,44 @@ namespace Calculator
             button.Click += HistoryLogEntry_Click;
         }
 
+        // Display result in result textbox
         private void HistoryLogEntry_Click(object sender, EventArgs e)
         {
-            Button clickedButton = (Button)sender;
-            MessageBox.Show((string)clickedButton.Text);
+            NonFocusButton clickedButton = (NonFocusButton)sender;
+            HistoryLog HistoryLog = new HistoryLog((string)clickedButton.Text);
+            if(HistoryLog != null && HistoryLog.HistoryLogEntry.Contains("="))
+            {
+                double number;
+                String historyLogStr = HistoryLog.HistoryLogEntry;
+                string[] historyLogArr = historyLogStr.Split('=');
+                if (historyLogArr.Length == 2)
+                {
+                    String entry = historyLogArr[1].Trim();
+                    if (Double.TryParse(entry, out number))
+                    {
+                        stMode.EntryText = number.ToString();
+                        this.refreshEntryText();
+                    }
+                }
+            }
         }
 
         // History log style
-        private void CreateHistoryLogStyle(Button buttonLog)
+        private void CreateHistoryLogStyle(NonFocusButton buttonLog)
         {
             buttonLog.Width = 183;
             buttonLog.Height = 60;
             buttonLog.Margin = new Padding(3, 0, 0, 3);
             buttonLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             buttonLog.TextAlign = ContentAlignment.MiddleRight;
-            // Color control
-            //buttonLog.BackColor = Color.LightBlue;
-            //if (i % 2 == 0)
-            //else
-            //button.BackColor = Color.LightPink;
-            //button.Tag = i;
+            buttonLog.FlatStyle = FlatStyle.Flat;
+            buttonLog.FlatAppearance.BorderColor = Color.Gray;
         }
 
+        // Make the FlowLayoutPanel scroll with the mouse wheel
         private void flowLayoutPanelHistory_Paint(object sender, PaintEventArgs e)
         {
+            // FlowLayoutPanel will scroll only if it has focus
             this.flowLayoutPanelHistory.Focus();
         }
 
@@ -333,7 +345,7 @@ namespace Calculator
                         // Refresh entry textbox
                         this.refreshEntryText();
                         // Create a history log
-                        this.CreateHistoryLog(stMode.HistoryLogEntry);
+                        this.CreateHistoryLog(stMode.HistoryLog.HistoryLogEntry);
                     }
                 }
             }
@@ -345,7 +357,7 @@ namespace Calculator
                     if(stMode.EqualsOperation())
                     {
                         // Create a history log
-                        this.CreateHistoryLog(stMode.HistoryLogEntry);
+                        this.CreateHistoryLog(stMode.HistoryLog.HistoryLogEntry);
                         // Clear result text value
                         stMode.ResultText = "";
                         // Refresh entry and result textboxes
