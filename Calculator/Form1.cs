@@ -453,6 +453,7 @@ namespace Calculator
         {
             this.KeyPreview = true;
             this.KeyDown += OnKeyDown;
+            this.KeyPress += OnKeyPress;
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
@@ -468,7 +469,82 @@ namespace Calculator
             {
                 this.pasteCtrlVToolStripMenuItem_Click(null, null);
             }
+
+            // Set equals operation key press
+            if (e.KeyCode == Keys.Return)
+            {
+                this.operation_button_Click(this.button21, null);
+            }
+
+            // Set backspace operation key press
+            if(e.KeyCode == Keys.Back)
+            {
+                this.operation_button_Click(this.button4, null);
+            }
         }
+
+        // Set digit and operation key presses
+        private void OnKeyPress(object sender, KeyPressEventArgs e)
+        {
+            String Key = e.KeyChar.ToString();
+
+            switch (Key)
+            {
+                case "0":
+                    this.number_button_Click(this.button23, null);
+                    break;
+                case "1":
+                    this.number_button_Click(this.button19, null);
+                    break;
+                case "2":
+                    this.number_button_Click(this.button18, null);
+                    break;
+                case "3":
+                    this.number_button_Click(this.button17, null);
+                    break;
+                case "4":
+                    this.number_button_Click(this.button14, null);
+                    break;
+                case "5":
+                    this.number_button_Click(this.button13, null);
+                    break;
+                case "6":
+                    this.number_button_Click(this.button12, null);
+                    break;
+                case "7":
+                    this.number_button_Click(this.button9, null);
+                    break;
+                case "8":
+                    this.number_button_Click(this.button8, null);
+                    break;
+                case "9":
+                    this.number_button_Click(this.button7, null);
+                    break;
+                case "+":
+                    this.operation_button_Click(this.button16, null);
+                    break;
+                case "-":
+                    this.operation_button_Click(this.button11, null);
+                    break;
+                case "*":
+                    this.operation_button_Click(this.button6, null);
+                    break;
+                case "/":
+                    this.operation_button_Click(this.button5, null);
+                    break;
+                case "%":
+                    this.operation_button_Click(this.button1, null);
+                    break;
+                case ".":
+                    this.number_button_Click(this.button22, null);
+                    break;
+                case "←":
+                    this.operation_button_Click(this.button19, null);
+                    break;
+                default:
+                    break;
+            }
+        } 
 
         #endregion
 
