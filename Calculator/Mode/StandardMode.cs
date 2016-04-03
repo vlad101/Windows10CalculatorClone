@@ -41,8 +41,19 @@ namespace Calculator.Mode
 
         public bool ArithmeticOperation(OperationType operation)
         {
+            // History operation
+            bool isHistory = this.PrevButtonSender.Equals("History");
+
             // Get the current expression
-            String currResultText = this.ResultText + Utils.TrimDouble(this.EntryText);
+            String currResultText = "";
+
+            // If previous operation is history, append the sign to an expresion; else append append operation followed by the entry text value
+            if (isHistory)
+            {
+                currResultText = this.ResultText;
+            }
+            else
+                currResultText = this.ResultText + Utils.TrimDouble(this.EntryText);
 
             // Declare ariphmetic sign
             String operationSign = "";
@@ -57,6 +68,7 @@ namespace Calculator.Mode
                 this.EntryText = Utils.EvaluateExpression(expression).ToString();
             }
             
+            // Set the operation
             switch(operation)
             {
                 case OperationType.Addition:
@@ -91,6 +103,12 @@ namespace Calculator.Mode
             // Set last operator being used
             this.PrevOperatorOnEquals = operationSign;
 
+            // If history remove a leading space in front of an operation sign
+            if (isHistory)
+            {
+                operationSign = operationSign.Substring(1);
+            }
+
             // If previous operation was an ariphmetic operation, update an operation
             // Otherwise append a new operation to an expression
             currResultText = this.UpdateOperation(currResultText, operationSign);
@@ -114,10 +132,13 @@ namespace Calculator.Mode
 
             // Evaluate expression
             this.EntryText = Utils.EvaluateExpression(expression.Trim().Replace(",", "")).ToString();
-            
+
             // Create a histofy log entry
-            this.CreateHistoryLogEntry(expression);
-            
+            if (!this.EntryText.Contains("\u221E"))
+            {
+                this.CreateHistoryLogEntry(expression);
+            }
+
             return true;
         }
 

@@ -12,6 +12,7 @@ using Calculator.Controllers;
 using Calculator.History;
 using Calculator.Mode;
 using Calculator.Operations;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace Calculator
@@ -59,8 +60,17 @@ namespace Calculator
             // Clear leading zero
             this.clearZero();
 
+            // If history log entry is selected, set result textbox to none
+            if (this.Mode.PrevButtonSender.Equals("History"))
+            {
+                // Clear operation and refresh text
+                this.Mode.EntryText = numBtn.Text;
+                this.Mode.ResultText = "";
+                this.refreshResultText();
+            }
+
             // Store previous button sender
-           this.Mode.PrevButtonSender = numBtn.Text;
+            this.Mode.PrevButtonSender = numBtn.Text;
 
             // Refresgh entry
             this.refreshEntryText();
@@ -167,7 +177,7 @@ namespace Calculator
         private void CheckInputOnOperation(String operation)
         {
             // If no entry text value, use zero followed by an operation sign
-            if (Mode.EntryText.Equals("0") && this.textBoxEntry.Text.Length != 0)
+            if (this.Mode.EntryText.Equals("0") && this.textBoxEntry.Text.Length != 0)
             {
                 if (operation.Equals("+") || operation.Equals("-") ||
                     operation.Equals("X")  || operation.Equals("÷"))
@@ -178,40 +188,9 @@ namespace Calculator
             }
 
             // If entry text value equals ".", prepend it with a "0"
-            if (Mode.EntryText.Equals("."))
+            if (this.Mode.EntryText.Equals("."))
             {
                this.Mode.ResultText = "0.";
-            }
-        }
-
-        // Clear leading zeros
-        private void clearZero()
-        {
-            // Allow the number start with a single zero
-            // Do not allow "00..."
-            if (Mode.EntryText.StartsWith("00"))
-            {
-                // Allow leading "0.", and trim all other leading zero combination
-                if (Mode.EntryText.Length > 1)
-                {
-                   this.Mode.EntryText = "0";
-                }
-
-                if (Mode.EntryText.StartsWith("0."))
-                {
-                    if (Mode.EntryText.Length == 2)
-                       this.Mode.EntryText = "0.";
-                }
-                else
-                {
-                   this.Mode.EntryText =this.Mode.EntryText.TrimStart('0');
-                }
-            }
-
-            // Always keep zero positive
-            if (Mode.EntryText.Equals("-0"))
-            {
-               this.Mode.EntryText = "0";
             }
         }
 
@@ -221,7 +200,7 @@ namespace Calculator
             // Allow one decimal point
             if (numVal.Equals("."))
             {
-                if (!Mode.EntryText.Contains("."))
+                if (!this.Mode.EntryText.Contains("."))
                    this.Mode.EntryText =this.Mode.EntryText + numVal;
             }
             else
@@ -230,20 +209,26 @@ namespace Calculator
             }
         }
 
-        // Update the entry text box value
+        // Update the entry and result textbox value
         private void refreshEntryText()
         {
-            if(Mode.EntryText != null &&this.Mode.EntryText.Length > 0)
+            if (this.Mode.EntryText != null && this.Mode.EntryText.Length > 0)
             {
-                if(!Mode.EntryText.EndsWith(".") || !Mode.EntryText.Equals("0"))
-                   this.Mode.EntryText = Utils.FormatText(Mode.EntryText);
-                this.textBoxEntry.Text =this.Mode.EntryText;
+                if (this.Mode.EntryText.Equals("."))
+                {
+                    this.Mode.EntryText = "0.";
+                }
+                if (!this.Mode.EntryText.EndsWith(".") || !this.Mode.EntryText.Equals("0"))
+                {
+                    this.Mode.EntryText = Utils.FormatText(this.Mode.EntryText);
+                }
+
+                // If entry textbox data is long, convert to scientific notation
+                this.Mode.EntryText = this.Mode.EntryText.ToString(CultureInfo.InvariantCulture);
+
+                this.textBoxEntry.Text = this.Mode.EntryText;
             }
         }
-
-        #endregion
-
-        #region UI entry result Methods
 
         // Update the result text box value
         private void refreshResultText()
@@ -271,6 +256,16 @@ namespace Calculator
 
             // Set click event
             button.Click += HistoryLogEntry_Click;
+
+            // Show Clear History Button
+            this.buttonClearHistory.Visible = true;
+        }
+
+        private void buttonClearHistory_Click(object sender, EventArgs e)
+        {
+            this.flowLayoutPanelHistory.Controls.Clear();
+            this.flowLayoutPanelHistory.VerticalScroll.Visible = false;
+            this.buttonClearHistory.Visible = false;
         }
 
         // Display result in result textbox
@@ -285,7 +280,15 @@ namespace Calculator
                 string[] historyLogArr = historyLogStr.Split('=');
                 if (historyLogArr.Length == 2)
                 {
+                    String result = historyLogArr[0];
                     String entry = historyLogArr[1].Trim();
+
+                    if (result != null)
+                    {
+                        this.Mode.ResultText = result;
+                        this.refreshResultText();
+                    }
+                    
                     if (Double.TryParse(entry, out number))
                     {
                        this.Mode.EntryText = number.ToString();
@@ -293,6 +296,9 @@ namespace Calculator
                     }
                 }
             }
+
+            // Store previous button sender as history
+            this.Mode.PrevButtonSender = "History";
         }
 
         // History log style
@@ -301,7 +307,7 @@ namespace Calculator
             buttonLog.Width = 183;
             buttonLog.Height = 60;
             buttonLog.Margin = new Padding(3, 0, 0, 3);
-            buttonLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            buttonLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.00F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             buttonLog.TextAlign = ContentAlignment.MiddleRight;
             buttonLog.FlatStyle = FlatStyle.Flat;
             buttonLog.FlatAppearance.BorderColor = Color.Gray;
@@ -333,7 +339,7 @@ namespace Calculator
         private void PerformEqualsOperation()
         {
             // If the last operator was equals operation, repeat the computattion
-            if(Mode.PrevButtonSender.Equals("="))
+            if (Mode.PrevButtonSender.Equals("=") || Mode.PrevButtonSender.Equals("History"))
             {
                 if (Mode.EntryText != null &&this.Mode.EntryText.Trim().Length != 0)
                 {
@@ -350,14 +356,17 @@ namespace Calculator
             else
             {
                 // Calculate expression
-                if (Mode.ResultText != null &&this.Mode.ResultText.Trim().Length != 0)
+                if (Mode.ResultText != null && this.Mode.ResultText.Trim().Length != 0)
                 {
                     if(Mode.EqualsOperation())
                     {
-                        // Create a history log
-                        this.CreateHistoryLog(Mode.HistoryLog.HistoryLogEntry);
+                        if (this.Mode.HistoryLog != null)
+                        {
+                            // Create a history log
+                            this.CreateHistoryLog(this.Mode.HistoryLog.HistoryLogEntry);
+                        }
                         // Clear result text value
-                       this.Mode.ResultText = "";
+                        this.Mode.ResultText = "";
                         // Refresh entry and result textboxes
                         this.refreshEntryText();
                         // Refresh result textbox
@@ -456,6 +465,37 @@ namespace Calculator
            this.Mode.PrevButtonSender.Equals("=");
         }
 
+        // Clear leading zeros
+        private void clearZero()
+        {
+            // Allow the number start with a single zero
+            // Do not allow "00..."
+            if (Mode.EntryText.StartsWith("00"))
+            {
+                // Allow leading "0.", and trim all other leading zero combination
+                if (Mode.EntryText.Length > 1)
+                {
+                    this.Mode.EntryText = "0";
+                }
+
+                if (Mode.EntryText.StartsWith("0."))
+                {
+                    if (Mode.EntryText.Length == 2)
+                        this.Mode.EntryText = "0.";
+                }
+                else
+                {
+                    this.Mode.EntryText = this.Mode.EntryText.TrimStart('0');
+                }
+            }
+
+            // Always keep zero positive
+            if (Mode.EntryText.Equals("-0"))
+            {
+                this.Mode.EntryText = "0";
+            }
+        }
+
         #endregion
 
         #region UI Main Form Load Methods
@@ -463,6 +503,10 @@ namespace Calculator
         //Load main form
         private void FormCalculator_Load(object sender, EventArgs e)
         {
+            // Hide Clear History Button
+            this.buttonClearHistory.Visible = false;
+
+            // Add Key Event Handlers
             this.KeyPreview = true;
             this.KeyDown += OnKeyDown;
             this.KeyPress += OnKeyPress;

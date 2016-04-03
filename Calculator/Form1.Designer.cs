@@ -72,6 +72,7 @@ namespace Calculator
             this.button3 = new Calculator.Controls.NonFocusButton();
             this.button2 = new Calculator.Controls.NonFocusButton();
             this.button1 = new Calculator.Controls.NonFocusButton();
+            this.buttonClearHistory = new Calculator.Controls.NonFocusButton();
             this.menuStripMode.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -503,11 +504,22 @@ namespace Calculator
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.operation_button_Click);
             // 
+            // buttonClearHistory
+            // 
+            this.buttonClearHistory.BackgroundImage = global::Calculator.Properties.Resources.GarbageCan;
+            this.buttonClearHistory.Location = new System.Drawing.Point(610, 265);
+            this.buttonClearHistory.Name = "buttonClearHistory";
+            this.buttonClearHistory.Size = new System.Drawing.Size(24, 27);
+            this.buttonClearHistory.TabIndex = 33;
+            this.buttonClearHistory.UseVisualStyleBackColor = true;
+            this.buttonClearHistory.Click += new System.EventHandler(this.buttonClearHistory_Click);
+            // 
             // FormCalculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(646, 273);
+            this.ClientSize = new System.Drawing.Size(646, 296);
+            this.Controls.Add(this.buttonClearHistory);
             this.Controls.Add(this.labelMode);
             this.Controls.Add(this.textBoxEntry);
             this.Controls.Add(this.flowLayoutPanelHistory);
@@ -542,8 +554,8 @@ namespace Calculator
             this.Controls.Add(this.menuStripMode);
             this.MainMenuStrip = this.menuStripMode;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(662, 311);
-            this.MinimumSize = new System.Drawing.Size(662, 311);
+            this.MaximumSize = new System.Drawing.Size(662, 335);
+            this.MinimumSize = new System.Drawing.Size(662, 335);
             this.Name = "FormCalculator";
             this.Text = "Calculator";
             this.Load += new System.EventHandler(this.FormCalculator_Load);
@@ -598,6 +610,7 @@ namespace Calculator
         private System.Windows.Forms.ToolStripMenuItem aboutCalculatorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyCtrlCToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pasteCtrlVToolStripMenuItem;
+        private NonFocusButton buttonClearHistory;
     }
 }
 

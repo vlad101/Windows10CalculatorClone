@@ -13,27 +13,36 @@ namespace Calculator.Operations
         // Format the text with commas
         public static String FormatText(String entryText)
         {
-            if (entryText != null && entryText.Length > 0)
+            try
             {
-                String formatStr;
-                int decPlaces = entryText.Substring(entryText.LastIndexOf('.') + 1).Length;
+                // Cannot divide by zero; \u221E is ∞ (infinity)
+                if (entryText.Contains("\u221E"))
+                    return "Cannot divide by zero";
 
-                if (!entryText.EndsWith("."))
+                if (entryText != null && entryText.Length > 0)
                 {
-                    if (entryText.Contains("."))
+                    String formatStr;
+                    int decPlaces = entryText.Substring(entryText.LastIndexOf('.') + 1).Length;
+
+                    if (!entryText.EndsWith("."))
                     {
-                        formatStr = "#,##0.";
-                        for (int i = 0; i < decPlaces; i++)
-                            formatStr += "0";
+                        if (entryText.Contains("."))
+                        {
+                            formatStr = "#,##0.";
+                            for (int i = 0; i < decPlaces; i++)
+                                formatStr += "0";
+                        }
+                        else
+                        {
+                            formatStr = "#,##0";
+                        }
+
+                        entryText = Convert.ToDecimal(entryText).ToString(formatStr);
                     }
-                    else
-                    {
-                        formatStr = "#,##0";
-                    }
-                    
-                    entryText = Convert.ToDecimal(entryText).ToString(formatStr);
                 }
             }
+            catch
+            { }
             return entryText;
         }
 
@@ -48,6 +57,9 @@ namespace Calculator.Operations
         // No 3rd party libraries required
         public static String EvaluateExpression(string expression)
         {
+            // Cannot divide by zero; \u221E is ∞ (infinity)
+            if (expression.Contains("\0"))
+                return "\u221E";
             try
             {
                 DataTable table = new DataTable();
