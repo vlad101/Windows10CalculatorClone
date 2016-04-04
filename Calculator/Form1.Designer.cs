@@ -47,6 +47,7 @@ namespace Calculator
             this.viewHelpF1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutCalculatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.labelMode = new System.Windows.Forms.Label();
+            this.buttonClearHistory = new Calculator.Controls.NonFocusButton();
             this.button21 = new Calculator.Controls.NonFocusButton();
             this.button22 = new Calculator.Controls.NonFocusButton();
             this.button23 = new Calculator.Controls.NonFocusButton();
@@ -72,7 +73,6 @@ namespace Calculator
             this.button3 = new Calculator.Controls.NonFocusButton();
             this.button2 = new Calculator.Controls.NonFocusButton();
             this.button1 = new Calculator.Controls.NonFocusButton();
-            this.buttonClearHistory = new Calculator.Controls.NonFocusButton();
             this.menuStripMode.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -92,15 +92,15 @@ namespace Calculator
             // label1
             // 
             this.label1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label1.Location = new System.Drawing.Point(403, 19);
+            this.label1.Location = new System.Drawing.Point(403, 38);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(2, 245);
+            this.label1.Size = new System.Drawing.Size(2, 255);
             this.label1.TabIndex = 26;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(420, 12);
+            this.label2.Location = new System.Drawing.Point(420, 29);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(39, 13);
             this.label2.TabIndex = 27;
@@ -110,7 +110,7 @@ namespace Calculator
             // 
             this.flowLayoutPanelHistory.AutoScroll = true;
             this.flowLayoutPanelHistory.Cursor = System.Windows.Forms.Cursors.Default;
-            this.flowLayoutPanelHistory.Location = new System.Drawing.Point(423, 28);
+            this.flowLayoutPanelHistory.Location = new System.Drawing.Point(423, 48);
             this.flowLayoutPanelHistory.Name = "flowLayoutPanelHistory";
             this.flowLayoutPanelHistory.Size = new System.Drawing.Size(211, 233);
             this.flowLayoutPanelHistory.TabIndex = 29;
@@ -138,6 +138,7 @@ namespace Calculator
             this.menuStripMode.Location = new System.Drawing.Point(0, 0);
             this.menuStripMode.Name = "menuStripMode";
             this.menuStripMode.Size = new System.Drawing.Size(646, 24);
+            this.menuStripMode.Stretch = false;
             this.menuStripMode.TabIndex = 31;
             this.menuStripMode.Text = "menuStripMode";
             // 
@@ -227,6 +228,16 @@ namespace Calculator
             this.labelMode.Name = "labelMode";
             this.labelMode.Size = new System.Drawing.Size(0, 17);
             this.labelMode.TabIndex = 32;
+            // 
+            // buttonClearHistory
+            // 
+            this.buttonClearHistory.BackgroundImage = global::Calculator.Properties.Resources.GarbageCan;
+            this.buttonClearHistory.Location = new System.Drawing.Point(610, 285);
+            this.buttonClearHistory.Name = "buttonClearHistory";
+            this.buttonClearHistory.Size = new System.Drawing.Size(24, 27);
+            this.buttonClearHistory.TabIndex = 33;
+            this.buttonClearHistory.UseVisualStyleBackColor = true;
+            this.buttonClearHistory.Click += new System.EventHandler(this.buttonClearHistory_Click);
             // 
             // button21
             // 
@@ -504,21 +515,11 @@ namespace Calculator
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.operation_button_Click);
             // 
-            // buttonClearHistory
-            // 
-            this.buttonClearHistory.BackgroundImage = global::Calculator.Properties.Resources.GarbageCan;
-            this.buttonClearHistory.Location = new System.Drawing.Point(610, 265);
-            this.buttonClearHistory.Name = "buttonClearHistory";
-            this.buttonClearHistory.Size = new System.Drawing.Size(24, 27);
-            this.buttonClearHistory.TabIndex = 33;
-            this.buttonClearHistory.UseVisualStyleBackColor = true;
-            this.buttonClearHistory.Click += new System.EventHandler(this.buttonClearHistory_Click);
-            // 
             // FormCalculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(646, 296);
+            this.ClientSize = new System.Drawing.Size(646, 317);
             this.Controls.Add(this.buttonClearHistory);
             this.Controls.Add(this.labelMode);
             this.Controls.Add(this.textBoxEntry);
@@ -554,7 +555,7 @@ namespace Calculator
             this.Controls.Add(this.menuStripMode);
             this.MainMenuStrip = this.menuStripMode;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(662, 335);
+            this.MaximumSize = new System.Drawing.Size(662, 355);
             this.MinimumSize = new System.Drawing.Size(662, 335);
             this.Name = "FormCalculator";
             this.Text = "Calculator";

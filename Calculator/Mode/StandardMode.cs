@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Calculator.Controllers;
 using Calculator.History;
-using Calculator.Operations;
+using Calculator.Libs;
 
 namespace Calculator.Mode
 {
@@ -24,6 +24,7 @@ namespace Calculator.Mode
         // Store button sender
         public string PrevButtonSender { get; set; }
 
+        // Store history log
         public HistoryLog HistoryLog { get; set; }
 
         // Store last operation after equals operation is used
@@ -53,7 +54,7 @@ namespace Calculator.Mode
                 currResultText = this.ResultText;
             }
             else
-                currResultText = this.ResultText + Utils.TrimDouble(this.EntryText);
+                currResultText = this.ResultText + FormatUtils.TrimDouble(this.EntryText);
 
             // Declare ariphmetic sign
             String operationSign = "";
@@ -62,10 +63,10 @@ namespace Calculator.Mode
             if (this.PerformOperation())
             {
                 // Create an expression
-                String expression = (this.ResultText + Utils.TrimDouble(this.EntryText)).Trim().Replace(",", "");
+                String expression = (this.ResultText + FormatUtils.TrimDouble(this.EntryText)).Trim().Replace(",", "");
 
                 // Evaluate an expression
-                this.EntryText = Utils.EvaluateExpression(expression).ToString();
+                this.EntryText = OperationUtils.EvaluateExpression(expression).ToString();
             }
             
             // Set the operation
@@ -125,13 +126,13 @@ namespace Calculator.Mode
                 return false;
 
             // Set last entry text being used
-            this.PrevEntryTextOnEquals = Utils.TrimDouble(this.EntryText);
+            this.PrevEntryTextOnEquals = FormatUtils.TrimDouble(this.EntryText);
 
             // Create an expression
-            String expression = (this.ResultText + Utils.TrimDouble(this.EntryText));
+            String expression = (this.ResultText + FormatUtils.TrimDouble(this.EntryText));
 
             // Evaluate expression
-            this.EntryText = Utils.EvaluateExpression(expression.Trim().Replace(",", "")).ToString();
+            this.EntryText = OperationUtils.EvaluateExpression(expression.Trim().Replace(",", "")).ToString();
 
             // Create a histofy log entry
             if (!this.EntryText.Contains("\u221E"))
@@ -148,7 +149,7 @@ namespace Calculator.Mode
             if (this.PrevOperatorOnEquals != null && this.PrevEntryTextOnEquals != null)
             {
                 String expression = this.EntryText + " " + this.PrevOperatorOnEquals + " " + this.PrevEntryTextOnEquals;
-                this.EntryText = Utils.EvaluateExpression(expression.Trim().Replace(",", ""));
+                this.EntryText = OperationUtils.EvaluateExpression(expression.Trim().Replace(",", ""));
                 this.CreateHistoryLogEntry(expression);
                 return true;
             }
@@ -236,7 +237,7 @@ namespace Calculator.Mode
 
         private void CreateHistoryLogEntry(String expression)
         {
-            HistoryLog = new HistoryLog(expression + " =\n" + Utils.FormatText(this.EntryText));
+            HistoryLog = new HistoryLog(expression + " =\n" + FormatUtils.FormatText(this.EntryText));
         }
 
         #endregion

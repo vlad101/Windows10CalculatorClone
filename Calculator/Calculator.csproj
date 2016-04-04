@@ -73,7 +73,9 @@
     <Compile Include="Mode\ProgrammerMode.cs" />
     <Compile Include="Mode\ScientificMode.cs" />
     <Compile Include="Mode\StandardMode.cs" />
-    <Compile Include="Operations\Utils.cs" />
+    <Compile Include="Libs\OperationUtils.cs" />
+    <Compile Include="Libs\Enums.cs" />
+    <Compile Include="Libs\FormatUtils.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

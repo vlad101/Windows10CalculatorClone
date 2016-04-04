@@ -4,55 +4,11 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
-namespace Calculator.Operations
+namespace Calculator.Libs
 {
-    class Utils
+    class OperationUtils
     {
-        // Format the text with commas
-        public static String FormatText(String entryText)
-        {
-            try
-            {
-                // Cannot divide by zero; \u221E is ∞ (infinity)
-                if (entryText.Contains("\u221E"))
-                    return "Cannot divide by zero";
-
-                if (entryText != null && entryText.Length > 0)
-                {
-                    String formatStr;
-                    int decPlaces = entryText.Substring(entryText.LastIndexOf('.') + 1).Length;
-
-                    if (!entryText.EndsWith("."))
-                    {
-                        if (entryText.Contains("."))
-                        {
-                            formatStr = "#,##0.";
-                            for (int i = 0; i < decPlaces; i++)
-                                formatStr += "0";
-                        }
-                        else
-                        {
-                            formatStr = "#,##0";
-                        }
-
-                        entryText = Convert.ToDecimal(entryText).ToString(formatStr);
-                    }
-                }
-            }
-            catch
-            { }
-            return entryText;
-        }
-
-        // Display decimal without trailing zeros
-        public static string TrimDouble(string temp)
-        {
-            var value = temp.IndexOf('.') == -1 ? temp : temp.TrimEnd('.', '0');
-            return value == string.Empty ? "0" : value;
-        }
-
         // Evaluate C# string with math operators
         // No 3rd party libraries required
         public static String EvaluateExpression(string expression)
@@ -90,6 +46,29 @@ namespace Calculator.Operations
                 else
                 {
                     return "-" + entryText;
+                }
+            }
+            return entryText;
+        }
+
+        // Remove the last entry text character on "<-" ("\u2190") button press
+        public static String RemoveLastChar(String entryText)
+        {
+
+            if (!entryText.Equals("0"))
+            {
+                if (entryText.Length <= 1 || (entryText.Length == 2 && entryText.Contains("-")))
+                {
+                    entryText = "0";
+                }
+                else
+                {
+                    entryText = entryText.Remove((entryText.Length - 1), 1);
+
+                    if (entryText.Length == 0)
+                    {
+                        entryText = "0";
+                    }
                 }
             }
             return entryText;

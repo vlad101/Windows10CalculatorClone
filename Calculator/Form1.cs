@@ -10,8 +10,8 @@ using System.Windows;
 using Calculator.Controls;
 using Calculator.Controllers;
 using Calculator.History;
+using Calculator.Libs;
 using Calculator.Mode;
-using Calculator.Operations;
 using System.Globalization;
 using System.Windows.Forms;
 
@@ -28,14 +28,14 @@ namespace Calculator
             // Initialize main form
             InitializeComponent();
 
-            // Set calculator scientific mode
-            this.standardToolStripMenuItem_Click(null, null);
+            // Set calculator mode
+            this.SetMode();
 
             // Set initial input to 0
             this.textBoxEntry.Text = "0";
         }
 
-        #region Button Events
+        #region Number and Operation Button Events
 
         // Button number click event
         private void number_button_Click(object sender, EventArgs e)
@@ -55,10 +55,10 @@ namespace Calculator
             }
 
             // Update entry text
-            this.updateEntryText(numBtn.Text);
+            this.Mode.EntryText = FormatUtils.updateEntryText(this.Mode.EntryText, numBtn.Text);
 
             // Clear leading zero
-            this.clearZero();
+            this.Mode.EntryText = FormatUtils.clearZero(this.Mode.EntryText);
 
             // If history log entry is selected, set result textbox to none
             if (this.Mode.PrevButtonSender.Equals("History"))
@@ -113,7 +113,7 @@ namespace Calculator
                     // Clear operations
                     case "\u2190": // Leftward arrow
                         // Remove a last character
-                        this.removeLastChar();
+                        this.Mode.EntryText = OperationUtils.RemoveLastChar(this.Mode.EntryText);
                         this.refreshEntryText();
                         break;
                     case "CE":
@@ -146,32 +146,6 @@ namespace Calculator
 
         #endregion
 
-        #region Button (Set signal, clear, remove last char) Methods
-
-        // Remove the last entry text character on "<-" ("\u2190") button press
-        private void removeLastChar()
-        {
-
-            if (!Mode.EntryText.Equals("0"))
-            {
-                if (Mode.EntryText.Length <= 1 || (Mode.EntryText.Length == 2 &&this.Mode.EntryText.Contains("-")))
-                {
-                   this.Mode.EntryText = "0";
-                }
-                else
-                {
-                   this.Mode.EntryText =this.Mode.EntryText.Remove((Mode.EntryText.Length - 1), 1);
-
-                    if (Mode.EntryText.Length == 0)
-                    {
-                       this.Mode.EntryText = "0";
-                    }
-                }
-            }
-        }
-
-        #endregion
-
         #region UI entry textbox Methods
 
         private void CheckInputOnOperation(String operation)
@@ -194,21 +168,6 @@ namespace Calculator
             }
         }
 
-        // Append a value to the entry textbox
-        private void updateEntryText(String numVal)
-        {
-            // Allow one decimal point
-            if (numVal.Equals("."))
-            {
-                if (!this.Mode.EntryText.Contains("."))
-                   this.Mode.EntryText =this.Mode.EntryText + numVal;
-            }
-            else
-            {
-               this.Mode.EntryText =this.Mode.EntryText + numVal;
-            }
-        }
-
         // Update the entry and result textbox value
         private void refreshEntryText()
         {
@@ -220,7 +179,7 @@ namespace Calculator
                 }
                 if (!this.Mode.EntryText.EndsWith(".") || !this.Mode.EntryText.Equals("0"))
                 {
-                    this.Mode.EntryText = Utils.FormatText(this.Mode.EntryText);
+                    this.Mode.EntryText = FormatUtils.FormatText(this.Mode.EntryText);
                 }
 
                 // If entry textbox data is long, convert to scientific notation
@@ -384,7 +343,7 @@ namespace Calculator
             if (!Mode.IsPrevSenderOperationSign())
             {
                 // Change the sign of the entry textbox
-               this.Mode.EntryText = Utils.SetSignedValue(Mode.EntryText);
+               this.Mode.EntryText = OperationUtils.SetSignedValue(Mode.EntryText);
 
                 // Refresh entry textbox
                 this.refreshEntryText();
@@ -395,28 +354,49 @@ namespace Calculator
 
         #region Set calculator mode methods
 
+        private void SetMode()
+        {
+            String mode = Properties.Settings.Default.mode;
+
+            switch(mode)
+            {
+                case "Standard":
+                    this.standardToolStripMenuItem_Click(null, null);
+                    break;
+                case "Scientific":
+                    this.scietificToolStripMenuItem_Click(null, null);
+                    break;
+                case "Programmer":
+                    this.scietificToolStripMenuItem_Click(null, null);
+                    break;
+                default:
+                    this.standardToolStripMenuItem_Click(null, null);
+                    break;
+            }
+        }
+
         // Set Standard Mode
         private void standardToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.SetCalculatorMode("STANDARD");
+            this.SetCalculatorMode(CalculatorMode.StandardMode);
         }
 
         // Set Scientific Mode
         private void scietificToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.SetCalculatorMode("SCIENTIFIC");
+            this.SetCalculatorMode(CalculatorMode.ScietificMode);
         }
 
         // Set Programmer Mode
         private void programmerToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            this.SetCalculatorMode("PROGRAMMER");
+            this.SetCalculatorMode(CalculatorMode.ProgrammerMode);
         }
 
 
         // Set calculator mode to standard, scientific, programmer
-        private void SetCalculatorMode(String modeStr)
+        private void SetCalculatorMode(CalculatorMode calculatorMode)
         {
             // Set menu tool strip to false
             this.standardToolStripMenuItem.Checked = false;
@@ -431,27 +411,38 @@ namespace Calculator
                 this.refreshResultText();
             }
 
-            switch(modeStr)
+            // Define calculator mode
+            String mode = "";
+
+            switch (calculatorMode)
             {
-                case "STANDARD":
+                case CalculatorMode.StandardMode:
                     Mode = new StandardMode();
-                    this.labelMode.Text = modeStr;
+                    mode = "Standard";
+                    this.labelMode.Text = mode;
                     this.standardToolStripMenuItem.Checked = true;
                     break;
-                case "SCIENTIFIC":
+                case CalculatorMode.ScietificMode:
                     this.Mode = new ScientificMode();
-                    this.labelMode.Text = modeStr;
+                    mode = "Scientific";
+                    this.labelMode.Text = mode;
                     this.scietificToolStripMenuItem.Checked = true;
                     break;
-                case "PROGRAMMER":
+                case CalculatorMode.ProgrammerMode:
                     this.Mode = new ProgrammerMode();
-                    this.labelMode.Text = modeStr;
+                    mode = "Programmer";
+                    this.labelMode.Text = mode;
                     this.programmerToolStripMenuItem.Checked = true;
                     break;
                 default:
-                    Console.WriteLine("Invalid Mode");
+                    mode = "Standard";
+                    this.labelMode.Text = mode;
                     break;
             }
+
+            // Set and save calculator mode
+            Properties.Settings.Default.mode = mode;
+            Properties.Settings.Default.Save();
         }
 
         #endregion
@@ -463,37 +454,6 @@ namespace Calculator
            return this.Mode.PrevButtonSender.Equals("+") ||this.Mode.PrevButtonSender.Equals("-") ||
            this.Mode.PrevButtonSender.Equals("X") ||this.Mode.PrevButtonSender.Equals("÷") ||
            this.Mode.PrevButtonSender.Equals("=");
-        }
-
-        // Clear leading zeros
-        private void clearZero()
-        {
-            // Allow the number start with a single zero
-            // Do not allow "00..."
-            if (Mode.EntryText.StartsWith("00"))
-            {
-                // Allow leading "0.", and trim all other leading zero combination
-                if (Mode.EntryText.Length > 1)
-                {
-                    this.Mode.EntryText = "0";
-                }
-
-                if (Mode.EntryText.StartsWith("0."))
-                {
-                    if (Mode.EntryText.Length == 2)
-                        this.Mode.EntryText = "0.";
-                }
-                else
-                {
-                    this.Mode.EntryText = this.Mode.EntryText.TrimStart('0');
-                }
-            }
-
-            // Always keep zero positive
-            if (Mode.EntryText.Equals("-0"))
-            {
-                this.Mode.EntryText = "0";
-            }
         }
 
         #endregion
@@ -622,8 +582,8 @@ namespace Calculator
             {
                 if (Double.TryParse(clipBoardText, out number))
                 {
-                    this.textBoxEntry.Text = Utils.FormatText(number.ToString());
-                   this.Mode.EntryText = Utils.FormatText(number.ToString());
+                    this.textBoxEntry.Text = FormatUtils.FormatText(number.ToString());
+                   this.Mode.EntryText = FormatUtils.FormatText(number.ToString());
                 }
             }
         }
