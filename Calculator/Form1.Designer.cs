@@ -73,6 +73,7 @@ namespace Calculator
             this.button3 = new Calculator.Controls.NonFocusButton();
             this.button2 = new Calculator.Controls.NonFocusButton();
             this.button1 = new Calculator.Controls.NonFocusButton();
+            this.buttonHistory = new System.Windows.Forms.Button();
             this.menuStripMode.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -515,11 +516,22 @@ namespace Calculator
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.operation_button_Click);
             // 
+            // buttonHistory
+            // 
+            this.buttonHistory.Location = new System.Drawing.Point(309, 287);
+            this.buttonHistory.Name = "buttonHistory";
+            this.buttonHistory.Size = new System.Drawing.Size(75, 23);
+            this.buttonHistory.TabIndex = 34;
+            this.buttonHistory.Text = "History";
+            this.buttonHistory.UseVisualStyleBackColor = true;
+            this.buttonHistory.Click += new System.EventHandler(this.buttonHistory_Click);
+            // 
             // FormCalculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(646, 317);
+            this.Controls.Add(this.buttonHistory);
             this.Controls.Add(this.buttonClearHistory);
             this.Controls.Add(this.labelMode);
             this.Controls.Add(this.textBoxEntry);
@@ -612,6 +624,7 @@ namespace Calculator
         private System.Windows.Forms.ToolStripMenuItem copyCtrlCToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pasteCtrlVToolStripMenuItem;
         private NonFocusButton buttonClearHistory;
+        private System.Windows.Forms.Button buttonHistory;
     }
 }
 

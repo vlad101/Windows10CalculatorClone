@@ -7,13 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Globalization;
+using System.Windows.Forms;
 using Calculator.Controls;
 using Calculator.Controllers;
 using Calculator.History;
 using Calculator.Libs;
 using Calculator.Mode;
-using System.Globalization;
-using System.Windows.Forms;
+using Calculator.Database;
 
 namespace Calculator
 {
@@ -21,6 +22,9 @@ namespace Calculator
     {
         // Declare calculator modes
         private StandardMode Mode;
+
+        // Show history entry log
+        private bool ShowHistory = false;
 
         // Load calculator main form
         public FormCalculator()
@@ -254,6 +258,10 @@ namespace Calculator
                         this.refreshEntryText();
                     }
                 }
+
+                // Insert data to the database
+                Data sql = new Data();
+                sql.InsertHistoryEntry(HistoryLog.HistoryLogEntry);
             }
 
             // Store previous button sender as history
@@ -277,6 +285,40 @@ namespace Calculator
         {
             // FlowLayoutPanel will scroll only if it has focus
             this.flowLayoutPanelHistory.Focus();
+        }
+
+        // Show or hide history
+        private void buttonHistory_Click(object sender, EventArgs e)
+        {
+            // This will change the Form's Width and Height to show the history, respectively.
+            if (this.ShowHistory)
+            {
+                this.SetFormSize(662);
+                this.ShowHistory = false;
+            }
+            else
+            {
+                this.SetFormSize(412);
+                this.ShowHistory = true;
+            }
+        }
+
+        // Show/Hide history on load
+        private void DoShowHistory()
+        {
+            this.ShowHistory = Properties.Settings.Default.showHistory;
+            this.buttonHistory_Click(null, null);
+        }
+
+        // Show or hide history; set axis, y-axis are the same for both
+        private void SetFormSize(int xAxis)
+        {
+            this.MaximumSize = new System.Drawing.Size(xAxis, 355);
+            this.MinimumSize = new System.Drawing.Size(xAxis, 355);
+
+            // Save the default value
+            Properties.Settings.Default.showHistory = this.ShowHistory;
+            Properties.Settings.Default.Save();
         }
 
         #endregion
@@ -469,7 +511,11 @@ namespace Calculator
             // Add Key Event Handlers
             this.KeyPreview = true;
             this.KeyDown += OnKeyDown;
+
             this.KeyPress += OnKeyPress;
+
+            // Set show history on form load
+            this.DoShowHistory();
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
