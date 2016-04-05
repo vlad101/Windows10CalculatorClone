@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
+using Calculator.History;
 
 namespace Calculator.Database
 {
@@ -59,6 +60,86 @@ namespace Calculator.Database
                     _con.Close(); // will happen whether the try is successful or errors out, ensuring your connection is closed properly.
                 }
             }
+        }
+
+        public Dictionary<int, HistoryLog> GetHistoryEntryList()
+        {
+            // Store list of history log entries in a dictionary
+            Dictionary<int, HistoryLog> dictHistoryLog = new Dictionary<int, HistoryLog>();
+
+            // Use a try... catch...finally block to ensure the connection is closed properly
+            try
+            {
+                // Open connection
+                _con.Open();
+
+                // Set the value of the parameter to the entry text log
+                cmd = new MySqlCommand();
+                cmd.Connection = _con;
+
+                // Use a parameterized query to avoid SQL Injection
+                cmd.CommandText = "SELECT * FROM history";
+
+                // Execute query
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        dictHistoryLog.Add(reader.GetInt32(0), new HistoryLog(reader.GetString(1)));
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No rows found.");
+                }
+                reader.Close();
+            }
+            catch
+            {
+                MessageBox.Show("Error, Cannot get connected to database!");
+            }
+            finally
+            {
+                _con.Close(); // will happen whether the try is successful or errors out, ensuring your connection is closed properly.
+            }
+            return dictHistoryLog;
+        }
+
+        public bool DeleteHistoryEntry()
+        {
+            bool isDeleted = false;
+
+            // Use a try... catch...finally block to ensure the connection is closed properly
+            try
+            {
+                // Open connection
+                _con.Open();
+
+                // Set the value of the parameter to the entry text log
+                cmd = new MySqlCommand();
+                cmd.Connection = _con;
+
+                // Delete query
+                cmd.CommandText = "DELETE FROM history";
+
+                // Execute query
+                cmd.ExecuteNonQuery();
+
+                // Set flag to success
+                isDeleted = true;
+            }
+            catch
+            {
+                MessageBox.Show("Error, Cannot get connected to database!");
+                isDeleted = false;
+            }
+            finally
+            {
+                _con.Close(); // will happen whether the try is successful or errors out, ensuring your connection is closed properly.
+            }
+            return isDeleted;
         }
     }
 }

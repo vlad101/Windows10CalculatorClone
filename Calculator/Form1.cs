@@ -226,9 +226,14 @@ namespace Calculator
 
         private void buttonClearHistory_Click(object sender, EventArgs e)
         {
-            this.flowLayoutPanelHistory.Controls.Clear();
-            this.flowLayoutPanelHistory.VerticalScroll.Visible = false;
-            this.buttonClearHistory.Visible = false;
+            // Delete history olg entry from db
+            if (this.DeleteHistoryLogDB())
+            {
+                // Delete button controls from a flow layout panel history
+                this.flowLayoutPanelHistory.VerticalScroll.Visible = false;
+                this.flowLayoutPanelHistory.Controls.Clear();
+                this.buttonClearHistory.Visible = false;            
+            }
         }
 
         // Display result in result textbox
@@ -270,7 +275,7 @@ namespace Calculator
             buttonLog.Width = 183;
             buttonLog.Height = 60;
             buttonLog.Margin = new Padding(3, 0, 0, 3);
-            buttonLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.00F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            buttonLog.Font = new Font("Microsoft Sans Serif", 10.00F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
             buttonLog.TextAlign = ContentAlignment.MiddleRight;
             buttonLog.FlatStyle = FlatStyle.Flat;
             buttonLog.FlatAppearance.BorderColor = Color.Gray;
@@ -492,23 +497,6 @@ namespace Calculator
 
         #endregion
 
-        #region Utility Methods
-
-        private bool isAriphmeticOperation()
-        {
-           return this.Mode.PrevButtonSender.Equals("+") ||this.Mode.PrevButtonSender.Equals("-") ||
-           this.Mode.PrevButtonSender.Equals("X") ||this.Mode.PrevButtonSender.Equals("÷") ||
-           this.Mode.PrevButtonSender.Equals("=");
-        }
-
-        private void InsertHistoryLogDB() 
-        {
-            Data sql = new Data();
-            sql.InsertHistoryEntry(Mode.HistoryLog.HistoryLogEntry);
-        }
-
-        #endregion
-
         #region UI Main Form Load Methods
 
         //Load main form
@@ -525,6 +513,9 @@ namespace Calculator
 
             // Set show history on form load
             this.DoShowHistory();
+
+            // Load history log entries
+            this.LoadHistoryLogList();
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
@@ -641,6 +632,48 @@ namespace Calculator
                    this.Mode.EntryText = FormatUtils.FormatText(number.ToString());
                 }
             }
+        }
+
+        #endregion
+
+        #region Utility Methods
+
+        // Determine if the previous button click is an operation
+        private bool isAriphmeticOperation()
+        {
+            return this.Mode.PrevButtonSender.Equals("+") || this.Mode.PrevButtonSender.Equals("-") ||
+            this.Mode.PrevButtonSender.Equals("X") || this.Mode.PrevButtonSender.Equals("÷") ||
+            this.Mode.PrevButtonSender.Equals("=");
+        }
+
+        // Insert history log entry into database
+        private void InsertHistoryLogDB()
+        {
+            Data sql = new Data();
+            sql.InsertHistoryEntry(Mode.HistoryLog.HistoryLogEntry);
+        }
+
+        // Load history log entry from a database
+        private void LoadHistoryLogList()
+        {
+            Data sql = new Data();
+            Dictionary<int, HistoryLog> dictHistoryLog = sql.GetHistoryEntryList();
+
+            foreach (KeyValuePair<int, HistoryLog> entry in dictHistoryLog)
+            {
+                String historyLogStr = entry.Value.HistoryLogEntry;
+                if (historyLogStr != null)
+                {
+                    this.CreateHistoryLog(historyLogStr);
+                }
+            }
+        }
+
+        // Delete all history log entries from a database
+        private bool DeleteHistoryLogDB()
+        {
+            Data sql = new Data();
+            return sql.DeleteHistoryEntry();
         }
 
         #endregion
