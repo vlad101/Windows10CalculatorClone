@@ -1,55 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MySql.Data.MySqlClient;
 
 namespace Calculator.Database
 {
     class Data
     {
-        private SqlConnection con;
+        private MySqlConnection _con;
+        private MySqlCommand cmd;
 
         public Data()
         {
-            MessageBox.Show("HELLO I AM HERE!");
-            con = new SqlConnection(@"Data Source = ABC-PC; trusted_connection = yes; Database = school; connection timeout = 30");
+            MySqlConnectionStringBuilder _connectionStr = new MySqlConnectionStringBuilder
+            {
+                Server = Properties.Settings.Default.DBHost,
+                Port = Convert.ToUInt32(Properties.Settings.Default.DBPort),
+                Database =Properties.Settings.Default.DBName,
+                UserID = Properties.Settings.Default.DBUser,
+                Password = Properties.Settings.Default.DBPassword,
+                ConnectionTimeout = 60,
+                AllowZeroDateTime = true
+            };
+            _con = new MySqlConnection(_connectionStr.ConnectionString);
         }
 
         public void InsertHistoryEntry(String historyLog)
         {
-            MessageBox.Show("HELLO I AM HERE!");
-
             if(historyLog != null)
             {
-                System.Data.SqlClient.SqlCommand cmd = new System.Data.SqlClient.SqlCommand();
-
-                // Use a parameterized query to avoid SQL Injection
-                cmd.CommandText = "INSERT INTO calculator VALUES (@EntryId, @HistoryEntry)";
-                cmd.Connection = con;
-
-                // Set the value of the parameter to the entry text log
-                cmd.Parameters.AddWithValue("@EntryId", null);
-                cmd.Parameters.AddWithValue("@HistoryEntry", historyLog);
-
-                MessageBox.Show(cmd.CommandText);
-
                 // Use a try... catch...finally block to ensure the connection is closed properly
                 try
                 {
-                    con.Open();
+                    // Open connection
+                    _con.Open();
+
+                    // Set the value of the parameter to the entry text log
+                    cmd = new MySqlCommand();
+                    cmd.Connection = _con;
+
+                    // Use a parameterized query to avoid SQL Injection
+                    cmd.CommandText = "INSERT INTO history VALUES (@EntryId, @HistoryEntry)";
+                    cmd.Parameters.AddWithValue("@EntryId", null);
+                    cmd.Parameters.AddWithValue("@HistoryEntry", historyLog);
+
+                    // Execute query
                     cmd.ExecuteNonQuery();
-                    MessageBox.Show("Item Inserted");
                 }
-                catch (Exception ex)
+                catch
                 {
-                    MessageBox.Show(ex.ToString());
+                    MessageBox.Show("Error, Cannot get connected to database!");
                 }
                 finally
                 {
-                    con.Close(); // will happen whether the try is successful or errors out, ensuring your connection is closed properly.
+                    _con.Close(); // will happen whether the try is successful or errors out, ensuring your connection is closed properly.
                 }
             }
         }
@@ -57,11 +64,15 @@ namespace Calculator.Database
 }
 
 /*
-CREATE DATABASE calculator;
-CREATE TABLE History
-(
-    EntryID INT NOT NULL AUTO_INCREMENT,
-    HistoryEntry varchar(255) NOT NULL,
-    PRIMARY KEY (EntryID)
-);
+ * Database setup
+ * 
+ */
+/*
+    CREATE DATABASE calculator;
+    CREATE TABLE History
+    (
+        EntryID INT NOT NULL AUTO_INCREMENT,
+        HistoryEntry varchar(255) NOT NULL,
+        PRIMARY KEY (EntryID)
+    );
  */

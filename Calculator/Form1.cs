@@ -258,10 +258,6 @@ namespace Calculator
                         this.refreshEntryText();
                     }
                 }
-
-                // Insert data to the database
-                Data sql = new Data();
-                sql.InsertHistoryEntry(HistoryLog.HistoryLogEntry);
             }
 
             // Store previous button sender as history
@@ -351,6 +347,9 @@ namespace Calculator
                         this.refreshEntryText();
                         // Create a history log
                         this.CreateHistoryLog(Mode.HistoryLog.HistoryLogEntry);
+
+                        // Insert data to the database
+                        this.InsertHistoryLogDB();
                     }
                 }
             }
@@ -368,6 +367,10 @@ namespace Calculator
                         }
                         // Clear result text value
                         this.Mode.ResultText = "";
+
+                        // Insert data to the database
+                        this.InsertHistoryLogDB();
+
                         // Refresh entry and result textboxes
                         this.refreshEntryText();
                         // Refresh result textbox
@@ -496,6 +499,12 @@ namespace Calculator
            return this.Mode.PrevButtonSender.Equals("+") ||this.Mode.PrevButtonSender.Equals("-") ||
            this.Mode.PrevButtonSender.Equals("X") ||this.Mode.PrevButtonSender.Equals("÷") ||
            this.Mode.PrevButtonSender.Equals("=");
+        }
+
+        private void InsertHistoryLogDB() 
+        {
+            Data sql = new Data();
+            sql.InsertHistoryEntry(Mode.HistoryLog.HistoryLogEntry);
         }
 
         #endregion

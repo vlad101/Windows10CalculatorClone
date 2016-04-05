@@ -46,5 +46,65 @@ namespace Calculator.Properties {
                 this["showHistory"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("127.0.0.1")]
+        public string DBHost {
+            get {
+                return ((string)(this["DBHost"]));
+            }
+            set {
+                this["DBHost"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3306")]
+        public int DBPort {
+            get {
+                return ((int)(this["DBPort"]));
+            }
+            set {
+                this["DBPort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("calculator")]
+        public string DBName {
+            get {
+                return ((string)(this["DBName"]));
+            }
+            set {
+                this["DBName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("root")]
+        public string DBUser {
+            get {
+                return ((string)(this["DBUser"]));
+            }
+            set {
+                this["DBUser"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("cabbage")]
+        public string DBPassword {
+            get {
+                return ((string)(this["DBPassword"]));
+            }
+            set {
+                this["DBPassword"] = value;
+            }
+        }
     }
 }
