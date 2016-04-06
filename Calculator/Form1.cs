@@ -13,6 +13,7 @@ using Calculator.Controls;
 using Calculator.Controllers;
 using Calculator.History;
 using Calculator.Libs;
+using Calculator.Memory;
 using Calculator.Mode;
 using Calculator.Database;
 
@@ -131,6 +132,16 @@ namespace Calculator
                         this.refreshEntryText();
                         this.refreshResultText();
                         break;
+                    // Memory operations
+                    case "MC":
+                    case "MR":
+                    case "MS":
+                    case "M+":
+                    case "M-":
+                        this.PerformMemoryOperation(operation);
+                        // Refresh entry and result textboxes
+                        this.refreshEntryText();
+                        break;
                     default:
                         MessageBox.Show(operation);
                         break;
@@ -191,12 +202,39 @@ namespace Calculator
 
                 this.textBoxEntry.Text = this.Mode.EntryText;
             }
+
+            // Refresh memory status
+            this.RefreshMemoryStatus();
         }
 
         // Update the result text box value
         private void refreshResultText()
         {
             this.textBoxResult.Text =this.Mode.ResultText;
+        }
+
+        #endregion
+
+        #region Memory methods
+
+        private void PerformMemoryOperation(String operation)
+        {
+            MessageBox.Show(operation);
+            //this.Mode.EntryText = "";
+        }
+
+        private void RefreshMemoryStatus()
+        {
+            if (MemoryBank.MemoryValue != null)
+            {
+                // Show memory
+                this.labelMemory.Text = "M";
+            }
+            else 
+            {
+                // Hide memory
+                this.labelMemory.Text = "";
+            }
         }
 
         #endregion
@@ -516,6 +554,9 @@ namespace Calculator
 
             // Load history log entries
             this.LoadHistoryLogList();
+
+            // Set memory label to empty
+            this.labelMemory.Text = "";
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
