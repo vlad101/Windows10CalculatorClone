@@ -27,6 +27,9 @@ namespace Calculator
         // Show history entry log
         private bool ShowHistory = false;
 
+        // Store flow layout status
+        private FlowLayoutPanelStatus FlowLayoutPanelStatus;
+
         // Load calculator main form
         public FormCalculator()
         {
@@ -35,6 +38,9 @@ namespace Calculator
 
             // Set calculator mode
             this.SetMode();
+
+            // Set history flow layout panel
+            this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.History;
 
             // Set initial input to 0
             this.textBoxEntry.Text = "0";
@@ -122,7 +128,7 @@ namespace Calculator
                         this.refreshEntryText();
                         break;
                     case "CE":
-                       this.Mode.ClearEntryOperation();
+                        this.Mode.ClearEntryOperation();
                         // Refresh entry textbox
                         this.refreshEntryText();
                         break;
@@ -134,13 +140,43 @@ namespace Calculator
                         break;
                     // Memory operations
                     case "MC":
+                        // Clear memory
+                        MemoryBank.MemoryClear();
+                        // Set memory to false
+                        this.SetMemoryStatus(false);
+                        break;
                     case "MR":
-                    case "MS":
-                    case "M+":
-                    case "M-":
-                        this.PerformMemoryOperation(operation);
-                        // Refresh entry and result textboxes
+                        // Memory recall
+                        this.Mode.EntryText = MemoryBank.MemoryRecall();
+                        // Refresh entry textbox
                         this.refreshEntryText();
+                        break;
+                    case "MS":
+                        // Memory store
+                        if(this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
+                        {
+                           MemoryBank.MemoryStore(Double.Parse(this.Mode.EntryText.Replace(",","")));
+                           // Set memory to true
+                           this.SetMemoryStatus(true);
+                        }
+                        break;
+                    case "M+":
+                        // Memory plus
+                        if (this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
+                        {
+                            MemoryBank.MemoryPlus(Double.Parse(this.Mode.EntryText.Replace(",", "")));
+                            // Set memory to true
+                            this.SetMemoryStatus(true);
+                        }
+                        break;
+                    case "M-":
+                        // Memory minus
+                        if (this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
+                        {
+                            MemoryBank.MemoryMinus(Double.Parse(this.Mode.EntryText.Replace(",", "")));
+                            // Set memory to true
+                            this.SetMemoryStatus(true);
+                        }
                         break;
                     default:
                         MessageBox.Show(operation);
@@ -202,9 +238,6 @@ namespace Calculator
 
                 this.textBoxEntry.Text = this.Mode.EntryText;
             }
-
-            // Refresh memory status
-            this.RefreshMemoryStatus();
         }
 
         // Update the result text box value
@@ -215,25 +248,25 @@ namespace Calculator
 
         #endregion
 
-        #region Memory methods
+        #region UI Memory Methods
 
-        private void PerformMemoryOperation(String operation)
+        private void SetMemoryStatus(bool status)
         {
-            MessageBox.Show(operation);
-            //this.Mode.EntryText = "";
-        }
-
-        private void RefreshMemoryStatus()
-        {
-            if (MemoryBank.MemoryValue != null)
+            if (status)
             {
-                // Show memory
+                // Show memory "M"
                 this.labelMemory.Text = "M";
+                // Enable MC and MR buttons
+                this.mcButton.Enabled = true;
+                this.mrButton.Enabled = true;
             }
             else 
             {
                 // Hide memory
                 this.labelMemory.Text = "";
+                // Disable MC and MR buttons
+                this.mcButton.Enabled = false;
+                this.mrButton.Enabled = false;
             }
         }
 
@@ -253,7 +286,7 @@ namespace Calculator
             this.CreateHistoryLogStyle(button);
 
             // Attach button to a layout panel
-            this.flowLayoutPanelHistory.Controls.Add(button);
+            this.flowLayoutPanel.Controls.Add(button);
 
             // Set click event
             button.Click += HistoryLogEntry_Click;
@@ -268,8 +301,8 @@ namespace Calculator
             if (this.DeleteHistoryLogDB())
             {
                 // Delete button controls from a flow layout panel history
-                this.flowLayoutPanelHistory.VerticalScroll.Visible = false;
-                this.flowLayoutPanelHistory.Controls.Clear();
+                this.flowLayoutPanel.VerticalScroll.Visible = false;
+                this.flowLayoutPanel.Controls.Clear();
                 this.buttonClearHistory.Visible = false;            
             }
         }
@@ -323,7 +356,7 @@ namespace Calculator
         private void flowLayoutPanelHistory_Paint(object sender, PaintEventArgs e)
         {
             // FlowLayoutPanel will scroll only if it has focus
-            this.flowLayoutPanelHistory.Focus();
+            this.flowLayoutPanel.Focus();
         }
 
         // Show or hide history
@@ -349,15 +382,95 @@ namespace Calculator
             this.buttonHistory_Click(null, null);
         }
 
+        // Insert history log entry into database
+        private void InsertHistoryLogDB()
+        {
+            DataHistory sql = new DataHistory();
+            sql.InsertHistoryEntry(Mode.HistoryLog.HistoryLogEntry);
+        }
+
+        // Load history log entry from a database
+        private void LoadHistoryLogList()
+        {
+            DataHistory sql = new DataHistory();
+            Dictionary<int, HistoryLog> dictHistoryLog = sql.GetHistoryEntryList();
+
+            foreach (KeyValuePair<int, HistoryLog> entry in dictHistoryLog)
+            {
+                String historyLogStr = entry.Value.HistoryLogEntry;
+                if (historyLogStr != null)
+                {
+                    this.CreateHistoryLog(historyLogStr);
+                }
+            }
+
+
+        }
+
+        // Delete all history log entries from a database
+        private bool DeleteHistoryLogDB()
+        {
+            DataHistory sql = new DataHistory();
+            return sql.DeleteHistoryEntry();
+        }
+
         // Show or hide history; set axis, y-axis are the same for both
         private void SetFormSize(int xAxis)
         {
-            this.MaximumSize = new System.Drawing.Size(xAxis, 355);
-            this.MinimumSize = new System.Drawing.Size(xAxis, 355);
+            xAxis = 900;
+
+            this.MaximumSize = new System.Drawing.Size(xAxis, 450);
+            this.MinimumSize = new System.Drawing.Size(xAxis, 450);
+
+            //this.MaximumSize = new System.Drawing.Size(xAxis, 355);
+            //this.MinimumSize = new System.Drawing.Size(xAxis, 355);
 
             // Save the default value
             Properties.Settings.Default.showHistory = this.ShowHistory;
             Properties.Settings.Default.Save();
+        }
+
+        #endregion
+
+        #region Flow Layout Panel Methods
+
+        private void LoadFlowLayoutPanel() 
+        {
+            switch(this.FlowLayoutPanelStatus)
+            {
+                case FlowLayoutPanelStatus.History:
+
+                    // Disable history button, enable memory button
+                    this.buttonHistoryList.Enabled = false;
+                    this.buttonMemoryList.Enabled = true;
+
+                    // Set flow layout status to history
+                    this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.History;
+
+                    break;
+                case FlowLayoutPanelStatus.Memory:
+
+                    // Enable history button, disable memory button
+                    this.buttonHistoryList.Enabled = true;
+                    this.buttonMemoryList.Enabled = false;
+
+                    // Set flow layout status to mmeory
+                    this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.Memory;
+
+                    break;
+            }
+        }
+
+        private void buttonHistoryList_Click(object sender, EventArgs e)
+        {
+            this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.History;
+            this.LoadFlowLayoutPanel();
+        }
+
+        private void buttonMemoryList_Click(object sender, EventArgs e)
+        {
+            this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.Memory;
+            this.LoadFlowLayoutPanel();
         }
 
         #endregion
@@ -555,8 +668,11 @@ namespace Calculator
             // Load history log entries
             this.LoadHistoryLogList();
 
-            // Set memory label to empty
-            this.labelMemory.Text = "";
+            // Set memory status to false
+            this.SetMemoryStatus(false);
+
+            // Load flat layout panel history
+            this.LoadFlowLayoutPanel();
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
@@ -685,36 +801,6 @@ namespace Calculator
             return this.Mode.PrevButtonSender.Equals("+") || this.Mode.PrevButtonSender.Equals("-") ||
             this.Mode.PrevButtonSender.Equals("X") || this.Mode.PrevButtonSender.Equals("÷") ||
             this.Mode.PrevButtonSender.Equals("=");
-        }
-
-        // Insert history log entry into database
-        private void InsertHistoryLogDB()
-        {
-            Data sql = new Data();
-            sql.InsertHistoryEntry(Mode.HistoryLog.HistoryLogEntry);
-        }
-
-        // Load history log entry from a database
-        private void LoadHistoryLogList()
-        {
-            Data sql = new Data();
-            Dictionary<int, HistoryLog> dictHistoryLog = sql.GetHistoryEntryList();
-
-            foreach (KeyValuePair<int, HistoryLog> entry in dictHistoryLog)
-            {
-                String historyLogStr = entry.Value.HistoryLogEntry;
-                if (historyLogStr != null)
-                {
-                    this.CreateHistoryLog(historyLogStr);
-                }
-            }
-        }
-
-        // Delete all history log entries from a database
-        private bool DeleteHistoryLogDB()
-        {
-            Data sql = new Data();
-            return sql.DeleteHistoryEntry();
         }
 
         #endregion

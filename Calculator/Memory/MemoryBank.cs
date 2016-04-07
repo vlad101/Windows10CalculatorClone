@@ -8,54 +8,37 @@ namespace Calculator.Memory
 {
     class MemoryBank
     {
-        public static string MemoryValue;
+        public static double MemoryValue;
 
-        public static String MemoryClear()
+        // Recall memory
+        public static String MemoryRecall()
         {
-            MemoryValue = null;
+            return MemoryValue.ToString();
+        }
+
+        // Clear memory
+        public static double MemoryClear()
+        {
+            MemoryValue = 0;
             return MemoryValue;
         }
 
-        public static String MemoryStore(String entryText)
+        // Store value in the memory
+        public static void MemoryStore(double entryNum)
         {
-            MemoryValue = entryText;
-            return MemoryValue;
+            MemoryValue = entryNum;
         }
 
-        public static String MemoryMinus(String entryText)
+        // Memory subtract
+        public static void MemoryMinus(double entryNum)
         {
-            // Memory subtract
-            if(isValidNumber(entryText))
-            {
-                double val = Double.Parse(entryText);
-                double memoryVal = Double.Parse(MemoryValue);
-                memoryVal -= val;
-                MemoryValue = memoryVal.ToString();
-                return MemoryValue;
-            }
-            return null;
+            MemoryValue -= entryNum;
         }
 
-        public static String MemoryPlus(String entryText)
+        // Memory add
+        public static void MemoryPlus(double entryNum)
         {
-            // Memory add
-            if (isValidNumber(entryText))
-            {
-                double val = Double.Parse(entryText);
-                double memoryVal = Double.Parse(MemoryValue);
-                memoryVal += val;
-                MemoryValue = memoryVal.ToString();
-                return MemoryValue;
-            }
-            return null;
-        }
-
-        private static bool isValidNumber(String entryText)
-        {
-             double number;
-             if (Double.TryParse(entryText, out number))
-                return true;
-            return false;
+            MemoryValue += entryNum;
         }
     }
 }

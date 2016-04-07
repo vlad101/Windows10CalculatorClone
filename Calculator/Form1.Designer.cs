@@ -32,8 +32,7 @@ namespace Calculator
         {
             this.textBoxResult = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.flowLayoutPanelHistory = new System.Windows.Forms.FlowLayoutPanel();
+            this.flowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.textBoxEntry = new System.Windows.Forms.TextBox();
             this.menuStripMode = new System.Windows.Forms.MenuStrip();
             this.modeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -80,6 +79,8 @@ namespace Calculator
             this.button3 = new Calculator.Controls.NonFocusButton();
             this.button2 = new Calculator.Controls.NonFocusButton();
             this.button1 = new Calculator.Controls.NonFocusButton();
+            this.buttonHistoryList = new Calculator.Controls.NonFocusButton();
+            this.buttonMemoryList = new Calculator.Controls.NonFocusButton();
             this.menuStripMode.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -104,24 +105,15 @@ namespace Calculator
             this.label1.Size = new System.Drawing.Size(2, 255);
             this.label1.TabIndex = 26;
             // 
-            // label2
+            // flowLayoutPanel
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(420, 29);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(39, 13);
-            this.label2.TabIndex = 27;
-            this.label2.Text = "History";
-            // 
-            // flowLayoutPanelHistory
-            // 
-            this.flowLayoutPanelHistory.AutoScroll = true;
-            this.flowLayoutPanelHistory.Cursor = System.Windows.Forms.Cursors.Default;
-            this.flowLayoutPanelHistory.Location = new System.Drawing.Point(423, 48);
-            this.flowLayoutPanelHistory.Name = "flowLayoutPanelHistory";
-            this.flowLayoutPanelHistory.Size = new System.Drawing.Size(211, 233);
-            this.flowLayoutPanelHistory.TabIndex = 29;
-            this.flowLayoutPanelHistory.Paint += new System.Windows.Forms.PaintEventHandler(this.flowLayoutPanelHistory_Paint);
+            this.flowLayoutPanel.AutoScroll = true;
+            this.flowLayoutPanel.Cursor = System.Windows.Forms.Cursors.Default;
+            this.flowLayoutPanel.Location = new System.Drawing.Point(423, 59);
+            this.flowLayoutPanel.Name = "flowLayoutPanel";
+            this.flowLayoutPanel.Size = new System.Drawing.Size(211, 233);
+            this.flowLayoutPanel.TabIndex = 29;
+            this.flowLayoutPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.flowLayoutPanelHistory_Paint);
             // 
             // textBoxEntry
             // 
@@ -314,7 +306,7 @@ namespace Calculator
             // buttonClearHistory
             // 
             this.buttonClearHistory.BackgroundImage = global::Calculator.Properties.Resources.GarbageCan;
-            this.buttonClearHistory.Location = new System.Drawing.Point(610, 285);
+            this.buttonClearHistory.Location = new System.Drawing.Point(610, 296);
             this.buttonClearHistory.Name = "buttonClearHistory";
             this.buttonClearHistory.Size = new System.Drawing.Size(24, 27);
             this.buttonClearHistory.TabIndex = 33;
@@ -597,11 +589,33 @@ namespace Calculator
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.operation_button_Click);
             // 
+            // buttonHistoryList
+            // 
+            this.buttonHistoryList.Location = new System.Drawing.Point(424, 29);
+            this.buttonHistoryList.Name = "buttonHistoryList";
+            this.buttonHistoryList.Size = new System.Drawing.Size(54, 24);
+            this.buttonHistoryList.TabIndex = 41;
+            this.buttonHistoryList.Text = "History";
+            this.buttonHistoryList.UseVisualStyleBackColor = true;
+            this.buttonHistoryList.Click += new System.EventHandler(this.buttonHistoryList_Click);
+            // 
+            // buttonMemoryList
+            // 
+            this.buttonMemoryList.Location = new System.Drawing.Point(484, 29);
+            this.buttonMemoryList.Name = "buttonMemoryList";
+            this.buttonMemoryList.Size = new System.Drawing.Size(54, 24);
+            this.buttonMemoryList.TabIndex = 42;
+            this.buttonMemoryList.Text = "Memory";
+            this.buttonMemoryList.UseVisualStyleBackColor = true;
+            this.buttonMemoryList.Click += new System.EventHandler(this.buttonMemoryList_Click);
+            // 
             // FormCalculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(646, 332);
+            this.ClientSize = new System.Drawing.Size(646, 331);
+            this.Controls.Add(this.buttonMemoryList);
+            this.Controls.Add(this.buttonHistoryList);
             this.Controls.Add(this.labelMemory);
             this.Controls.Add(this.mMinusButton);
             this.Controls.Add(this.mPlusButton);
@@ -612,8 +626,7 @@ namespace Calculator
             this.Controls.Add(this.buttonClearHistory);
             this.Controls.Add(this.labelMode);
             this.Controls.Add(this.textBoxEntry);
-            this.Controls.Add(this.flowLayoutPanelHistory);
-            this.Controls.Add(this.label2);
+            this.Controls.Add(this.flowLayoutPanel);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button21);
             this.Controls.Add(this.button22);
@@ -660,8 +673,7 @@ namespace Calculator
 
         private System.Windows.Forms.TextBox textBoxResult;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanelHistory;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel;
         private System.Windows.Forms.TextBox textBoxEntry;
         private NonFocusButton button1;
         private NonFocusButton button2;
@@ -708,6 +720,8 @@ namespace Calculator
         private NonFocusButton mrButton;
         private NonFocusButton mcButton;
         private System.Windows.Forms.Label labelMemory;
+        private NonFocusButton buttonHistoryList;
+        private NonFocusButton buttonMemoryList;
     }
 }
 

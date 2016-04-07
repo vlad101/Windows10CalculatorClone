@@ -9,12 +9,12 @@ using Calculator.History;
 
 namespace Calculator.Database
 {
-    class Data
+    class DataHistory
     {
         private MySqlConnection _con;
         private MySqlCommand cmd;
 
-        public Data()
+        public DataHistory()
         {
             MySqlConnectionStringBuilder _connectionStr = new MySqlConnectionStringBuilder
             {

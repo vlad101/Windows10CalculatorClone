@@ -64,7 +64,7 @@
     <Compile Include="Controls\NonFocusButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Database\Data.cs" />
+    <Compile Include="Database\DataHistory.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
