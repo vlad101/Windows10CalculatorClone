@@ -81,6 +81,7 @@ namespace Calculator
             this.button1 = new Calculator.Controls.NonFocusButton();
             this.buttonHistoryList = new Calculator.Controls.NonFocusButton();
             this.buttonMemoryList = new Calculator.Controls.NonFocusButton();
+            this.buttonClearMemory = new Calculator.Controls.NonFocusButton();
             this.menuStripMode.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -113,7 +114,7 @@ namespace Calculator
             this.flowLayoutPanel.Name = "flowLayoutPanel";
             this.flowLayoutPanel.Size = new System.Drawing.Size(211, 233);
             this.flowLayoutPanel.TabIndex = 29;
-            this.flowLayoutPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.flowLayoutPanelHistory_Paint);
+            this.flowLayoutPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.flowLayoutPanel_Paint);
             // 
             // textBoxEntry
             // 
@@ -311,7 +312,7 @@ namespace Calculator
             this.buttonClearHistory.Size = new System.Drawing.Size(24, 27);
             this.buttonClearHistory.TabIndex = 33;
             this.buttonClearHistory.UseVisualStyleBackColor = true;
-            this.buttonClearHistory.Click += new System.EventHandler(this.buttonClearHistory_Click);
+            this.buttonClearHistory.Click += new System.EventHandler(this.buttonClearLog_Click);
             // 
             // button21
             // 
@@ -609,11 +610,22 @@ namespace Calculator
             this.buttonMemoryList.UseVisualStyleBackColor = true;
             this.buttonMemoryList.Click += new System.EventHandler(this.buttonMemoryList_Click);
             // 
+            // buttonClearMemory
+            // 
+            this.buttonClearMemory.BackgroundImage = global::Calculator.Properties.Resources.GarbageCan;
+            this.buttonClearMemory.Location = new System.Drawing.Point(580, 296);
+            this.buttonClearMemory.Name = "buttonClearMemory";
+            this.buttonClearMemory.Size = new System.Drawing.Size(24, 27);
+            this.buttonClearMemory.TabIndex = 43;
+            this.buttonClearMemory.UseVisualStyleBackColor = true;
+            this.buttonClearMemory.Click += new System.EventHandler(this.buttonClearLog_Click);
+            // 
             // FormCalculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(646, 331);
+            this.Controls.Add(this.buttonClearMemory);
             this.Controls.Add(this.buttonMemoryList);
             this.Controls.Add(this.buttonHistoryList);
             this.Controls.Add(this.labelMemory);
@@ -722,6 +734,7 @@ namespace Calculator
         private System.Windows.Forms.Label labelMemory;
         private NonFocusButton buttonHistoryList;
         private NonFocusButton buttonMemoryList;
+        private NonFocusButton buttonClearMemory;
     }
 }
 

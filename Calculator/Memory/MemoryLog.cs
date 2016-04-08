@@ -6,9 +6,19 @@ using System.Threading.Tasks;
 
 namespace Calculator.Memory
 {
-    class MemoryBank
+    class MemoryLog
     {
+        // Store memory value
         public static double MemoryValue;
+
+        // Store Memory log entry
+        public String MemoryLogEntry;
+
+        // Constructor for memory log
+        public MemoryLog(String MemoryLogEntry)
+        {
+            this.MemoryLogEntry = MemoryLogEntry;
+        }
 
         // Recall memory
         public static String MemoryRecall()

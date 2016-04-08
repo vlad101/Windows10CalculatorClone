@@ -141,13 +141,13 @@ namespace Calculator
                     // Memory operations
                     case "MC":
                         // Clear memory
-                        MemoryBank.MemoryClear();
+                        MemoryLog.MemoryClear();
                         // Set memory to false
                         this.SetMemoryStatus(false);
                         break;
                     case "MR":
                         // Memory recall
-                        this.Mode.EntryText = MemoryBank.MemoryRecall();
+                        this.Mode.EntryText = MemoryLog.MemoryRecall();
                         // Refresh entry textbox
                         this.refreshEntryText();
                         break;
@@ -155,7 +155,7 @@ namespace Calculator
                         // Memory store
                         if(this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
                         {
-                           MemoryBank.MemoryStore(Double.Parse(this.Mode.EntryText.Replace(",","")));
+                           MemoryLog.MemoryStore(Double.Parse(this.Mode.EntryText.Replace(",","")));
                            // Set memory to true
                            this.SetMemoryStatus(true);
                         }
@@ -164,7 +164,7 @@ namespace Calculator
                         // Memory plus
                         if (this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
                         {
-                            MemoryBank.MemoryPlus(Double.Parse(this.Mode.EntryText.Replace(",", "")));
+                            MemoryLog.MemoryPlus(Double.Parse(this.Mode.EntryText.Replace(",", "")));
                             // Set memory to true
                             this.SetMemoryStatus(true);
                         }
@@ -173,7 +173,7 @@ namespace Calculator
                         // Memory minus
                         if (this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
                         {
-                            MemoryBank.MemoryMinus(Double.Parse(this.Mode.EntryText.Replace(",", "")));
+                            MemoryLog.MemoryMinus(Double.Parse(this.Mode.EntryText.Replace(",", "")));
                             // Set memory to true
                             this.SetMemoryStatus(true);
                         }
@@ -272,9 +272,9 @@ namespace Calculator
 
         #endregion
 
-        #region History Log Methods
+        #region History and Memory Log Methods
 
-        private void CreateHistoryLog(String entry)
+        private void CreateLog(String entry)
         {
             // Create new log
             NonFocusButton button = new NonFocusButton();
@@ -283,22 +283,36 @@ namespace Calculator
             button.Text = entry;
             
             // Add style
-            this.CreateHistoryLogStyle(button);
+            this.CreateLogStyle(button);
 
             // Attach button to a layout panel
             this.flowLayoutPanel.Controls.Add(button);
 
-            // Set click event
-            button.Click += HistoryLogEntry_Click;
+            // Set click event and set clear button
+            if (this.FlowLayoutPanelStatus == FlowLayoutPanelStatus.History)
+            {
+                // Set history log event
+                button.Click += HistoryLogEntry_Click;
 
-            // Show Clear History Button
-            this.buttonClearHistory.Visible = true;
+                // Show clear history button
+                this.buttonClearHistory.Visible = true;
+                this.buttonClearMemory.Visible = false;
+            }
+            else
+            {
+                // Set memory log event
+                button.Click += MemoryLogEntry_Click;
+
+                // Show clear memory button
+                this.buttonClearMemory.Visible = false;
+                this.buttonClearHistory.Visible = true;
+            }
         }
 
-        private void buttonClearHistory_Click(object sender, EventArgs e)
+        private void buttonClearLog_Click(object sender, EventArgs e)
         {
             // Delete history olg entry from db
-            if (this.DeleteHistoryLogDB())
+            if (this.DeleteLogDB())
             {
                 // Delete button controls from a flow layout panel history
                 this.flowLayoutPanel.VerticalScroll.Visible = false;
@@ -307,7 +321,7 @@ namespace Calculator
             }
         }
 
-        // Display result in result textbox
+        // Display history in entry and result textbox
         private void HistoryLogEntry_Click(object sender, EventArgs e)
         {
             NonFocusButton clickedButton = (NonFocusButton)sender;
@@ -340,8 +354,43 @@ namespace Calculator
             this.Mode.PrevButtonSender = "History";
         }
 
+        // Display history in entry and result textbox
+        private void MemoryLogEntry_Click(object sender, EventArgs e)
+        {
+            NonFocusButton clickedButton = (NonFocusButton)sender;
+            MemoryLog MemoryLog = new MemoryLog((string)clickedButton.Text);
+            /*
+                if (HistoryLog != null && HistoryLog.HistoryLogEntry.Contains("="))
+                {
+                    double number;
+                    String historyLogStr = HistoryLog.HistoryLogEntry;
+                    string[] historyLogArr = historyLogStr.Split('=');
+                    if (historyLogArr.Length == 2)
+                    {
+                        String result = historyLogArr[0];
+                        String entry = historyLogArr[1].Trim();
+
+                        if (result != null)
+                        {
+                            this.Mode.ResultText = result;
+                            this.refreshResultText();
+                        }
+
+                        if (Double.TryParse(entry, out number))
+                        {
+                            this.Mode.EntryText = number.ToString();
+                            this.refreshEntryText();
+                        }
+                    }
+                }
+
+                // Store previous button sender as history
+                this.Mode.PrevButtonSender = "History";
+            */
+        }
+
         // History log style
-        private void CreateHistoryLogStyle(NonFocusButton buttonLog)
+        private void CreateLogStyle(NonFocusButton buttonLog)
         {
             buttonLog.Width = 183;
             buttonLog.Height = 60;
@@ -353,7 +402,7 @@ namespace Calculator
         }
 
         // Make the FlowLayoutPanel scroll with the mouse wheel
-        private void flowLayoutPanelHistory_Paint(object sender, PaintEventArgs e)
+        private void flowLayoutPanel_Paint(object sender, PaintEventArgs e)
         {
             // FlowLayoutPanel will scroll only if it has focus
             this.flowLayoutPanel.Focus();
@@ -390,28 +439,51 @@ namespace Calculator
         }
 
         // Load history log entry from a database
-        private void LoadHistoryLogList()
+        private void LoadEntryLogList()
         {
-            DataHistory sql = new DataHistory();
-            Dictionary<int, HistoryLog> dictHistoryLog = sql.GetHistoryEntryList();
-
-            foreach (KeyValuePair<int, HistoryLog> entry in dictHistoryLog)
+            if(this.FlowLayoutPanelStatus.Equals(FlowLayoutPanelStatus.History))
             {
-                String historyLogStr = entry.Value.HistoryLogEntry;
-                if (historyLogStr != null)
+                DataHistory sql = new DataHistory();
+                Dictionary<int, HistoryLog> dictHistoryLog = sql.GetHistoryEntryList();
+
+                foreach (KeyValuePair<int, HistoryLog> entry in dictHistoryLog)
                 {
-                    this.CreateHistoryLog(historyLogStr);
+                    String historyLogStr = entry.Value.HistoryLogEntry;
+                    if (historyLogStr != null)
+                    {
+                        this.CreateLog(historyLogStr);
+                    }
                 }
             }
+            else
+            {
+                DataMemory sql = new DataMemory();
+                Dictionary<int, MemoryLog> dictMemoryLog = sql.GetMemoryEntryList();
 
-
+                foreach (KeyValuePair<int, MemoryLog> entry in dictMemoryLog)
+                {
+                    String memoryLogStr = entry.Value.MemoryLogEntry;
+                    if (memoryLogStr != null)
+                    {
+                        this.CreateLog(memoryLogStr);
+                    }
+                }
+            }
         }
 
         // Delete all history log entries from a database
-        private bool DeleteHistoryLogDB()
+        private bool DeleteLogDB()
         {
-            DataHistory sql = new DataHistory();
-            return sql.DeleteHistoryEntry();
+            if (this.FlowLayoutPanelStatus.Equals(FlowLayoutPanelStatus.History))
+            {
+                DataHistory sql = new DataHistory();
+                return sql.DeleteHistoryEntry();
+            }
+            else
+            {
+                DataMemory sql = new DataMemory();
+                return sql.DeleteMemoryEntry();
+            }
         }
 
         // Show or hide history; set axis, y-axis are the same for both
@@ -502,7 +574,7 @@ namespace Calculator
                         // Refresh entry textbox
                         this.refreshEntryText();
                         // Create a history log
-                        this.CreateHistoryLog(Mode.HistoryLog.HistoryLogEntry);
+                        this.CreateLog(Mode.HistoryLog.HistoryLogEntry);
 
                         // Insert data to the database
                         this.InsertHistoryLogDB();
@@ -519,7 +591,7 @@ namespace Calculator
                         if (this.Mode.HistoryLog != null)
                         {
                             // Create a history log
-                            this.CreateHistoryLog(this.Mode.HistoryLog.HistoryLogEntry);
+                            this.CreateLog(this.Mode.HistoryLog.HistoryLogEntry);
                         }
                         // Clear result text value
                         this.Mode.ResultText = "";
@@ -666,7 +738,7 @@ namespace Calculator
             this.DoShowHistory();
 
             // Load history log entries
-            this.LoadHistoryLogList();
+            this.LoadEntryLogList();
 
             // Set memory status to false
             this.SetMemoryStatus(false);
