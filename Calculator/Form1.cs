@@ -30,6 +30,9 @@ namespace Calculator
         // Store flow layout status
         private FlowLayoutPanelStatus FlowLayoutPanelStatus;
 
+        // Store memory log
+        MemoryLog memoryLog = new MemoryLog();
+
         // Load calculator main form
         public FormCalculator()
         {
@@ -155,7 +158,7 @@ namespace Calculator
                         // Memory store
                         if(this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
                         {
-                           MemoryLog.MemoryStore(Double.Parse(this.Mode.EntryText.Replace(",","")));
+                           this.memoryLog.MemoryStore(Double.Parse(this.Mode.EntryText.Replace(",","")));
                            // Set memory to true
                            this.SetMemoryStatus(true);
                         }
@@ -164,7 +167,7 @@ namespace Calculator
                         // Memory plus
                         if (this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
                         {
-                            MemoryLog.MemoryPlus(Double.Parse(this.Mode.EntryText.Replace(",", "")));
+                            this.memoryLog.MemoryPlus(Double.Parse(this.Mode.EntryText.Replace(",", "")));
                             // Set memory to true
                             this.SetMemoryStatus(true);
                         }
@@ -173,7 +176,7 @@ namespace Calculator
                         // Memory minus
                         if (this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
                         {
-                            MemoryLog.MemoryMinus(Double.Parse(this.Mode.EntryText.Replace(",", "")));
+                            this.memoryLog.MemoryMinus(Double.Parse(this.Mode.EntryText.Replace(",", "")));
                             // Set memory to true
                             this.SetMemoryStatus(true);
                         }
@@ -300,12 +303,13 @@ namespace Calculator
             }
             else
             {
+                MessageBox.Show("Hello I am here!");
                 // Set memory log event
-                button.Click += MemoryLogEntry_Click;
+                //button.Click += MemoryLogEntry_Click;
 
                 // Show clear memory button
-                this.buttonClearMemory.Visible = false;
-                this.buttonClearHistory.Visible = true;
+                //this.buttonClearMemory.Visible = false;
+                //this.buttonClearHistory.Visible = true;
             }
         }
 
@@ -314,10 +318,11 @@ namespace Calculator
             // Delete history olg entry from db
             if (this.DeleteLogDB())
             {
+                // Remove vertical scroll bar
+                this.flowLayoutPanel.VerticalScroll.Visible = false; 
                 // Delete button controls from a flow layout panel history
-                this.flowLayoutPanel.VerticalScroll.Visible = false;
                 this.flowLayoutPanel.Controls.Clear();
-                this.buttonClearHistory.Visible = false;            
+                this.buttonClearHistory.Visible = false;         
             }
         }
 

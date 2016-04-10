@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Calculator.Database;
 
 namespace Calculator.Memory
 {
@@ -14,7 +15,9 @@ namespace Calculator.Memory
         // Store Memory log entry
         public String MemoryLogEntry;
 
-        // Constructor for memory log
+        // Constructors for memory log
+        public MemoryLog(){}
+
         public MemoryLog(String MemoryLogEntry)
         {
             this.MemoryLogEntry = MemoryLogEntry;
@@ -34,21 +37,34 @@ namespace Calculator.Memory
         }
 
         // Store value in the memory
-        public static void MemoryStore(double entryNum)
+        public bool MemoryStore(double entryNum)
         {
             MemoryValue = entryNum;
+
+            if (this.InsertMemoryLog())
+            {
+                return true;
+            }
+            return false;
         }
 
         // Memory subtract
-        public static void MemoryMinus(double entryNum)
+        public void MemoryMinus(double entryNum)
         {
             MemoryValue -= entryNum;
         }
 
         // Memory add
-        public static void MemoryPlus(double entryNum)
+        public void MemoryPlus(double entryNum)
         {
             MemoryValue += entryNum;
+        }
+
+        // Insert data to database
+        private bool InsertMemoryLog()
+        {
+            DataMemory dataMemory = new DataMemory();
+            return dataMemory.InsertMemoryEntry(MemoryValue.ToString());
         }
     }
 }

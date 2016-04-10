@@ -29,8 +29,10 @@ namespace Calculator.Database
             _con = new MySqlConnection(_connectionStr.ConnectionString);
         }
 
-        public void InsertMemoryEntry(String memoryLog)
+        public bool InsertMemoryEntry(String memoryLog)
         {
+            bool flag = false;
+
             if (memoryLog != null)
             {
                 // Use a try... catch...finally block to ensure the connection is closed properly
@@ -50,20 +52,29 @@ namespace Calculator.Database
 
                     // Execute query
                     cmd.ExecuteNonQuery();
+
+                    // Data inserted success
+                    flag = true;
                 }
                 catch
                 {
                     MessageBox.Show("Error, Cannot get connected to database!");
+
+                    // Data inserted fail
+                    flag = false;
                 }
                 finally
                 {
                     _con.Close(); // will happen whether the try is successful or errors out, ensuring your connection is closed properly.
                 }
             }
+            return flag;
         }
 
-        public void UpdateMemoryEntry(int EntryId, String memoryLog)
+        public bool UpdateMemoryEntry(int EntryId, String memoryLog)
         {
+            bool flag = false;
+            
             if (memoryLog != null)
             {
                 // Use a try... catch...finally block to ensure the connection is closed properly
@@ -83,6 +94,9 @@ namespace Calculator.Database
 
                     // Execute query
                     cmd.ExecuteNonQuery();
+
+                    // Data inserted success
+                    flag = true;
                 }
                 catch
                 {
@@ -93,6 +107,7 @@ namespace Calculator.Database
                     _con.Close(); // will happen whether the try is successful or errors out, ensuring your connection is closed properly.
                 }
             }
+            return flag;
         }
 
         public Dictionary<int, MemoryLog> GetMemoryEntryList()
