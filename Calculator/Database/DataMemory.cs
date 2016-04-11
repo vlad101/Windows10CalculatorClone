@@ -157,6 +157,7 @@ namespace Calculator.Database
 
         public bool DeleteMemoryEntry()
         {
+            MessageBox.Show("delete memory database!");
             bool isDeleted = false;
 
             // Use a try... catch...finally block to ensure the connection is closed properly

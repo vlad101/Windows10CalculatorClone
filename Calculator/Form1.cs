@@ -118,6 +118,10 @@ namespace Calculator
                         this.PerformAriphmeticOperation(OperationType.Division);
                         break;
                     case "=":
+                        // Set flow layout status to history
+                        this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.History;
+
+                        // Perform equals operation
                         this.PerformEqualsOperation();
                         break;
                     // Sign change operation
@@ -155,28 +159,43 @@ namespace Calculator
                         this.refreshEntryText();
                         break;
                     case "MS":
-                        // Memory store
+                        // Set flow layout status to history
+                        this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.Memory;
+
+                        // Memory store operation
                         if(this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
                         {
-                           this.memoryLog.MemoryStore(Double.Parse(this.Mode.EntryText.Replace(",","")));
-                           // Set memory to true
-                           this.SetMemoryStatus(true);
+                            double memoryEntry = Double.Parse(this.Mode.EntryText.Replace(",",""));
+                            this.CreateLog(memoryEntry.ToString());
+                            this.memoryLog.MemoryStore(memoryEntry);
+                            // Set memory to true
+                            this.SetMemoryStatus(true);
                         }
                         break;
                     case "M+":
-                        // Memory plus
+                        // Set flow layout status to history
+                        this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.Memory;
+
+                        // Memory plus operation
                         if (this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
                         {
-                            this.memoryLog.MemoryPlus(Double.Parse(this.Mode.EntryText.Replace(",", "")));
+                            double memoryEntry = Double.Parse(this.Mode.EntryText.Replace(",", ""));
+                            this.CreateLog(MemoryLog.MemoryValue.ToString());
+                            this.memoryLog.MemoryPlus(memoryEntry);
                             // Set memory to true
                             this.SetMemoryStatus(true);
                         }
                         break;
                     case "M-":
-                        // Memory minus
+                        // Set flow layout status to history
+                        this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.Memory;
+
+                        // Memory minus operation
                         if (this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
                         {
-                            this.memoryLog.MemoryMinus(Double.Parse(this.Mode.EntryText.Replace(",", "")));
+                            double memoryEntry = Double.Parse(this.Mode.EntryText.Replace(",", ""));
+                            this.CreateLog(MemoryLog.MemoryValue.ToString());
+                            this.memoryLog.MemoryMinus(memoryEntry);
                             // Set memory to true
                             this.SetMemoryStatus(true);
                         }
@@ -288,41 +307,49 @@ namespace Calculator
             // Add style
             this.CreateLogStyle(button);
 
-            // Attach button to a layout panel
-            this.flowLayoutPanel.Controls.Add(button);
-
             // Set click event and set clear button
-            if (this.FlowLayoutPanelStatus == FlowLayoutPanelStatus.History)
-            {
-                // Set history log event
-                button.Click += HistoryLogEntry_Click;
+            switch (this.FlowLayoutPanelStatus)
+            { 
+                case FlowLayoutPanelStatus.History:
 
-                // Show clear history button
-                this.buttonClearHistory.Visible = true;
-                this.buttonClearMemory.Visible = false;
+                    // Attach button to a layout panel
+                    this.flowLayoutPanelHistory.Controls.Add(button);
+
+                    // Set history log event
+                    button.Click += HistoryLogEntry_Click;
+
+                    break;
+
+                case Libs.FlowLayoutPanelStatus.Memory:
+
+                    // Attach button to a layout panel
+                    this.flowLayoutPanelMemory.Controls.Add(button);
+
+                    // Set memory log event
+                    button.Click += MemoryLogEntry_Click;
+
+                    break;
             }
-            else
-            {
-                MessageBox.Show("Hello I am here!");
-                // Set memory log event
-                //button.Click += MemoryLogEntry_Click;
 
-                // Show clear memory button
-                //this.buttonClearMemory.Visible = false;
-                //this.buttonClearHistory.Visible = true;
+            // Show clear log list button
+            this.buttonClearLogListHistory.Visible = true;
+        }
+
+        private void buttonClearLogHistory_Click(object sender, EventArgs e)
+        {
+            // Delete history olg entry from db
+            if (this.DeleteLogDB("memory"))
+            {
+                this.RemoveFlowLayoutControls("history");
             }
         }
 
-        private void buttonClearLog_Click(object sender, EventArgs e)
+        private void buttonClearLogMemory_Click(object sender, EventArgs e)
         {
             // Delete history olg entry from db
-            if (this.DeleteLogDB())
+            if (this.DeleteLogDB("history"))
             {
-                // Remove vertical scroll bar
-                this.flowLayoutPanel.VerticalScroll.Visible = false; 
-                // Delete button controls from a flow layout panel history
-                this.flowLayoutPanel.Controls.Clear();
-                this.buttonClearHistory.Visible = false;         
+                this.RemoveFlowLayoutControls("memory");
             }
         }
 
@@ -410,7 +437,8 @@ namespace Calculator
         private void flowLayoutPanel_Paint(object sender, PaintEventArgs e)
         {
             // FlowLayoutPanel will scroll only if it has focus
-            this.flowLayoutPanel.Focus();
+            this.flowLayoutPanelHistory.Focus();
+            this.flowLayoutPanelMemory.Focus();
         }
 
         // Show or hide history
@@ -444,63 +472,74 @@ namespace Calculator
         }
 
         // Load history log entry from a database
-        private void LoadEntryLogList()
+        private void LoadLogList()
         {
-            if(this.FlowLayoutPanelStatus.Equals(FlowLayoutPanelStatus.History))
-            {
-                DataHistory sql = new DataHistory();
-                Dictionary<int, HistoryLog> dictHistoryLog = sql.GetHistoryEntryList();
+            // Load database history logs
+            DataHistory sqlHistory = new DataHistory();
+            Dictionary<int, HistoryLog> dictHistoryLog = sqlHistory.GetHistoryEntryList();
 
-                foreach (KeyValuePair<int, HistoryLog> entry in dictHistoryLog)
+            foreach (KeyValuePair<int, HistoryLog> entry in dictHistoryLog)
+            {
+                // Set default flow layout panel to history
+                this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.History;
+                String historyLogStr = entry.Value.HistoryLogEntry;
+                if (historyLogStr != null)
                 {
-                    String historyLogStr = entry.Value.HistoryLogEntry;
-                    if (historyLogStr != null)
-                    {
-                        this.CreateLog(historyLogStr);
-                    }
+                    this.CreateLog(historyLogStr);
                 }
             }
-            else
-            {
-                DataMemory sql = new DataMemory();
-                Dictionary<int, MemoryLog> dictMemoryLog = sql.GetMemoryEntryList();
 
-                foreach (KeyValuePair<int, MemoryLog> entry in dictMemoryLog)
+            // Load database memory logs
+            DataMemory sqlMemory = new DataMemory();
+            Dictionary<int, MemoryLog> dictMemoryLog = sqlMemory.GetMemoryEntryList();
+
+            foreach (KeyValuePair<int, MemoryLog> entry in dictMemoryLog)
+            {
+                // Set default flow layout panel to memory
+                this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.Memory;
+                String memoryLogStr = entry.Value.MemoryLogEntry;
+                if (memoryLogStr != null)
                 {
-                    String memoryLogStr = entry.Value.MemoryLogEntry;
-                    if (memoryLogStr != null)
-                    {
-                        this.CreateLog(memoryLogStr);
-                    }
+                    this.CreateLog(memoryLogStr);
                 }
             }
+
+            // Set default flow layout panel to history
+            this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.History;
         }
 
         // Delete all history log entries from a database
-        private bool DeleteLogDB()
+        private bool DeleteLogDB(String flowLayoutStatus)
         {
-            if (this.FlowLayoutPanelStatus.Equals(FlowLayoutPanelStatus.History))
+            bool result = false;
+            switch (flowLayoutStatus)
             {
-                DataHistory sql = new DataHistory();
-                return sql.DeleteHistoryEntry();
+                case "history":
+                    DataHistory sqlHistory = new DataHistory();
+                    result = sqlHistory.DeleteHistoryEntry();
+                    break;
+                case "memory":
+                    DataMemory sqlMemory = new DataMemory();
+                    result = sqlMemory.DeleteMemoryEntry();
+                    break;
             }
-            else
-            {
-                DataMemory sql = new DataMemory();
-                return sql.DeleteMemoryEntry();
-            }
+            return result;
         }
 
         // Show or hide history; set axis, y-axis are the same for both
         private void SetFormSize(int xAxis)
         {
+            /*
+             * Static memory
+             * 
             xAxis = 900;
 
             this.MaximumSize = new System.Drawing.Size(xAxis, 450);
             this.MinimumSize = new System.Drawing.Size(xAxis, 450);
+            */
 
-            //this.MaximumSize = new System.Drawing.Size(xAxis, 355);
-            //this.MinimumSize = new System.Drawing.Size(xAxis, 355);
+            this.MaximumSize = new System.Drawing.Size(xAxis, 355);
+            this.MinimumSize = new System.Drawing.Size(xAxis, 355);
 
             // Save the default value
             Properties.Settings.Default.showHistory = this.ShowHistory;
@@ -521,8 +560,9 @@ namespace Calculator
                     this.buttonHistoryList.Enabled = false;
                     this.buttonMemoryList.Enabled = true;
 
-                    // Set flow layout status to history
-                    this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.History;
+                    // Load flow layout panel history
+                    this.flowLayoutPanelHistory.Show();
+                    this.flowLayoutPanelMemory.Hide();
 
                     break;
                 case FlowLayoutPanelStatus.Memory:
@@ -531,23 +571,79 @@ namespace Calculator
                     this.buttonHistoryList.Enabled = true;
                     this.buttonMemoryList.Enabled = false;
 
-                    // Set flow layout status to mmeory
-                    this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.Memory;
+                    // Load flow layout panel history
+                    this.flowLayoutPanelMemory.Show();
+                    this.flowLayoutPanelHistory.Hide();
 
                     break;
             }
         }
 
-        private void buttonHistoryList_Click(object sender, EventArgs e)
+        // Click button displays history list in a flow layout panel
+        private void buttonLogListHistory_Click(object sender, EventArgs e)
         {
-            this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.History;
-            this.LoadFlowLayoutPanel();
+            // Enable history button, disable memory button
+            this.buttonHistoryList.Enabled = false;
+            this.buttonMemoryList.Enabled = true;
+
+            // Load flow layout panel memory
+            this.flowLayoutPanelHistory.Show();
+            this.flowLayoutPanelMemory.Hide();
+
+            // Hide clear memory button, show clear history button
+            this.buttonClearLogListMemory.Visible = false;
+            this.buttonClearLogListHistory.Visible = true;
         }
 
-        private void buttonMemoryList_Click(object sender, EventArgs e)
+        // Click button displays history list in a flow layout panel
+        private void buttonLogListMemory_Click(object sender, EventArgs e)
         {
-            this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.Memory;
-            this.LoadFlowLayoutPanel();
+            // Disable history button, enable memory button
+            this.buttonHistoryList.Enabled = true;
+            this.buttonMemoryList.Enabled = false;
+
+            // Load flow layout panel memory
+            this.flowLayoutPanelMemory.Show();
+            this.flowLayoutPanelHistory.Hide();
+
+            // Show clear memory button, hide clear history button
+            this.buttonClearLogListMemory.Visible = true;
+            this.buttonClearLogListHistory.Visible = false;
+        }
+
+        // Hide flowlayout panel and its controls
+        private void RemoveFlowLayoutControls(String flowLayoutStatus)
+        {
+            switch (flowLayoutStatus)
+            {
+                case "history":
+
+                    // Remove vertical scroll bar
+                    this.flowLayoutPanelHistory.VerticalScroll.Visible = false;
+
+                    // Delete button controls from a flow layout panel history
+                    this.flowLayoutPanelHistory.Controls.Clear();
+
+                    // Hide button clear history button
+                    this.buttonClearLogListHistory.Visible = false;
+                    break;
+                case "memory":
+
+                    // Remove vertical scroll bar
+                    this.flowLayoutPanelMemory.VerticalScroll.Visible = false;
+
+                    // Delete button controls from a flow layout panel history
+                    this.flowLayoutPanelMemory.Controls.Clear();
+
+                    // Hide clear memory button
+                    this.buttonClearLogListMemory.Visible = false;
+
+                    // Set memory label status to nothing
+                    this.labelMemory.Text = "";
+
+                    break;
+            }
+
         }
 
         #endregion
@@ -731,7 +827,7 @@ namespace Calculator
         private void FormCalculator_Load(object sender, EventArgs e)
         {
             // Hide Clear History Button
-            this.buttonClearHistory.Visible = false;
+            this.buttonClearLogListHistory.Visible = false;
 
             // Add Key Event Handlers
             this.KeyPreview = true;
@@ -743,7 +839,7 @@ namespace Calculator
             this.DoShowHistory();
 
             // Load history log entries
-            this.LoadEntryLogList();
+            this.LoadLogList();
 
             // Set memory status to false
             this.SetMemoryStatus(false);
@@ -881,5 +977,10 @@ namespace Calculator
         }
 
         #endregion
+
+        private void buttonClearLog_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

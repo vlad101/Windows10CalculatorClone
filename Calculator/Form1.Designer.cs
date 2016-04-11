@@ -32,7 +32,7 @@ namespace Calculator
         {
             this.textBoxResult = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.flowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.flowLayoutPanelHistory = new System.Windows.Forms.FlowLayoutPanel();
             this.textBoxEntry = new System.Windows.Forms.TextBox();
             this.menuStripMode = new System.Windows.Forms.MenuStrip();
             this.modeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,12 +48,15 @@ namespace Calculator
             this.labelMode = new System.Windows.Forms.Label();
             this.buttonHistory = new System.Windows.Forms.Button();
             this.labelMemory = new System.Windows.Forms.Label();
+            this.flowLayoutPanelMemory = new System.Windows.Forms.FlowLayoutPanel();
+            this.buttonMemoryList = new Calculator.Controls.NonFocusButton();
+            this.buttonHistoryList = new Calculator.Controls.NonFocusButton();
             this.mMinusButton = new Calculator.Controls.NonFocusButton();
             this.mPlusButton = new Calculator.Controls.NonFocusButton();
             this.msButton = new Calculator.Controls.NonFocusButton();
             this.mrButton = new Calculator.Controls.NonFocusButton();
             this.mcButton = new Calculator.Controls.NonFocusButton();
-            this.buttonClearHistory = new Calculator.Controls.NonFocusButton();
+            this.buttonClearLogListHistory = new Calculator.Controls.NonFocusButton();
             this.button21 = new Calculator.Controls.NonFocusButton();
             this.button22 = new Calculator.Controls.NonFocusButton();
             this.button23 = new Calculator.Controls.NonFocusButton();
@@ -79,9 +82,7 @@ namespace Calculator
             this.button3 = new Calculator.Controls.NonFocusButton();
             this.button2 = new Calculator.Controls.NonFocusButton();
             this.button1 = new Calculator.Controls.NonFocusButton();
-            this.buttonHistoryList = new Calculator.Controls.NonFocusButton();
-            this.buttonMemoryList = new Calculator.Controls.NonFocusButton();
-            this.buttonClearMemory = new Calculator.Controls.NonFocusButton();
+            this.buttonClearLogListMemory = new Calculator.Controls.NonFocusButton();
             this.menuStripMode.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -106,15 +107,15 @@ namespace Calculator
             this.label1.Size = new System.Drawing.Size(2, 255);
             this.label1.TabIndex = 26;
             // 
-            // flowLayoutPanel
+            // flowLayoutPanelHistory
             // 
-            this.flowLayoutPanel.AutoScroll = true;
-            this.flowLayoutPanel.Cursor = System.Windows.Forms.Cursors.Default;
-            this.flowLayoutPanel.Location = new System.Drawing.Point(423, 59);
-            this.flowLayoutPanel.Name = "flowLayoutPanel";
-            this.flowLayoutPanel.Size = new System.Drawing.Size(211, 233);
-            this.flowLayoutPanel.TabIndex = 29;
-            this.flowLayoutPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.flowLayoutPanel_Paint);
+            this.flowLayoutPanelHistory.AutoScroll = true;
+            this.flowLayoutPanelHistory.Cursor = System.Windows.Forms.Cursors.Default;
+            this.flowLayoutPanelHistory.Location = new System.Drawing.Point(423, 59);
+            this.flowLayoutPanelHistory.Name = "flowLayoutPanelHistory";
+            this.flowLayoutPanelHistory.Size = new System.Drawing.Size(211, 233);
+            this.flowLayoutPanelHistory.TabIndex = 29;
+            this.flowLayoutPanelHistory.Paint += new System.Windows.Forms.PaintEventHandler(this.flowLayoutPanel_Paint);
             // 
             // textBoxEntry
             // 
@@ -248,6 +249,36 @@ namespace Calculator
             this.labelMemory.TabIndex = 40;
             this.labelMemory.Text = "M";
             // 
+            // flowLayoutPanelMemory
+            // 
+            this.flowLayoutPanelMemory.AutoScroll = true;
+            this.flowLayoutPanelMemory.Cursor = System.Windows.Forms.Cursors.Default;
+            this.flowLayoutPanelMemory.Location = new System.Drawing.Point(423, 59);
+            this.flowLayoutPanelMemory.Name = "flowLayoutPanelMemory";
+            this.flowLayoutPanelMemory.Size = new System.Drawing.Size(211, 233);
+            this.flowLayoutPanelMemory.TabIndex = 30;
+            this.flowLayoutPanelMemory.Paint += new System.Windows.Forms.PaintEventHandler(this.flowLayoutPanel_Paint);
+            // 
+            // buttonMemoryList
+            // 
+            this.buttonMemoryList.Location = new System.Drawing.Point(484, 29);
+            this.buttonMemoryList.Name = "buttonMemoryList";
+            this.buttonMemoryList.Size = new System.Drawing.Size(54, 24);
+            this.buttonMemoryList.TabIndex = 42;
+            this.buttonMemoryList.Text = "Memory";
+            this.buttonMemoryList.UseVisualStyleBackColor = true;
+            this.buttonMemoryList.Click += new System.EventHandler(this.buttonLogListMemory_Click);
+            // 
+            // buttonHistoryList
+            // 
+            this.buttonHistoryList.Location = new System.Drawing.Point(424, 29);
+            this.buttonHistoryList.Name = "buttonHistoryList";
+            this.buttonHistoryList.Size = new System.Drawing.Size(54, 24);
+            this.buttonHistoryList.TabIndex = 41;
+            this.buttonHistoryList.Text = "History";
+            this.buttonHistoryList.UseVisualStyleBackColor = true;
+            this.buttonHistoryList.Click += new System.EventHandler(this.buttonLogListHistory_Click);
+            // 
             // mMinusButton
             // 
             this.mMinusButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -304,15 +335,15 @@ namespace Calculator
             this.mcButton.UseVisualStyleBackColor = true;
             this.mcButton.Click += new System.EventHandler(this.operation_button_Click);
             // 
-            // buttonClearHistory
+            // buttonClearLogListHistory
             // 
-            this.buttonClearHistory.BackgroundImage = global::Calculator.Properties.Resources.GarbageCan;
-            this.buttonClearHistory.Location = new System.Drawing.Point(610, 296);
-            this.buttonClearHistory.Name = "buttonClearHistory";
-            this.buttonClearHistory.Size = new System.Drawing.Size(24, 27);
-            this.buttonClearHistory.TabIndex = 33;
-            this.buttonClearHistory.UseVisualStyleBackColor = true;
-            this.buttonClearHistory.Click += new System.EventHandler(this.buttonClearLog_Click);
+            this.buttonClearLogListHistory.BackgroundImage = global::Calculator.Properties.Resources.GarbageCan;
+            this.buttonClearLogListHistory.Location = new System.Drawing.Point(610, 296);
+            this.buttonClearLogListHistory.Name = "buttonClearLogListHistory";
+            this.buttonClearLogListHistory.Size = new System.Drawing.Size(24, 27);
+            this.buttonClearLogListHistory.TabIndex = 33;
+            this.buttonClearLogListHistory.UseVisualStyleBackColor = true;
+            this.buttonClearLogListHistory.Click += new System.EventHandler(this.buttonClearLogHistory_Click);
             // 
             // button21
             // 
@@ -590,42 +621,23 @@ namespace Calculator
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.operation_button_Click);
             // 
-            // buttonHistoryList
+            // buttonClearLogListMemory
             // 
-            this.buttonHistoryList.Location = new System.Drawing.Point(424, 29);
-            this.buttonHistoryList.Name = "buttonHistoryList";
-            this.buttonHistoryList.Size = new System.Drawing.Size(54, 24);
-            this.buttonHistoryList.TabIndex = 41;
-            this.buttonHistoryList.Text = "History";
-            this.buttonHistoryList.UseVisualStyleBackColor = true;
-            this.buttonHistoryList.Click += new System.EventHandler(this.buttonHistoryList_Click);
-            // 
-            // buttonMemoryList
-            // 
-            this.buttonMemoryList.Location = new System.Drawing.Point(484, 29);
-            this.buttonMemoryList.Name = "buttonMemoryList";
-            this.buttonMemoryList.Size = new System.Drawing.Size(54, 24);
-            this.buttonMemoryList.TabIndex = 42;
-            this.buttonMemoryList.Text = "Memory";
-            this.buttonMemoryList.UseVisualStyleBackColor = true;
-            this.buttonMemoryList.Click += new System.EventHandler(this.buttonMemoryList_Click);
-            // 
-            // buttonClearMemory
-            // 
-            this.buttonClearMemory.BackgroundImage = global::Calculator.Properties.Resources.GarbageCan;
-            this.buttonClearMemory.Location = new System.Drawing.Point(580, 296);
-            this.buttonClearMemory.Name = "buttonClearMemory";
-            this.buttonClearMemory.Size = new System.Drawing.Size(24, 27);
-            this.buttonClearMemory.TabIndex = 43;
-            this.buttonClearMemory.UseVisualStyleBackColor = true;
-            this.buttonClearMemory.Click += new System.EventHandler(this.buttonClearLog_Click);
+            this.buttonClearLogListMemory.BackgroundImage = global::Calculator.Properties.Resources.GarbageCan;
+            this.buttonClearLogListMemory.Location = new System.Drawing.Point(610, 296);
+            this.buttonClearLogListMemory.Name = "buttonClearLogListMemory";
+            this.buttonClearLogListMemory.Size = new System.Drawing.Size(24, 27);
+            this.buttonClearLogListMemory.TabIndex = 43;
+            this.buttonClearLogListMemory.UseVisualStyleBackColor = true;
+            this.buttonClearLogListMemory.Click += new System.EventHandler(this.buttonClearLogMemory_Click);
             // 
             // FormCalculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(646, 331);
-            this.Controls.Add(this.buttonClearMemory);
+            this.ClientSize = new System.Drawing.Size(646, 332);
+            this.Controls.Add(this.buttonClearLogListMemory);
+            this.Controls.Add(this.flowLayoutPanelMemory);
             this.Controls.Add(this.buttonMemoryList);
             this.Controls.Add(this.buttonHistoryList);
             this.Controls.Add(this.labelMemory);
@@ -635,10 +647,10 @@ namespace Calculator
             this.Controls.Add(this.mrButton);
             this.Controls.Add(this.mcButton);
             this.Controls.Add(this.buttonHistory);
-            this.Controls.Add(this.buttonClearHistory);
+            this.Controls.Add(this.buttonClearLogListHistory);
             this.Controls.Add(this.labelMode);
             this.Controls.Add(this.textBoxEntry);
-            this.Controls.Add(this.flowLayoutPanel);
+            this.Controls.Add(this.flowLayoutPanelHistory);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button21);
             this.Controls.Add(this.button22);
@@ -685,7 +697,7 @@ namespace Calculator
 
         private System.Windows.Forms.TextBox textBoxResult;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanelHistory;
         private System.Windows.Forms.TextBox textBoxEntry;
         private NonFocusButton button1;
         private NonFocusButton button2;
@@ -724,7 +736,7 @@ namespace Calculator
         private System.Windows.Forms.ToolStripMenuItem aboutCalculatorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyCtrlCToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pasteCtrlVToolStripMenuItem;
-        private NonFocusButton buttonClearHistory;
+        private NonFocusButton buttonClearLogListHistory;
         private System.Windows.Forms.Button buttonHistory;
         private NonFocusButton mMinusButton;
         private NonFocusButton mPlusButton;
@@ -734,7 +746,8 @@ namespace Calculator
         private System.Windows.Forms.Label labelMemory;
         private NonFocusButton buttonHistoryList;
         private NonFocusButton buttonMemoryList;
-        private NonFocusButton buttonClearMemory;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanelMemory;
+        private NonFocusButton buttonClearLogListMemory;
     }
 }
 
