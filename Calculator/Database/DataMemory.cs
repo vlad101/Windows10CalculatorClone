@@ -138,10 +138,6 @@ namespace Calculator.Database
                         dictHMemoryLog.Add(reader.GetInt32(0), new MemoryLog(reader.GetString(1)));
                     }
                 }
-                else
-                {
-                    Console.WriteLine("No rows found.");
-                }
                 reader.Close();
             }
             catch
@@ -157,7 +153,6 @@ namespace Calculator.Database
 
         public bool DeleteMemoryEntry()
         {
-            MessageBox.Show("delete memory database!");
             bool isDeleted = false;
 
             // Use a try... catch...finally block to ensure the connection is closed properly

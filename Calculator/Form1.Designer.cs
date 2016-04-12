@@ -49,6 +49,7 @@ namespace Calculator
             this.buttonHistory = new System.Windows.Forms.Button();
             this.labelMemory = new System.Windows.Forms.Label();
             this.flowLayoutPanelMemory = new System.Windows.Forms.FlowLayoutPanel();
+            this.buttonClearLogListMemory = new Calculator.Controls.NonFocusButton();
             this.buttonMemoryList = new Calculator.Controls.NonFocusButton();
             this.buttonHistoryList = new Calculator.Controls.NonFocusButton();
             this.mMinusButton = new Calculator.Controls.NonFocusButton();
@@ -82,7 +83,6 @@ namespace Calculator
             this.button3 = new Calculator.Controls.NonFocusButton();
             this.button2 = new Calculator.Controls.NonFocusButton();
             this.button1 = new Calculator.Controls.NonFocusButton();
-            this.buttonClearLogListMemory = new Calculator.Controls.NonFocusButton();
             this.menuStripMode.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -258,6 +258,16 @@ namespace Calculator
             this.flowLayoutPanelMemory.Size = new System.Drawing.Size(211, 233);
             this.flowLayoutPanelMemory.TabIndex = 30;
             this.flowLayoutPanelMemory.Paint += new System.Windows.Forms.PaintEventHandler(this.flowLayoutPanel_Paint);
+            // 
+            // buttonClearLogListMemory
+            // 
+            this.buttonClearLogListMemory.BackgroundImage = global::Calculator.Properties.Resources.GarbageCan;
+            this.buttonClearLogListMemory.Location = new System.Drawing.Point(610, 296);
+            this.buttonClearLogListMemory.Name = "buttonClearLogListMemory";
+            this.buttonClearLogListMemory.Size = new System.Drawing.Size(24, 27);
+            this.buttonClearLogListMemory.TabIndex = 43;
+            this.buttonClearLogListMemory.UseVisualStyleBackColor = true;
+            this.buttonClearLogListMemory.Click += new System.EventHandler(this.buttonClearLogMemory_Click);
             // 
             // buttonMemoryList
             // 
@@ -620,16 +630,6 @@ namespace Calculator
             this.button1.Text = "%";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.operation_button_Click);
-            // 
-            // buttonClearLogListMemory
-            // 
-            this.buttonClearLogListMemory.BackgroundImage = global::Calculator.Properties.Resources.GarbageCan;
-            this.buttonClearLogListMemory.Location = new System.Drawing.Point(610, 296);
-            this.buttonClearLogListMemory.Name = "buttonClearLogListMemory";
-            this.buttonClearLogListMemory.Size = new System.Drawing.Size(24, 27);
-            this.buttonClearLogListMemory.TabIndex = 43;
-            this.buttonClearLogListMemory.UseVisualStyleBackColor = true;
-            this.buttonClearLogListMemory.Click += new System.EventHandler(this.buttonClearLogMemory_Click);
             // 
             // FormCalculator
             // 

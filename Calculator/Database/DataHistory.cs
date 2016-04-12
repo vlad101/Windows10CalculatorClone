@@ -90,10 +90,6 @@ namespace Calculator.Database
                         dictHistoryLog.Add(reader.GetInt32(0), new HistoryLog(reader.GetString(1)));
                     }
                 }
-                else
-                {
-                    Console.WriteLine("No rows found.");
-                }
                 reader.Close();
             }
             catch
