@@ -159,15 +159,16 @@ namespace Calculator
                         this.refreshEntryText();
                         break;
                     case "MS":
-                        // Set flow layout status to history
+                        // Set flow layout status to memory
                         this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.Memory;
 
-                        // Memory store operation
                         if(this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
                         {
                             double memoryEntry = Double.Parse(this.Mode.EntryText.Replace(",",""));
-                            this.CreateLog(Libs.FormatUtils.FormatText(memoryEntry.ToString()));
+                            // Memory store operation
                             this.memoryLog.MemoryStore(memoryEntry);
+                            // Create memory log
+                            this.CreateLog(Libs.FormatUtils.FormatText(memoryEntry.ToString()));
                             // Set memory to true
                             this.SetMemoryStatus(true);
                         }
@@ -176,12 +177,13 @@ namespace Calculator
                         // Set flow layout status to history
                         this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.Memory;
 
-                        // Memory plus operation
                         if (this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
                         {
                             double memoryEntry = Double.Parse(this.Mode.EntryText.Replace(",", ""));
-                            this.CreateLog(Libs.FormatUtils.FormatText(MemoryLog.MemoryValue.ToString()));
+                            // Memory plus operation
                             this.memoryLog.MemoryPlus(memoryEntry);
+                            // Create memory log
+                            this.CreateLog(Libs.FormatUtils.FormatText(MemoryLog.MemoryValue.ToString()));
                             // Set memory to true
                             this.SetMemoryStatus(true);
                         }
@@ -190,12 +192,13 @@ namespace Calculator
                         // Set flow layout status to history
                         this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.Memory;
 
-                        // Memory minus operation
                         if (this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
                         {
                             double memoryEntry = Double.Parse(this.Mode.EntryText.Replace(",", ""));
-                            this.CreateLog(Libs.FormatUtils.FormatText(MemoryLog.MemoryValue.ToString()));
+                            // Memory minus operation
                             this.memoryLog.MemoryMinus(memoryEntry);
+                            // Create memory log
+                            this.CreateLog(Libs.FormatUtils.FormatText(MemoryLog.MemoryValue.ToString()));
                             // Set memory to true
                             this.SetMemoryStatus(true);
                         }
@@ -328,6 +331,24 @@ namespace Calculator
                     // Set memory log event
                     button.Click += MemoryLogEntry_Click;
 
+                    // Add button MC to memory log
+                    NonFocusButton buttonMC = new NonFocusButton();
+                    this.CreateMemoryLogStyle(buttonMC);
+                    buttonMC.Text = "MC";
+                    this.flowLayoutPanelMemory.Controls.Add(buttonMC);
+
+                    // Add button M+ to memory log
+                    NonFocusButton buttonMPlus = new NonFocusButton();
+                    this.CreateMemoryLogStyle(buttonMPlus);
+                    buttonMPlus.Text = "M+";
+                    this.flowLayoutPanelMemory.Controls.Add(buttonMPlus);
+                    
+                    // Add button M- to memory log
+                    NonFocusButton buttonMinus = new NonFocusButton();
+                    this.CreateMemoryLogStyle(buttonMinus);
+                    buttonMinus.Text = "M-";
+                    this.flowLayoutPanelMemory.Controls.Add(buttonMinus);
+
                     break;
             }
 
@@ -421,7 +442,7 @@ namespace Calculator
             */
         }
 
-        // History log style
+        // Flow layout panel control log style
         private void CreateLogStyle(NonFocusButton buttonLog)
         {
             buttonLog.Width = 183;
@@ -429,6 +450,18 @@ namespace Calculator
             buttonLog.Margin = new Padding(3, 0, 0, 3);
             buttonLog.Font = new Font("Microsoft Sans Serif", 10.00F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
             buttonLog.TextAlign = ContentAlignment.MiddleRight;
+            buttonLog.FlatStyle = FlatStyle.Flat;
+            buttonLog.FlatAppearance.BorderColor = Color.Gray;
+        }
+
+        // Memory Flow layout panel control log style
+        private void CreateMemoryLogStyle(NonFocusButton buttonLog)
+        {
+            buttonLog.Width = 59;
+            buttonLog.Height = 23;
+            buttonLog.Margin = new Padding(3, 0, 0, 5);
+            buttonLog.Font = new Font("Microsoft Sans Serif", 8.00F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
+            buttonLog.TextAlign = ContentAlignment.MiddleCenter;
             buttonLog.FlatStyle = FlatStyle.Flat;
             buttonLog.FlatAppearance.BorderColor = Color.Gray;
         }
@@ -497,10 +530,13 @@ namespace Calculator
             {
                 // Set default flow layout panel to memory
                 this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.Memory;
-                String memoryLogStr = entry.Value.MemoryLogEntry;
+                StringBuilder memoryLogStr = new System.Text.StringBuilder();
+                memoryLogStr.Append("{");
+                memoryLogStr.Append(String.Format("{0}={1}", entry.Key.ToString(), entry.Value.MemoryLogEntry));
+                memoryLogStr.Append("}");
                 if (memoryLogStr != null)
                 {
-                    this.CreateLog(memoryLogStr);
+                    this.CreateLog(memoryLogStr.ToString());
                 }
             }
 
@@ -999,10 +1035,5 @@ namespace Calculator
         }
 
         #endregion
-
-        private void buttonClearLog_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }
