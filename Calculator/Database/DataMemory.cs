@@ -29,9 +29,9 @@ namespace Calculator.Database
             _con = new MySqlConnection(_connectionStr.ConnectionString);
         }
 
-        public bool InsertMemoryEntry(String memoryLog)
+        public int InsertMemoryEntry(String memoryLog)
         {
-            bool flag = false;
+            int flag = -1;
 
             if (memoryLog != null)
             {
@@ -53,15 +53,27 @@ namespace Calculator.Database
                     // Execute query
                     cmd.ExecuteNonQuery();
 
-                    // Data inserted success
-                    flag = true;
+                    // Get the Unique ID for the Last Inserted Row
+                    cmd.CommandText = "SELECT LAST_INSERT_ID()";
+
+                    // Execute query
+                    MySqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            flag = reader.GetInt32(0);
+                        }
+                    }
+                    reader.Close();
                 }
                 catch
                 {
                     MessageBox.Show("Error, Cannot get connected to database!");
 
                     // Data inserted fail
-                    flag = false;
+                    flag = -1;
                 }
                 finally
                 {

@@ -37,15 +37,11 @@ namespace Calculator.Memory
         }
 
         // Store value in the memory
-        public bool MemoryStore(double entryNum)
+        public int MemoryStore(double entryNum)
         {
             MemoryValue = entryNum;
 
-            if (this.InsertMemoryLog())
-            {
-                return true;
-            }
-            return false;
+            return this.InsertMemoryLog();
         }
 
         // Memory subtract
@@ -61,7 +57,7 @@ namespace Calculator.Memory
         }
 
         // Insert data to database
-        private bool InsertMemoryLog()
+        private int InsertMemoryLog()
         {
             DataMemory dataMemory = new DataMemory();
             return dataMemory.InsertMemoryEntry(MemoryValue.ToString());

@@ -169,11 +169,20 @@ namespace Calculator
                         {
                             double memoryEntry = Double.Parse(this.Mode.EntryText.Replace(",",""));
                             // Memory store operation
-                            this.memoryLog.MemoryStore(memoryEntry);
-                            // Create memory log
-                            this.CreateLog(Libs.FormatUtils.FormatText(memoryEntry.ToString()));
-                            // Set memory to true
-                            this.SetMemoryStatus(true);
+                            int memoryStoreResult = this.memoryLog.MemoryStore(memoryEntry);
+                            MessageBox.Show(memoryStoreResult.ToString());
+                            if (memoryStoreResult != -1)
+                            {
+                                // Create memory log
+                                String memoryLogStr = this.FormatMemoryLogEntry(memoryStoreResult.ToString(), Libs.FormatUtils.FormatText(memoryEntry.ToString()));
+
+                                if (memoryLogStr != null)
+                                {
+                                    this.CreateLog(Libs.FormatUtils.FormatText(memoryLogStr));
+                                    // Set memory to true
+                                    this.SetMemoryStatus(true);
+                                }
+                            }
                         }
                         break;
                     case "M+":
@@ -306,9 +315,6 @@ namespace Calculator
         {
             // Create new log
             NonFocusButton button = new NonFocusButton();
-
-            // Add text
-            button.Text = entry;
             
             // Add style
             this.CreateLogStyle(button);
@@ -317,6 +323,9 @@ namespace Calculator
             switch (this.FlowLayoutPanelStatus)
             { 
                 case FlowLayoutPanelStatus.History:
+
+                    // Add text
+                    button.Text = entry;
 
                     // Attach button to a layout panel
                     this.flowLayoutPanelHistory.Controls.Add(button);
@@ -328,40 +337,46 @@ namespace Calculator
 
                 case Libs.FlowLayoutPanelStatus.Memory:
 
-                    // Attach button to a layout panel
-                    this.flowLayoutPanelMemory.Controls.Add(button);
+                    if(entry.Split('=').Length > 1)
+                    {
+                        String entryId = entry.Split('=')[0];
+                        String entryLog = entry.Split('=')[1];
 
-                    // Set memory log event
-                    button.Click += MemoryLogEntry_Click;
+                        // Add text
+                        button.Text = entryLog;
 
-                    // Set memory log entry name
-                    button.Name = "memoryLogEntryControl" + this.MemoryLogCount.ToString();
+                        // Attach button to a layout panel
+                        this.flowLayoutPanelMemory.Controls.Add(button);
 
-                    // Add button MC to memory log
-                    NonFocusButton buttonMC = new NonFocusButton();
-                    this.CreateMemoryLogStyle(buttonMC);
-                    buttonMC.Text = "MC";
-                    buttonMC.Name = "buttonMCControl" + this.MemoryLogCount.ToString();
-                    buttonMC.Click += MemoryLogEntryButtonMC_Click;
-                    this.flowLayoutPanelMemory.Controls.Add(buttonMC);
+                        // Set memory log event
+                        button.Click += MemoryLogEntry_Click;
 
-                    // Add button M+ to memory log
-                    NonFocusButton buttonMPlus = new NonFocusButton();
-                    this.CreateMemoryLogStyle(buttonMPlus);
-                    buttonMPlus.Text = "M+";
-                    buttonMPlus.Name = "buttonMPlusControl" + this.MemoryLogCount.ToString();
-                    buttonMPlus.Click += MemoryLogEntryButtonMPlus_Click;
-                    this.flowLayoutPanelMemory.Controls.Add(buttonMPlus);
+                        // Add button MC to memory log
+                        NonFocusButton buttonMC = new NonFocusButton();
+                        this.CreateMemoryLogStyle(buttonMC);
+                        buttonMC.Text = "MC";
+                        buttonMC.Name = "memoryLogEntryId" + entryId;
+                        buttonMC.Click += MemoryLogEntryButtonMC_Click;
+                        this.flowLayoutPanelMemory.Controls.Add(buttonMC);
+
+                        // Add button M+ to memory log
+                        NonFocusButton buttonMPlus = new NonFocusButton();
+                        this.CreateMemoryLogStyle(buttonMPlus);
+                        buttonMPlus.Text = "M+";
+                        buttonMPlus.Name = "memoryLogEntryId" + entryId;
+                        buttonMPlus.Click += MemoryLogEntryButtonMPlus_Click;
+                        this.flowLayoutPanelMemory.Controls.Add(buttonMPlus);
                     
-                    // Add button M- to memory log
-                    NonFocusButton buttonMinus = new NonFocusButton();
-                    this.CreateMemoryLogStyle(buttonMinus);
-                    buttonMinus.Text = "M-";
-                    buttonMinus.Name = "buttonMMinusControl" + this.MemoryLogCount.ToString();
-                    buttonMinus.Click += MemoryLogEntryButtonMMinus_Click;
-                    this.flowLayoutPanelMemory.Controls.Add(buttonMinus);
+                        // Add button M- to memory log
+                        NonFocusButton buttonMMinus = new NonFocusButton();
+                        this.CreateMemoryLogStyle(buttonMMinus);
+                        buttonMMinus.Text = "M-";
+                        buttonMMinus.Name = "memoryLogEntryId" + entryId;
+                        buttonMMinus.Click += MemoryLogEntryButtonMMinus_Click;
+                        this.flowLayoutPanelMemory.Controls.Add(buttonMMinus);
 
-                    this.MemoryLogCount++;
+                        this.MemoryLogCount++;
+                    }
 
                     break;
             }
@@ -390,17 +405,23 @@ namespace Calculator
 
         private void MemoryLogEntryButtonMC_Click(object sender, EventArgs e)
         {
-            say what
             NonFocusButton clickedButton = (NonFocusButton)sender;
-            //MessageBox.Show((string)clickedButton.Text);
-            string controlName = clickedButton.Name;
-            int controlNumber = Int32.Parse(String.Join("", controlName.Where(char.IsDigit)));
+            
+            // Delete memory log by memory log id
+            MessageBox.Show((string)clickedButton.Name);
 
-            foreach (Control item in this.flowLayoutPanelMemory.Controls.OfType<Control>())
+            // Delte memory log entry along with 3 buttons
+            int indexControl = this.flowLayoutPanelMemory.Controls.IndexOf((Control)sender);
+
+            for (int i = 0; i < 4; i++)
             {
-                int controlNumberTemp = Int32.Parse(String.Join("", item.Name.Where(char.IsDigit)));
-                if (controlNumber == controlNumberTemp)
-                    this.flowLayoutPanelMemory.Controls.Remove(item);
+                this.flowLayoutPanelMemory.Controls.Remove(this.flowLayoutPanelMemory.Controls[indexControl - 1]);
+            }
+
+            // If flow layout panel has no more memory entries, hide clear log list memory button
+            if (this.flowLayoutPanelMemory.Controls.Count == 0)
+            {
+                this.buttonClearLogListMemory.Visible = false;
             }
         }
 
@@ -574,13 +595,11 @@ namespace Calculator
             {
                 // Set default flow layout panel to memory
                 this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.Memory;
-                StringBuilder memoryLogStr = new System.Text.StringBuilder();
-                memoryLogStr.Append("{");
-                memoryLogStr.Append(String.Format("{0}={1}", entry.Key.ToString(), entry.Value.MemoryLogEntry));
-                memoryLogStr.Append("}");
+                // Create memory log
+                String memoryLogStr = this.FormatMemoryLogEntry(entry.Key.ToString(), entry.Value.MemoryLogEntry);
                 if (memoryLogStr != null)
                 {
-                    this.CreateLog(memoryLogStr.ToString());
+                    this.CreateLog(Libs.FormatUtils.FormatText(memoryLogStr));
                 }
             }
 
@@ -1076,6 +1095,14 @@ namespace Calculator
             return this.Mode.PrevButtonSender.Equals("+") || this.Mode.PrevButtonSender.Equals("-") ||
             this.Mode.PrevButtonSender.Equals("X") || this.Mode.PrevButtonSender.Equals("÷") ||
             this.Mode.PrevButtonSender.Equals("=");
+        }
+
+        // Format entry memory log as entry id, entry log pair.l Ex: EntryId=EntryLog
+        private String FormatMemoryLogEntry(String entryId, String entryValue)
+        {
+            StringBuilder memoryLogStr = new System.Text.StringBuilder();
+            memoryLogStr.Append(String.Format("{0}={1}", entryId, entryValue));
+            return memoryLogStr.ToString();
         }
 
         #endregion
