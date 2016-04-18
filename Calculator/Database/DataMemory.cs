@@ -11,8 +11,12 @@ namespace Calculator.Database
 {
     class DataMemory
     {
+        // Database connection
         private MySqlConnection _con;
         private MySqlCommand cmd;
+
+        // Last added database entry id
+        public int LastInsertedMemoryEntryId = -1;
 
         public DataMemory()
         {
@@ -67,6 +71,8 @@ namespace Calculator.Database
                         }
                     }
                     reader.Close();
+
+                    this.LastInsertedMemoryEntryId = flag;
                 }
                 catch
                 {
@@ -83,11 +89,11 @@ namespace Calculator.Database
             return flag;
         }
 
-        public bool UpdateMemoryEntry(int EntryId, String memoryLog)
+        public bool UpdateMemoryEntry(String EntryId, String memoryLog)
         {
             bool flag = false;
             
-            if (memoryLog != null)
+            if (EntryId != null && memoryLog != null)
             {
                 // Use a try... catch...finally block to ensure the connection is closed properly
                 try
@@ -196,6 +202,47 @@ namespace Calculator.Database
                 _con.Close(); // will happen whether the try is successful or errors out, ensuring your connection is closed properly.
             }
             return isDeleted;
+        }
+
+        public int DeleteMemoryEntryById(String memoryEntryId)
+        {
+            int flag = -1;
+
+            if (memoryEntryId != null)
+            {
+                // Use a try... catch...finally block to ensure the connection is closed properly
+                try
+                {
+                    // Open connection
+                    _con.Open();
+
+                    // Set the value of the parameter to the entry text log
+                    cmd = new MySqlCommand();
+                    cmd.Connection = _con;
+
+                    // Use a parameterized query to avoid SQL Injection
+                    cmd.CommandText = "DELETE FROM memory where EntryId=@EntryId";
+                    cmd.Parameters.AddWithValue("@EntryId", memoryEntryId);
+
+                    // Execute query
+                    cmd.ExecuteNonQuery();
+
+                    // Success
+                    flag = 1;
+                }
+                catch
+                {
+                    MessageBox.Show("Error, Cannot get connected to database!");
+
+                    // Data inserted fail
+                    flag = -1;
+                }
+                finally
+                {
+                    _con.Close(); // will happen whether the try is successful or errors out, ensuring your connection is closed properly.
+                }
+            }
+            return flag;
         }
     }
 }

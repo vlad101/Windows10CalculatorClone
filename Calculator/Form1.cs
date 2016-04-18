@@ -30,7 +30,7 @@ namespace Calculator
         // Store flow layout status
         private FlowLayoutPanelStatus FlowLayoutPanelStatus;
 
-        // create counter for memory log
+        // Create counter for memory log
         private int MemoryLogCount = 0;
 
         // Store memory log
@@ -170,7 +170,6 @@ namespace Calculator
                             double memoryEntry = Double.Parse(this.Mode.EntryText.Replace(",",""));
                             // Memory store operation
                             int memoryStoreResult = this.memoryLog.MemoryStore(memoryEntry);
-                            MessageBox.Show(memoryStoreResult.ToString());
                             if (memoryStoreResult != -1)
                             {
                                 // Create memory log
@@ -343,7 +342,7 @@ namespace Calculator
                         String entryLog = entry.Split('=')[1];
 
                         // Add text
-                        button.Text = entryLog;
+                        button.Text = Libs.FormatUtils.FormatText(entryLog);
 
                         // Attach button to a layout panel
                         this.flowLayoutPanelMemory.Controls.Add(button);
@@ -407,15 +406,21 @@ namespace Calculator
         {
             NonFocusButton clickedButton = (NonFocusButton)sender;
             
-            // Delete memory log by memory log id
-            MessageBox.Show((string)clickedButton.Name);
+            // Get button name
+            String buttonName = (string)clickedButton.Name;
 
-            // Delte memory log entry along with 3 buttons
+            // Delete memory log entry along with 3 buttons
             int indexControl = this.flowLayoutPanelMemory.Controls.IndexOf((Control)sender);
 
-            for (int i = 0; i < 4; i++)
+            // Find and extract digit memory log id from button name
+            String memoryId = string.Join("", buttonName.ToCharArray().Where(Char.IsDigit));
+
+            if(this.DeleteMemoryEntryById(memoryId) != -1)
             {
-                this.flowLayoutPanelMemory.Controls.Remove(this.flowLayoutPanelMemory.Controls[indexControl - 1]);
+                for (int i = 0; i < 4; i++)
+                {
+                    this.flowLayoutPanelMemory.Controls.Remove(this.flowLayoutPanelMemory.Controls[indexControl - 1]);
+                }
             }
 
             // If flow layout panel has no more memory entries, hide clear log list memory button
@@ -428,15 +433,61 @@ namespace Calculator
         private void MemoryLogEntryButtonMPlus_Click(object sender, EventArgs e)
         {
             NonFocusButton clickedButton = (NonFocusButton)sender;
-            MessageBox.Show((string)clickedButton.Name);
 
+            // Get button name
+            String buttonName = (string)clickedButton.Name;
+
+            // Find and extract digit memory log id from button name
+            String memoryId = string.Join("", buttonName.ToCharArray().Where(Char.IsDigit));
+
+            // Delete memory log entry along with 3 buttons
+            int indexControl = this.flowLayoutPanelMemory.Controls.IndexOf((Control)sender);
+
+            Control control = this.flowLayoutPanelMemory.Controls[indexControl - 2];
+
+            double value;
+
+            if (Double.TryParse(this.Mode.EntryText, out value))
+            {
+                String expression = control.Text.Replace(",", "") + " + " + value.ToString().Replace(",", "");
+
+                String answer = Libs.OperationUtils.EvaluateExpression(expression);
+                
+                if (this.UpdateMemoryEntryById(memoryId, answer))
+                {
+                    control.Text = Libs.FormatUtils.FormatText(answer);
+                }
+            }
         }
 
         private void MemoryLogEntryButtonMMinus_Click(object sender, EventArgs e)
         {
             NonFocusButton clickedButton = (NonFocusButton)sender;
-            MessageBox.Show((string)clickedButton.Name);
 
+            // Get button name
+            String buttonName = (string)clickedButton.Name;
+
+            // Find and extract digit memory log id from button name
+            String memoryId = string.Join("", buttonName.ToCharArray().Where(Char.IsDigit));
+
+            // Delete memory log entry along with 3 buttons
+            int indexControl = this.flowLayoutPanelMemory.Controls.IndexOf((Control)sender);
+
+            Control control = this.flowLayoutPanelMemory.Controls[indexControl - 3];
+
+            double value;
+
+            if (Double.TryParse(this.Mode.EntryText, out value))
+            {
+                String expression = control.Text.Replace(",", "") + "-" + value.ToString().Replace(",", "");
+                
+                String answer = Libs.OperationUtils.EvaluateExpression(expression);
+
+                if (this.UpdateMemoryEntryById(memoryId, answer))
+                {
+                    control.Text = Libs.FormatUtils.FormatText(answer);
+                }
+            }
         }
 
         // Display history in entry and result textbox
@@ -567,6 +618,20 @@ namespace Calculator
         {
             DataHistory sql = new DataHistory();
             sql.InsertHistoryEntry(Mode.HistoryLog.HistoryLogEntry);
+        }
+
+        // Delete memory log entry by id
+        private int DeleteMemoryEntryById(String memoryEntryId)
+        {
+            DataMemory sql = new DataMemory();
+            return sql.DeleteMemoryEntryById(memoryEntryId);
+        }
+
+        // Update memory log entry by id
+        private bool UpdateMemoryEntryById(String memoryEntryId, String memoryEntry)
+        {
+            DataMemory sql = new DataMemory();
+            return sql.UpdateMemoryEntry(memoryEntryId, memoryEntry);
         }
 
         // Load history log entry from a database

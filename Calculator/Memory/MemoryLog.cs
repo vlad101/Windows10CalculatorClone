@@ -40,7 +40,6 @@ namespace Calculator.Memory
         public int MemoryStore(double entryNum)
         {
             MemoryValue = entryNum;
-
             return this.InsertMemoryLog();
         }
 
