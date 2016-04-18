@@ -16,7 +16,7 @@ namespace Calculator.Database
         private MySqlCommand cmd;
 
         // Last added database entry id
-        public int LastInsertedMemoryEntryId = -1;
+        public static int LastInsertedMemoryEntryId = -1;
 
         public DataMemory()
         {
@@ -72,7 +72,7 @@ namespace Calculator.Database
                     }
                     reader.Close();
 
-                    this.LastInsertedMemoryEntryId = flag;
+                    LastInsertedMemoryEntryId = flag;
                 }
                 catch
                 {
