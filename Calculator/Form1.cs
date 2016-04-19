@@ -103,10 +103,13 @@ namespace Calculator
             string operation = operBtn.Text;
 
             // If the operation is memory recall, insert an empty string for memory clear
-            if (operation.Equals("MC") && this.Mode.EntryText == null)
+            if (operation.Contains("M") && this.Mode.EntryText == null)
             {
                 this.Mode.EntryText = "";
             }
+
+            // Get last updated memory log entry id
+            String lastMemoryId = DataMemory.LastInsertedMemoryEntryId.ToString();
 
             // Do the action
             if (this.Mode.EntryText != null)
@@ -167,9 +170,14 @@ namespace Calculator
                         break;
                     case "MR":
                         // Memory recall
-                        this.Mode.EntryText = MemoryLog.MemoryRecall();
-                        // Refresh entry textbox
-                        this.refreshEntryText();
+                        this.Mode.EntryText = Libs.FormatUtils.FormatText(this.GetMemoryEntryById(lastMemoryId));
+                        this.Mode.ResultText = "";
+                        // Refresh entry and result textbox
+                        if (this.Mode.EntryText != null)
+                        {
+                            this.refreshEntryText();
+                            this.refreshResultText();
+                        }
                         break;
                     case "MS":
                         // Set flow layout status to memory
@@ -177,19 +185,22 @@ namespace Calculator
 
                         if(this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
                         {
-                            double memoryEntry = Double.Parse(this.Mode.EntryText.Replace(",",""));
-                            // Memory store operation
-                            int memoryStoreResult = this.memoryLog.MemoryStore(memoryEntry);
-                            if (memoryStoreResult != -1)
+                            double number;
+                            if(Double.TryParse(this.Mode.EntryText.Replace(",",""), out number))
                             {
-                                // Create memory log
-                                String memoryLogStr = this.FormatMemoryLogEntry(memoryStoreResult.ToString(), Libs.FormatUtils.FormatText(memoryEntry.ToString()));
-
-                                if (memoryLogStr != null)
+                                // Memory store operation
+                                int memoryStoreResult = this.memoryLog.MemoryStore(number);
+                                if (memoryStoreResult != -1)
                                 {
-                                    this.CreateLog(Libs.FormatUtils.FormatText(memoryLogStr));
-                                    // Set memory to true
-                                    this.SetMemoryStatus(true);
+                                    // Create memory log
+                                    String memoryLogStr = this.FormatMemoryLogEntry(memoryStoreResult.ToString(), Libs.FormatUtils.FormatText(number.ToString()));
+
+                                    if (memoryLogStr != null)
+                                    {
+                                        this.CreateLog(Libs.FormatUtils.FormatText(memoryLogStr));
+                                        // Set memory to true
+                                        this.SetMemoryStatus(true);
+                                    }
                                 }
                             }
                         }
@@ -198,31 +209,66 @@ namespace Calculator
                     case "M+":
                         // Set flow layout status to history
                         this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.Memory;
-
-                        if (this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
+                        
+                        // If last inserted memory entry id is -1, insert data into memory
+                        // If last inserted memory entry id is -1, update memory plus operation
+                        if (lastMemoryId.Equals("-1"))
                         {
-                            double memoryEntry = Double.Parse(this.Mode.EntryText.Replace(",", ""));
-                            // Memory plus operation
-                            this.memoryLog.MemoryPlus(memoryEntry);
-                            // Create memory log
-                            this.CreateLog(Libs.FormatUtils.FormatText(MemoryLog.MemoryValue.ToString()));
+                            // Memory Store operation
+                            this.operation_button_Click(this.msButton, null);
+
                             // Set memory to true
                             this.SetMemoryStatus(true);
+                        }
+                        else
+                        {
+                            // Get the last memory control
+                            Control control = this.flowLayoutPanelMemory.Controls[this.flowLayoutPanelMemory.Controls.Count - 4];
+
+                            double value;
+
+                            if (Double.TryParse(this.Mode.EntryText, out value))
+                            {
+                                String expression = control.Text.Replace(",", "") + " + " + value.ToString().Replace(",", "");
+                                String answer = Libs.OperationUtils.EvaluateExpression(expression);
+                                if (this.UpdateMemoryEntryById(lastMemoryId, answer))
+                                {
+                                    control.Text = Libs.FormatUtils.FormatText(answer);
+                                }
+                            }
                         }
                         break;
                     case "M-":
                         // Set flow layout status to history
                         this.FlowLayoutPanelStatus = FlowLayoutPanelStatus.Memory;
 
-                        if (this.Mode.EntryText != null && !this.Mode.EntryText.Equals("0"))
+                        // If last inserted memory entry id is -1, insert data into memory
+                        // If last inserted memory entry id is -1, update memory minus operation
+                        if (lastMemoryId.Equals("-1"))
                         {
-                            double memoryEntry = Double.Parse(this.Mode.EntryText.Replace(",", ""));
-                            // Memory minus operation
-                            this.memoryLog.MemoryMinus(memoryEntry);
-                            // Create memory log
-                            this.CreateLog(Libs.FormatUtils.FormatText(MemoryLog.MemoryValue.ToString()));
+                            // Memory Store operation
+                            this.operation_button_Click(this.msButton, null);
+
                             // Set memory to true
                             this.SetMemoryStatus(true);
+                        }
+                        else
+                        {
+
+                            // Get the last memory control
+                            Control control = this.flowLayoutPanelMemory.Controls[this.flowLayoutPanelMemory.Controls.Count - 4];
+
+                            double value;
+
+                            if (Double.TryParse(this.Mode.EntryText, out value))
+                            {
+                                String expression = control.Text.Replace(",", "") + " - " + value.ToString().Replace(",", "");
+                                String answer = Libs.OperationUtils.EvaluateExpression(expression);
+                                if (this.UpdateMemoryEntryById(lastMemoryId, answer))
+                                {
+                                    control.Text = Libs.FormatUtils.FormatText(answer);
+                                }
+                            }
                         }
                         break;
                     default:
@@ -347,7 +393,11 @@ namespace Calculator
                     button.Click += HistoryLogEntry_Click;
 
                     // Show clear log list button
-                    this.buttonClearLogListHistory.Visible = true;
+                    if (!this.buttonHistoryList.Enabled && this.buttonMemoryList.Enabled)
+                    {
+                        this.buttonClearLogListHistory.Visible = true;
+                    }
+                    //this.buttonClearLogListMemory.Visible = false;
 
                     break;
 
@@ -355,11 +405,12 @@ namespace Calculator
 
                     if(entry.Split('=').Length > 1)
                     {
+                        // Get entry id and entry log
                         String entryId = entry.Split('=')[0];
                         String entryLog = entry.Split('=')[1];
 
                         // Set last inserted memory entry id
-                        DataMemory.LastInsertedMemoryEntryId = Int32.Parse(entryLog);
+                        DataMemory.LastInsertedMemoryEntryId = Int32.Parse(entryId);
 
                         // Add text
                         button.Text = Libs.FormatUtils.FormatText(entryLog);
@@ -397,24 +448,16 @@ namespace Calculator
                         this.MemoryLogCount++;
 
                         // Show clear log list button
-                        this.buttonClearLogListMemory.Visible = true;
+                        if (this.buttonHistoryList.Enabled  && !this.buttonMemoryList.Enabled)
+                        {
+                            this.buttonClearLogListMemory.Visible = true;
+                        }
+                        
+                        
+                        //this.buttonClearLogListHistory.Visible = false;
                     }
 
                     break;
-            }
-
-            // Hide clear memory button when history log list is displayed
-            if (this.buttonHistoryList.Enabled)
-            {
-                MessageBox.Show("hiding memory");
-                this.buttonClearLogListMemory.Visible = false;
-            }
-
-            // Hide clear history button when memory log list is displayed
-            if (this.buttonMemoryList.Enabled)
-            {
-                MessageBox.Show("hiding history");
-                this.buttonClearLogListHistory.Visible = false;
             }
         }
 
@@ -432,7 +475,14 @@ namespace Calculator
             // Delete memory log entry from db
             if (this.DeleteLogDB(FlowLayoutPanelStatus.Memory))
             {
+                // Remove memory log list
                 this.RemoveFlowLayoutControls(FlowLayoutPanelStatus.Memory);
+
+                // Set memory to false
+                this.SetMemoryStatus(false);
+
+                // Set last updated memory id to -1
+                DataMemory.LastInsertedMemoryEntryId = -1;
             }
         }
 
@@ -462,6 +512,9 @@ namespace Calculator
             {
                 this.buttonClearLogListMemory.Visible = false;
                 this.SetMemoryStatus(false);
+
+                // Set last updated memory id to -1
+                DataMemory.LastInsertedMemoryEntryId = -1;
             }
         }
 
@@ -562,35 +615,19 @@ namespace Calculator
         private void MemoryLogEntry_Click(object sender, EventArgs e)
         {
             NonFocusButton clickedButton = (NonFocusButton)sender;
-            MemoryLog MemoryLog = new MemoryLog((string)clickedButton.Text);
-            /*
-                if (HistoryLog != null && HistoryLog.HistoryLogEntry.Contains("="))
-                {
-                    double number;
-                    String historyLogStr = HistoryLog.HistoryLogEntry;
-                    string[] historyLogArr = historyLogStr.Split('=');
-                    if (historyLogArr.Length == 2)
-                    {
-                        String result = historyLogArr[0];
-                        String entry = historyLogArr[1].Trim();
 
-                        if (result != null)
-                        {
-                            this.Mode.ResultText = result;
-                            this.refreshResultText();
-                        }
+            // Get button name
+            String entry = (string)clickedButton.Text;
 
-                        if (Double.TryParse(entry, out number))
-                        {
-                            this.Mode.EntryText = number.ToString();
-                            this.refreshEntryText();
-                        }
-                    }
-                }
+            // Set memory log entry
+            this.Mode.EntryText = entry;
 
-                // Store previous button sender as history
-                this.Mode.PrevButtonSender = "History";
-            */
+            // Set result entry
+            this.Mode.ResultText = "";
+
+            // Refresh entry and result entry
+            this.refreshEntryText();
+            this.refreshResultText();
         }
 
         // Flow layout panel control log style
@@ -649,10 +686,10 @@ namespace Calculator
         }
 
         // Insert history log entry into database
-        private void InsertHistoryLogDB()
+        private bool InsertHistoryLogDB()
         {
             DataHistory sql = new DataHistory();
-            sql.InsertHistoryEntry(Mode.HistoryLog.HistoryLogEntry);
+            return sql.InsertHistoryEntry(Mode.HistoryLog.HistoryLogEntry);
         }
 
         // Delete memory log entry by id
@@ -674,6 +711,13 @@ namespace Calculator
         {
             DataMemory sql = new DataMemory();
             return sql.UpdateMemoryEntry(memoryEntryId, memoryEntry);
+        }
+
+        // Get memory log entry by id
+        private String GetMemoryEntryById(String memoryEntryId)
+        {
+            DataMemory sql = new DataMemory();
+            return sql.GetMemoryEntryById(memoryEntryId);
         }
 
         // Load history log entry from a database
@@ -755,8 +799,8 @@ namespace Calculator
         private void SetFormSize(int xAxis)
         {
             // Set calculator dimensions
-            this.MaximumSize = new System.Drawing.Size(xAxis, 370);
-            this.MinimumSize = new System.Drawing.Size(xAxis, 370);
+            this.MaximumSize = new System.Drawing.Size(xAxis, 390);
+            this.MinimumSize = new System.Drawing.Size(xAxis, 390);
 
             // Save the default value
             Properties.Settings.Default.showHistory = this.ShowHistory;
@@ -810,10 +854,16 @@ namespace Calculator
             // Hide clear memory button, show clear history button
             if (this.flowLayoutPanelHistory.Controls.Count > 0)
             {
+                // Update flow layout status
+                this.labelFlowLayoutPanelStatus.Text = this.flowLayoutPanelHistory.Controls.Count + " history log(s) added";
+
                 this.buttonClearLogListHistory.Visible = true;
             }
             else
             {
+                // Update flow layout status
+                this.labelFlowLayoutPanelStatus.Text = "No history logs added";
+
                 this.buttonClearLogListHistory.Visible = false;
             }
 
@@ -834,10 +884,16 @@ namespace Calculator
             // Show clear memory button, hide clear history button
             if (this.flowLayoutPanelMemory.Controls.Count > 0)
             {
+                // Update flow layout status
+                this.labelFlowLayoutPanelStatus.Text = this.flowLayoutPanelMemory.Controls.Count + " memory log(s) added";
+
                 this.buttonClearLogListMemory.Visible = true;
             }
             else
             {
+                // Update flow layout status
+                this.labelFlowLayoutPanelStatus.Text = "No memory logs added";
+
                 this.buttonClearLogListMemory.Visible = false;
             }
 

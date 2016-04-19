@@ -169,6 +169,49 @@ namespace Calculator.Database
             return dictHMemoryLog;
         }
 
+        public String GetMemoryEntryById(String EntryId)
+        {
+            // Store memory log
+            String memoryLog = null;
+
+            // Use a try... catch...finally block to ensure the connection is closed properly
+            try
+            {
+                // Open connection
+                _con.Open();
+
+                // Set the value of the parameter to the entry text log
+                cmd = new MySqlCommand();
+                cmd.Connection = _con;
+
+                // Use a parameterized query to avoid SQL Injection
+                cmd.CommandText = "SELECT * FROM memory where EntryId=@EntryId";
+                cmd.Parameters.AddWithValue("@EntryId", EntryId);
+
+                // Execute query
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        memoryLog = reader.GetString(1);
+                    }
+                }
+                reader.Close();
+            }
+            catch
+            {
+                MessageBox.Show("Error, Cannot get connected to database!");
+                memoryLog = null;
+            }
+            finally
+            {
+                _con.Close(); // will happen whether the try is successful or errors out, ensuring your connection is closed properly.
+            }
+            return memoryLog;
+        }
+
         public bool DeleteMemoryEntry()
         {
             bool isDeleted = false;

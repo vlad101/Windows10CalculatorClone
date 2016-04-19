@@ -49,6 +49,7 @@ namespace Calculator
             this.buttonHistory = new System.Windows.Forms.Button();
             this.labelMemory = new System.Windows.Forms.Label();
             this.flowLayoutPanelMemory = new System.Windows.Forms.FlowLayoutPanel();
+            this.labelFlowLayoutPanelStatus = new System.Windows.Forms.Label();
             this.buttonClearLogListMemory = new Calculator.Controls.NonFocusButton();
             this.buttonMemoryList = new Calculator.Controls.NonFocusButton();
             this.buttonHistoryList = new Calculator.Controls.NonFocusButton();
@@ -111,7 +112,7 @@ namespace Calculator
             // 
             this.flowLayoutPanelHistory.AutoScroll = true;
             this.flowLayoutPanelHistory.Cursor = System.Windows.Forms.Cursors.Default;
-            this.flowLayoutPanelHistory.Location = new System.Drawing.Point(423, 59);
+            this.flowLayoutPanelHistory.Location = new System.Drawing.Point(423, 73);
             this.flowLayoutPanelHistory.Name = "flowLayoutPanelHistory";
             this.flowLayoutPanelHistory.Size = new System.Drawing.Size(211, 233);
             this.flowLayoutPanelHistory.TabIndex = 29;
@@ -253,16 +254,26 @@ namespace Calculator
             // 
             this.flowLayoutPanelMemory.AutoScroll = true;
             this.flowLayoutPanelMemory.Cursor = System.Windows.Forms.Cursors.Default;
-            this.flowLayoutPanelMemory.Location = new System.Drawing.Point(423, 59);
+            this.flowLayoutPanelMemory.Location = new System.Drawing.Point(423, 73);
             this.flowLayoutPanelMemory.Name = "flowLayoutPanelMemory";
             this.flowLayoutPanelMemory.Size = new System.Drawing.Size(211, 233);
             this.flowLayoutPanelMemory.TabIndex = 30;
             this.flowLayoutPanelMemory.Paint += new System.Windows.Forms.PaintEventHandler(this.flowLayoutPanel_Paint);
             // 
+            // labelFlowLayoutPanelStatus
+            // 
+            this.labelFlowLayoutPanelStatus.AutoSize = true;
+            this.labelFlowLayoutPanelStatus.Font = new System.Drawing.Font("Microsoft Tai Le", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelFlowLayoutPanelStatus.Location = new System.Drawing.Point(423, 55);
+            this.labelFlowLayoutPanelStatus.Name = "labelFlowLayoutPanelStatus";
+            this.labelFlowLayoutPanelStatus.Size = new System.Drawing.Size(106, 14);
+            this.labelFlowLayoutPanelStatus.TabIndex = 44;
+            this.labelFlowLayoutPanelStatus.Text = "Flow Layout Status";
+            // 
             // buttonClearLogListMemory
             // 
             this.buttonClearLogListMemory.BackgroundImage = global::Calculator.Properties.Resources.GarbageCan;
-            this.buttonClearLogListMemory.Location = new System.Drawing.Point(610, 296);
+            this.buttonClearLogListMemory.Location = new System.Drawing.Point(610, 310);
             this.buttonClearLogListMemory.Name = "buttonClearLogListMemory";
             this.buttonClearLogListMemory.Size = new System.Drawing.Size(24, 27);
             this.buttonClearLogListMemory.TabIndex = 43;
@@ -348,7 +359,7 @@ namespace Calculator
             // buttonClearLogListHistory
             // 
             this.buttonClearLogListHistory.BackgroundImage = global::Calculator.Properties.Resources.GarbageCan;
-            this.buttonClearLogListHistory.Location = new System.Drawing.Point(610, 296);
+            this.buttonClearLogListHistory.Location = new System.Drawing.Point(610, 310);
             this.buttonClearLogListHistory.Name = "buttonClearLogListHistory";
             this.buttonClearLogListHistory.Size = new System.Drawing.Size(24, 27);
             this.buttonClearLogListHistory.TabIndex = 33;
@@ -635,7 +646,8 @@ namespace Calculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(646, 332);
+            this.ClientSize = new System.Drawing.Size(646, 342);
+            this.Controls.Add(this.labelFlowLayoutPanelStatus);
             this.Controls.Add(this.buttonClearLogListMemory);
             this.Controls.Add(this.flowLayoutPanelMemory);
             this.Controls.Add(this.buttonMemoryList);
@@ -681,8 +693,8 @@ namespace Calculator
             this.Controls.Add(this.menuStripMode);
             this.MainMenuStrip = this.menuStripMode;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(662, 370);
-            this.MinimumSize = new System.Drawing.Size(662, 370);
+            this.MaximumSize = new System.Drawing.Size(662, 380);
+            this.MinimumSize = new System.Drawing.Size(662, 380);
             this.Name = "FormCalculator";
             this.Text = "Calculator";
             this.Load += new System.EventHandler(this.FormCalculator_Load);
@@ -748,6 +760,7 @@ namespace Calculator
         private NonFocusButton buttonMemoryList;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanelMemory;
         private NonFocusButton buttonClearLogListMemory;
+        private System.Windows.Forms.Label labelFlowLayoutPanelStatus;
     }
 }
 

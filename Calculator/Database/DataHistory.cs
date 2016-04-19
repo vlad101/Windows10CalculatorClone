@@ -29,8 +29,10 @@ namespace Calculator.Database
             _con = new MySqlConnection(_connectionStr.ConnectionString);
         }
 
-        public void InsertHistoryEntry(String historyLog)
+        public bool InsertHistoryEntry(String historyLog)
         {
+            bool flag = false;
+
             if(historyLog != null)
             {
                 // Use a try... catch...finally block to ensure the connection is closed properly
@@ -50,16 +52,20 @@ namespace Calculator.Database
 
                     // Execute query
                     cmd.ExecuteNonQuery();
+
+                    flag = true;
                 }
                 catch
                 {
                     MessageBox.Show("Error, Cannot get connected to database!");
+                    flag = false;
                 }
                 finally
                 {
                     _con.Close(); // will happen whether the try is successful or errors out, ensuring your connection is closed properly.
                 }
             }
+            return flag;
         }
 
         public Dictionary<int, HistoryLog> GetHistoryEntryList()
