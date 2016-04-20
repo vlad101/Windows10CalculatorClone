@@ -13,6 +13,9 @@ namespace Calculator.Libs
         // No 3rd party libraries required
         public static String EvaluateExpression(string expression)
         {
+            // If expression contains X, replace it with multiplication sign
+            expression = expression.Replace("X", "*");
+
             // Cannot divide by zero; \u221E is ∞ (infinity)
             if (expression.Contains("\0"))
                 return "\u221E";

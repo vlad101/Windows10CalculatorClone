@@ -339,6 +339,40 @@ namespace Calculator
             this.textBoxResult.Text =this.Mode.ResultText;
         }
 
+        // Update the flow layout panel status
+        private void refreshFlowLayoutStatus(FlowLayoutPanelStatus flowLayoutStatus)
+        {
+            // Get history log count
+            int historyLogCount = this.flowLayoutPanelHistory.Controls.Count;
+            
+            // Get memory log count, 4 button = 1 memory log
+            int memoryLogCount = this.flowLayoutPanelMemory.Controls.Count / 4;
+
+            switch(flowLayoutStatus)
+            {
+                case FlowLayoutPanelStatus.History:
+                    if (historyLogCount > 0)
+                    {
+                        this.labelFlowLayoutPanelStatus.Text = historyLogCount + " history log(s) added";
+                    }
+                    else
+                    {
+                        this.labelFlowLayoutPanelStatus.Text = "No history logs added";
+                    }
+                    break;
+                case FlowLayoutPanelStatus.Memory:
+                    if (memoryLogCount > 0)
+                    {
+                        this.labelFlowLayoutPanelStatus.Text = memoryLogCount + " memory log(s) added";
+                    }
+                    else
+                    {
+                        this.labelFlowLayoutPanelStatus.Text = "No memory logs added";
+                    }
+                    break;
+            }
+        }
+
         #endregion
 
         #region UI Memory Methods
@@ -395,8 +429,13 @@ namespace Calculator
                     // Show clear log list button
                     if (!this.buttonHistoryList.Enabled && this.buttonMemoryList.Enabled)
                     {
+                        // Refresh flow layout status text
+                        this.refreshFlowLayoutStatus(FlowLayoutPanelStatus.History);
+
+                        // Show clear log button
                         this.buttonClearLogListHistory.Visible = true;
                     }
+                    
                     //this.buttonClearLogListMemory.Visible = false;
 
                     break;
@@ -453,8 +492,13 @@ namespace Calculator
                             this.buttonClearLogListMemory.Visible = true;
                         }
                         
-                        
                         //this.buttonClearLogListHistory.Visible = false;
+
+                        // Refresh flow layout status text
+                        if (this.buttonHistoryList.Enabled && !this.buttonMemoryList.Enabled)
+                        {
+                            this.refreshFlowLayoutStatus(FlowLayoutPanelStatus.Memory);
+                        }
                     }
 
                     break;
@@ -468,6 +512,9 @@ namespace Calculator
             {
                 this.RemoveFlowLayoutControls(FlowLayoutPanelStatus.History);
             }
+
+            // Refresh flow layout status text
+            this.refreshFlowLayoutStatus(FlowLayoutPanelStatus.History);
         }
 
         private void buttonClearLogMemory_Click(object sender, EventArgs e)
@@ -484,6 +531,9 @@ namespace Calculator
                 // Set last updated memory id to -1
                 DataMemory.LastInsertedMemoryEntryId = -1;
             }
+
+            // Refresh flow layout status text
+            this.refreshFlowLayoutStatus(FlowLayoutPanelStatus.Memory);
         }
 
         private void MemoryLogEntryButtonMC_Click(object sender, EventArgs e)
@@ -516,6 +566,9 @@ namespace Calculator
                 // Set last updated memory id to -1
                 DataMemory.LastInsertedMemoryEntryId = -1;
             }
+
+            // Refresh flow layout status text
+            this.refreshFlowLayoutStatus(FlowLayoutPanelStatus.Memory);
         }
 
         private void MemoryLogEntryButtonMPlus_Click(object sender, EventArgs e)
@@ -825,6 +878,12 @@ namespace Calculator
                     this.flowLayoutPanelHistory.Show();
                     this.flowLayoutPanelMemory.Hide();
 
+                    // Refresh flow layout status text
+                    if (!this.buttonHistoryList.Enabled && this.buttonMemoryList.Enabled)
+                    {
+                        this.refreshFlowLayoutStatus(FlowLayoutPanelStatus.History);
+                    }
+
                     break;
                 case FlowLayoutPanelStatus.Memory:
 
@@ -835,6 +894,12 @@ namespace Calculator
                     // Load flow layout panel history
                     this.flowLayoutPanelMemory.Show();
                     this.flowLayoutPanelHistory.Hide();
+
+                    // Refresh flow layout status text
+                    if (this.buttonHistoryList.Enabled && !this.buttonMemoryList.Enabled)
+                    {
+                        this.refreshFlowLayoutStatus(FlowLayoutPanelStatus.Memory);
+                    }
 
                     break;
             }
@@ -854,20 +919,21 @@ namespace Calculator
             // Hide clear memory button, show clear history button
             if (this.flowLayoutPanelHistory.Controls.Count > 0)
             {
-                // Update flow layout status
-                this.labelFlowLayoutPanelStatus.Text = this.flowLayoutPanelHistory.Controls.Count + " history log(s) added";
-
                 this.buttonClearLogListHistory.Visible = true;
             }
             else
             {
-                // Update flow layout status
-                this.labelFlowLayoutPanelStatus.Text = "No history logs added";
-
                 this.buttonClearLogListHistory.Visible = false;
             }
 
+            // Hide clear memory button
             this.buttonClearLogListMemory.Visible = false;
+
+            // Refresh flow layout status text
+            if (!this.buttonHistoryList.Enabled && this.buttonMemoryList.Enabled)
+            {
+                this.refreshFlowLayoutStatus(FlowLayoutPanelStatus.History);
+            }
         }
 
         // Click button displays history list in a flow layout panel
@@ -884,20 +950,18 @@ namespace Calculator
             // Show clear memory button, hide clear history button
             if (this.flowLayoutPanelMemory.Controls.Count > 0)
             {
-                // Update flow layout status
-                this.labelFlowLayoutPanelStatus.Text = this.flowLayoutPanelMemory.Controls.Count + " memory log(s) added";
-
                 this.buttonClearLogListMemory.Visible = true;
             }
             else
             {
-                // Update flow layout status
-                this.labelFlowLayoutPanelStatus.Text = "No memory logs added";
-
                 this.buttonClearLogListMemory.Visible = false;
             }
 
+            // Hide clear log history button
             this.buttonClearLogListHistory.Visible = false;
+
+            // Refresh flow layout status text
+            this.refreshFlowLayoutStatus(FlowLayoutPanelStatus.Memory);
         }
 
         // Hide flowlayout panel and its controls
