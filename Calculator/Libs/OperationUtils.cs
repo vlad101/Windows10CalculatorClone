@@ -13,6 +13,50 @@ namespace Calculator.Libs
         // No 3rd party libraries required
         public static String EvaluateExpression(string expression)
         {
+            // if expression contains exponent operation ignore it
+            System.Windows.Forms.MessageBox.Show(expression);
+
+            if(expression.Contains("cube"))
+            {
+
+                /* WORKING! 
+                List<int> foundIndexes = new List<int>();
+
+                char[] separatingChars = "cube(".ToCharArray(); ;
+
+                string[] words = expression.Split(separatingChars, System.StringSplitOptions.RemoveEmptyEntries);
+
+                expression = "";
+
+                foreach (string s in words)
+                {
+                    StringBuilder strBuilder = new StringBuilder();
+                    strBuilder.Append("*");
+                    for (int i = 0; i < s.Length; i++ )
+                    {
+                        if (s[i] == ')')
+                        {
+                            foundIndexes.Add(i);
+                        }
+                        else
+                        {
+                            strBuilder.Append(s[i]);
+                        }
+                    }
+                    strBuilder.Append("*");
+                    
+                    Console.WriteLine(strBuilder.ToString());
+
+                    expression += s;
+                }
+
+                */
+                
+                //int index = s.IndexOf(")");
+                //string temp = s.Substring(0, index) + s.Substring(index + 1);
+                //expression += temp;
+            }
+
             // If expression contains X, replace it with multiplication sign
             expression = expression.Replace("X", "*");
 

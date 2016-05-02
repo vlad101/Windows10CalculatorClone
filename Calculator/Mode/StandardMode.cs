@@ -45,11 +45,14 @@ namespace Calculator.Mode
             // History operation
             bool isHistory = this.PrevButtonSender.Equals("History");
 
+            // Exponent operation
+            bool isPower = this.PrevButtonSender.Equals("Power");
+
             // Get the current expression
             String currResultText = "";
 
             // If previous operation is history, append the sign to an expresion; else append append operation followed by the entry text value
-            if (isHistory)
+            if (isHistory || isPower)
             {
                 currResultText = this.ResultText;
             }
@@ -63,7 +66,16 @@ namespace Calculator.Mode
             if (this.PerformOperation())
             {
                 // Create an expression
-                String expression = (this.ResultText + FormatUtils.TrimDouble(this.EntryText)).Trim().Replace(",", "");
+                String expression = "";
+
+                if (isPower)
+                {
+                    expression = (this.ResultText).Trim().Replace(",", "");
+                }
+                else
+                {
+                    expression = (this.ResultText + FormatUtils.TrimDouble(this.EntryText)).Trim().Replace(",", "");
+                }
 
                 // Evaluate an expression
                 this.EntryText = OperationUtils.EvaluateExpression(expression).ToString();
@@ -128,8 +140,20 @@ namespace Calculator.Mode
             // Set last entry text being used
             this.PrevEntryTextOnEquals = FormatUtils.TrimDouble(this.EntryText);
 
+            // Exponent operation
+            bool isPower = this.PrevButtonSender.Equals("Power");
+
             // Create an expression
-            String expression = (this.ResultText + FormatUtils.TrimDouble(this.EntryText));
+            String expression = "";
+
+            if (isPower)
+            {
+                expression = this.ResultText;
+            }
+            else
+            {
+                expression = this.ResultText + FormatUtils.TrimDouble(this.EntryText);
+            }
 
             // Evaluate expression
             this.EntryText = OperationUtils.EvaluateExpression(expression.Trim().Replace(",", "")).ToString();

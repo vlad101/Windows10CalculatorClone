@@ -102,8 +102,8 @@ namespace Calculator
             // Get operation key
             string operation = operBtn.Text;
 
-            // If the operation is memory recall, insert an empty string for memory clear
-            if (operation.Contains("M") && this.Mode.EntryText == null)
+            // Operation is memory or exponent can be performed even when no data entered
+            if (operation.Contains("M") && operation.Contains("x\xB") && this.Mode.EntryText == null)
             {
                 this.Mode.EntryText = "";
             }
@@ -135,6 +135,41 @@ namespace Calculator
 
                         // Perform equals operation
                         this.PerformEqualsOperation();
+                        break;
+                    // Exponent operations
+                    case "x\xB2": // square
+                        MessageBox.Show("SQUARE!");
+                        break;
+                    case "x\xB3": // cube
+                        
+                        this.Mode.EntryText = FormatUtils.TrimDouble(this.Mode.EntryText);
+
+                        if (this.Mode.EntryText.Length == 0)
+                        {
+                            // Set result entry text
+                            this.Mode.ResultText = this.Mode.ResultText + "cube(" + 0 + ")";
+                            
+                            // Set entry text to the cube entry text value
+                            this.Mode.EntryText = "0";
+                        }
+                        else
+                        {
+                            // Set result entry text
+                            this.Mode.ResultText = this.Mode.ResultText + "cube(" + this.Mode.EntryText + ")";
+
+                            // Set entry text to the cube entry text value
+                            this.Mode.EntryText = Math.Pow(double.Parse(this.Mode.EntryText.Replace(",", "")), 3).ToString();
+                        }
+
+                        // Refresh entry textbox
+                        this.refreshEntryText();
+
+                        // Refresh result textbox
+                        this.refreshResultText();
+
+                        // Set exponent operation
+                        operation = "Power";
+
                         break;
                     // Sign change operation
                     case "±":
@@ -204,7 +239,6 @@ namespace Calculator
                                 }
                             }
                         }
-
                         break;
                     case "M+":
                         // Set flow layout status to history
@@ -285,7 +319,7 @@ namespace Calculator
             this.CheckInputOnOperation(operation);
 
             // Store previous button sender
-           this.Mode.PrevButtonSender = operBtn.Text;
+            this.Mode.PrevButtonSender = operation;
         }
 
         #endregion
@@ -357,7 +391,7 @@ namespace Calculator
                     }
                     else
                     {
-                        this.labelFlowLayoutPanelStatus.Text = "No history logs added";
+                        this.labelFlowLayoutPanelStatus.Text = "There's no history yet";
                     }
                     break;
                 case FlowLayoutPanelStatus.Memory:
@@ -367,7 +401,7 @@ namespace Calculator
                     }
                     else
                     {
-                        this.labelFlowLayoutPanelStatus.Text = "No memory logs added";
+                        this.labelFlowLayoutPanelStatus.Text = "There's nothing saved in memory";
                     }
                     break;
             }
@@ -742,7 +776,11 @@ namespace Calculator
         private bool InsertHistoryLogDB()
         {
             DataHistory sql = new DataHistory();
-            return sql.InsertHistoryEntry(Mode.HistoryLog.HistoryLogEntry);
+
+            if (this.Mode.HistoryLog.HistoryLogEntry == null)
+                return false;
+
+            return sql.InsertHistoryEntry(this.Mode.HistoryLog.HistoryLogEntry);
         }
 
         // Delete memory log entry by id
@@ -1019,29 +1057,24 @@ namespace Calculator
         private void PerformEqualsOperation()
         {
             // If the last operator was equals operation, repeat the computattion
-            if (Mode.PrevButtonSender.Equals("=") || Mode.PrevButtonSender.Equals("History"))
+            if (this.Mode.PrevButtonSender.Equals("=") || this.Mode.PrevButtonSender.Equals("History"))
             {
-                if (Mode.EntryText != null &&this.Mode.EntryText.Trim().Length != 0)
+                if (this.Mode.EntryText != null && this.Mode.EntryText.Trim().Length != 0)
                 {
                     // Repeat a previous operation
-                    if(Mode.RepeatCalcOnEqualsOperator())
+                    if (this.Mode.RepeatCalcOnEqualsOperator())
                     {
-                        // Refresh entry textbox
-                        this.refreshEntryText();
                         // Create a history log
                         this.CreateLog(Mode.HistoryLog.HistoryLogEntry);
-
-                        // Insert data to the database
-                        this.InsertHistoryLogDB();
                     }
                 }
             }
             else
             {
                 // Calculate expression
-                if (Mode.ResultText != null && this.Mode.ResultText.Trim().Length != 0)
+                if (this.Mode.ResultText != null && this.Mode.ResultText.Trim().Length != 0)
                 {
-                    if(Mode.EqualsOperation())
+                    if (this.Mode.EqualsOperation())
                     {
                         if (this.Mode.HistoryLog != null)
                         {
@@ -1051,16 +1084,19 @@ namespace Calculator
                         // Clear result text value
                         this.Mode.ResultText = "";
 
-                        // Insert data to the database
-                        this.InsertHistoryLogDB();
-
-                        // Refresh entry and result textboxes
-                        this.refreshEntryText();
                         // Refresh result textbox
                         this.refreshResultText();
                     }
                 }
             }
+
+            // Refresh entry textbox
+            this.refreshEntryText();
+
+
+
+            // Insert data to the database
+            this.InsertHistoryLogDB();
         }
 
 
