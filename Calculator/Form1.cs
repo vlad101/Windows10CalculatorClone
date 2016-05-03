@@ -138,7 +138,34 @@ namespace Calculator
                         break;
                     // Exponent operations
                     case "x\xB2": // square
-                        MessageBox.Show("SQUARE!");
+                        this.Mode.EntryText = FormatUtils.TrimDouble(this.Mode.EntryText);
+
+                        if (this.Mode.EntryText.Length == 0)
+                        {
+                            // Set result entry text
+                            this.Mode.ResultText = this.Mode.ResultText + "sqr(" + 0 + ")";
+                            
+                            // Set entry text to the cube entry text value
+                            this.Mode.EntryText = "0";
+                        }
+                        else
+                        {
+                            // Set result entry text
+                            this.Mode.ResultText = this.Mode.ResultText + "sqr(" + this.Mode.EntryText + ")";
+
+                            // Set entry text to the cube entry text value
+                            this.Mode.EntryText = Math.Pow(double.Parse(this.Mode.EntryText.Replace(",", "")), 2).ToString();
+                        }
+
+                        // Refresh entry textbox
+                        this.refreshEntryText();
+
+                        // Refresh result textbox
+                        this.refreshResultText();
+
+                        // Set exponent operation
+                        operation = "Power";
+
                         break;
                     case "x\xB3": // cube
                         

@@ -13,26 +13,20 @@ namespace Calculator.Libs
         // No 3rd party libraries required
         public static String EvaluateExpression(string expression)
         {
-            if (expression.Contains("cube") || expression.Contains("sqr"))
+            // Cube exponent
+            if (expression.Contains("cube"))
             {
-                StringBuilder strBuilder = new StringBuilder();
-
                 char[] separatingChars = "cube".ToCharArray();
-
                 string[] words = expression.Split(separatingChars, System.StringSplitOptions.RemoveEmptyEntries);
+                expression = CreateExponentExpression(words, 3);
+            }
 
-                foreach (string s in words)
-                {
-                    StringBuilder exponentValue = new StringBuilder();
-                    for (int i = 1; i < s.IndexOf(')'); i++ )
-                    {
-                        exponentValue.Append(s[i]);
-                    }
-                    string valueExp = "(" + exponentValue.ToString() + ")";
-
-                    strBuilder.Append(s.Replace(valueExp, (valueExp + "*" + valueExp + "*" + valueExp)));
-                }
-                expression = strBuilder.ToString();
+            // Square exponent
+            if (expression.Contains("sqr"))
+            {
+                char[] separatingChars = "sqr".ToCharArray();
+                string[] words = expression.Split(separatingChars, System.StringSplitOptions.RemoveEmptyEntries);
+                expression = CreateExponentExpression(words, 2);
             }
 
             // If expression contains X, replace it with multiplication sign
@@ -97,6 +91,40 @@ namespace Calculator.Libs
                 }
             }
             return entryText;
+        }
+
+        private static String CreateExponentExpression(string[] words, int exp)
+        {
+            StringBuilder strBuilder = new StringBuilder();
+
+            foreach (string s in words)
+            {
+                StringBuilder exponentValue = new StringBuilder();
+
+                for (int i = 1; i < s.IndexOf(')'); i++)
+                {
+                    exponentValue.Append(s[i]);
+                }
+
+                if (exponentValue.Length > 0)
+                {
+                    string valueExp = "(" + exponentValue.ToString() + ")";
+
+                    if (exp == 3)
+                    {
+                        strBuilder.Append(s.Replace(valueExp, (valueExp + "*" + valueExp + "*" + valueExp)));
+                    }
+                    else
+                    {
+                        strBuilder.Append(s.Replace(valueExp, (valueExp + "*" + valueExp)));
+                    }
+                }
+                else
+                {
+                    strBuilder.Append(s);
+                }
+            }
+            return strBuilder.ToString();
         }
     }
 }
