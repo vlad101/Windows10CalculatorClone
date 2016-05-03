@@ -4,6 +4,8 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace Calculator.Libs
 {
@@ -16,9 +18,34 @@ namespace Calculator.Libs
             // Cube exponent
             if (expression.Contains("cube"))
             {
-                char[] separatingChars = "cube".ToCharArray();
-                string[] words = expression.Split(separatingChars, System.StringSplitOptions.RemoveEmptyEntries);
-                expression = CreateExponentExpression(words, 3);
+                IEnumerable<int> cubeIndeces = IndexOfAll(expression, "cube");
+
+                foreach (int i in cubeIndeces)
+                {
+                    bool found = false;
+                    char c = ')';
+                    int startIndex = i;
+                    int endIndex = -1;
+                    for (int j = i; j < expression.Length && !found; j++)
+                    {
+                        if(expression[j].Equals(c))
+                        {
+                            found = true;
+                            endIndex = j;
+                        }
+                    }
+                    //MessageBox.Show(expression.Substring(startIndex, endIndex));
+                    MessageBox.Show("HI: " + endIndex.ToString());
+                }
+
+                
+
+                expression = expression.Replace("cube", "");
+
+                MessageBox.Show(expression);
+                //char[] separatingChars = "cube".ToCharArray();
+                //string[] words = expression.Split(separatingChars, System.StringSplitOptions.RemoveEmptyEntries);
+                //expression = CreateExponentExpression(words, 3);
             }
 
             // Square exponent
@@ -125,6 +152,11 @@ namespace Calculator.Libs
                 }
             }
             return strBuilder.ToString();
+        }
+
+        public static IEnumerable<int> IndexOfAll(string sourceString, string subString)
+        {
+            return Regex.Matches(sourceString, subString).Cast<Match>().Select(m => m.Index);
         }
     }
 }
