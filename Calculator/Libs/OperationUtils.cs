@@ -15,47 +15,26 @@ namespace Calculator.Libs
         // No 3rd party libraries required
         public static String EvaluateExpression(string expression)
         {
-            // Cube exponent
-            if (expression.Contains("cube"))
-            {
-                IEnumerable<int> cubeIndeces = IndexOfAll(expression, "cube");
-
-                foreach (int i in cubeIndeces)
-                {
-                    bool found = false;
-                    char c = ')';
-                    int startIndex = i;
-                    int endIndex = -1;
-                    for (int j = i; j < expression.Length && !found; j++)
-                    {
-                        if(expression[j].Equals(c))
-                        {
-                            found = true;
-                            endIndex = j;
-                        }
-                    }
-                    //MessageBox.Show(expression.Substring(startIndex, endIndex));
-                    MessageBox.Show("HI: " + endIndex.ToString());
-                }
-
-                
-
-                expression = expression.Replace("cube", "");
-
-                MessageBox.Show(expression);
-                //char[] separatingChars = "cube".ToCharArray();
-                //string[] words = expression.Split(separatingChars, System.StringSplitOptions.RemoveEmptyEntries);
-                //expression = CreateExponentExpression(words, 3);
-            }
-
             // Square exponent
-            if (expression.Contains("sqr"))
+            if (expression.Contains("sqr("))
             {
-                char[] separatingChars = "sqr".ToCharArray();
-                string[] words = expression.Split(separatingChars, System.StringSplitOptions.RemoveEmptyEntries);
-                expression = CreateExponentExpression(words, 2);
+                expression = expression.Replace("sqr(", "square(");
+                expression = CreateExponentExpression(expression, 2);
             }
 
+            // Cube exponent
+            if (expression.Contains("cube("))
+            {
+                expression = CreateExponentExpression(expression, 3);
+            }
+
+            // Square root (1/2 exponent)
+            if (expression.Contains("sqrt("))
+            {
+                expression = expression.Replace("sqrt(", "squareroot(");
+                expression = CreateExponentExpression(expression, 0.5);
+            }
+            
             // If expression contains X, replace it with multiplication sign
             expression = expression.Replace("X", "*");
 
@@ -120,38 +99,68 @@ namespace Calculator.Libs
             return entryText;
         }
 
-        private static String CreateExponentExpression(string[] words, int exp)
+        private static String CreateExponentExpression(String expression, double exponent)
         {
-            StringBuilder strBuilder = new StringBuilder();
+            String expStr = "";
+            int padding = -1;
 
-            foreach (string s in words)
+            if (exponent == 0.5)
             {
-                StringBuilder exponentValue = new StringBuilder();
+                expStr = "squareroot";
+                padding = 11;
+            }
+            else if (exponent == 2)
+            {
+                expStr = "square";
+                padding = 7;
+            }
+            else if (exponent == 3)
+            {
+                expStr = "cube";
+                padding = 5;
+            }
 
-                for (int i = 1; i < s.IndexOf(')'); i++)
+            List<String> listValuesToExp = new List<string>();
+
+            IEnumerable<int> expIndeces = IndexOfAll(expression, expStr);
+
+            if(expIndeces != null)
+            {
+                foreach (int i in expIndeces)
                 {
-                    exponentValue.Append(s[i]);
+                    StringBuilder valueToExp = new StringBuilder();
+                    bool found = false;
+                    char c = ')';
+                    int startIndex = i + padding;
+
+                    for (int j = startIndex; j < expression.Length && !found; j++)
+                    {
+                        if(expression[j].Equals(c))
+                        {
+                            found = true;
+                        }
+                        else
+                        {
+                            valueToExp.Append(expression[j]);
+                        }
+                    }
+                    listValuesToExp.Add(valueToExp.ToString());
                 }
 
-                if (exponentValue.Length > 0)
+                foreach(String value in listValuesToExp)
                 {
-                    string valueExp = "(" + exponentValue.ToString() + ")";
-
-                    if (exp == 3)
+                    if (expStr.Equals("sqrt"))
                     {
-                        strBuilder.Append(s.Replace(valueExp, (valueExp + "*" + valueExp + "*" + valueExp)));
+                        expression = expression.Replace(expStr + "(" + value + ")", Math.Sqrt(Double.Parse(value)).ToString());
                     }
                     else
                     {
-                        strBuilder.Append(s.Replace(valueExp, (valueExp + "*" + valueExp)));
+                        expression = expression.Replace(expStr + "(" + value + ")", Math.Pow(Double.Parse(value), exponent).ToString());
                     }
                 }
-                else
-                {
-                    strBuilder.Append(s);
-                }
             }
-            return strBuilder.ToString();
+            
+            return expression;
         }
 
         public static IEnumerable<int> IndexOfAll(string sourceString, string subString)

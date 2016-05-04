@@ -103,9 +103,9 @@ namespace Calculator
             string operation = operBtn.Text;
 
             // Operation is memory or exponent can be performed even when no data entered
-            if (operation.Contains("M") && operation.Contains("x\xB") && this.Mode.EntryText == null)
+            if (this.Mode.EntryText == null)
             {
-                this.Mode.EntryText = "";
+                this.Mode.EntryText = "0";
             }
 
             // Get last updated memory log entry id
@@ -138,24 +138,24 @@ namespace Calculator
                         break;
                     // Exponent operations
                     case "x\xB2": // square
-                        this.Mode.EntryText = FormatUtils.TrimDouble(this.Mode.EntryText);
 
-                        if (this.Mode.EntryText.Length == 0)
-                        {
-                            // Set result entry text
-                            this.Mode.ResultText = this.Mode.ResultText + "sqr(" + 0 + ")";
-                            
-                            // Set entry text to the cube entry text value
-                            this.Mode.EntryText = "0";
-                        }
-                        else
-                        {
-                            // Set result entry text
-                            this.Mode.ResultText = this.Mode.ResultText + "sqr(" + this.Mode.EntryText + ")";
+                        // Perform Exponent operation
+                        this.PerformExponentOperation(2);
 
-                            // Set entry text to the cube entry text value
-                            this.Mode.EntryText = Math.Pow(double.Parse(this.Mode.EntryText.Replace(",", "")), 2).ToString();
-                        }
+                        // Refresh entry textbox
+                        this.refreshEntryText();
+
+                        // Refresh result textbox
+                        this.refreshResultText();
+
+                        // Set exponent operation
+                        operation = "Power";
+                        
+                        break;
+                    case "x\xB3": // cube
+                        
+                        // Perform Exponent operation
+                        this.PerformExponentOperation(3);
 
                         // Refresh entry textbox
                         this.refreshEntryText();
@@ -167,26 +167,10 @@ namespace Calculator
                         operation = "Power";
 
                         break;
-                    case "x\xB3": // cube
-                        
-                        this.Mode.EntryText = FormatUtils.TrimDouble(this.Mode.EntryText);
+                    case "\u221A": // square root
 
-                        if (this.Mode.EntryText.Length == 0)
-                        {
-                            // Set result entry text
-                            this.Mode.ResultText = this.Mode.ResultText + "cube(" + 0 + ")";
-                            
-                            // Set entry text to the cube entry text value
-                            this.Mode.EntryText = "0";
-                        }
-                        else
-                        {
-                            // Set result entry text
-                            this.Mode.ResultText = this.Mode.ResultText + "cube(" + this.Mode.EntryText + ")";
-
-                            // Set entry text to the cube entry text value
-                            this.Mode.EntryText = Math.Pow(double.Parse(this.Mode.EntryText.Replace(",", "")), 3).ToString();
-                        }
+                        // Perform Exponent operation
+                        this.PerformExponentOperation(0.5);
 
                         // Refresh entry textbox
                         this.refreshEntryText();
@@ -1067,7 +1051,7 @@ namespace Calculator
 
         #endregion
 
-        #region Perfom Ariphmetic and Equals Operations
+        #region Perfom Ariphmetic, Exponent and Equals Operations
 
         // Perform ariphmetic operation
         private void PerformAriphmeticOperation(OperationType operation)
@@ -1078,6 +1062,56 @@ namespace Calculator
             this.refreshResultText();
             // Clear entry text value
            this.Mode.EntryText = "";
+        }
+
+        // Perform exponent operation
+        private void PerformExponentOperation(double exp)
+        {
+            String expStr = "";
+
+            if (exp == 2)
+            {
+                expStr = "sqr";
+            }
+            else if (exp == 3)
+            {
+                expStr = "cube";
+            }
+            else if (exp == 0.5)
+            {
+                expStr = "sqrt";
+            }
+
+            this.Mode.EntryText = FormatUtils.TrimDouble(this.Mode.EntryText);
+
+            if (this.Mode.EntryText.Length == 0)
+            {
+                // Set result entry text
+                this.Mode.ResultText = this.Mode.ResultText + expStr + "(" + 0 + ")";
+
+                // Set entry text to the cube entry text value
+                this.Mode.EntryText = "0";
+            }
+            else
+            {
+                if (!this.Mode.PrevButtonSender.Equals("Power"))
+                {
+                    // Set result entry text
+                    this.Mode.ResultText = this.Mode.ResultText + expStr + "(" + this.Mode.EntryText + ")";
+
+                    // Set entry text to the exponent entry text value
+                    if (expStr != "sqrt")
+                    {
+                        // Exponent
+                        this.Mode.EntryText = Math.Pow(double.Parse(this.Mode.EntryText.Replace(",", "")), exp).ToString();
+                    }
+                    else
+                    {
+                        // Square root
+                        this.Mode.EntryText = Math.Sqrt(double.Parse(this.Mode.EntryText.Replace(",", ""))).ToString();
+                    }
+                }
+            }
         }
 
         // Perform equals operation
@@ -1388,6 +1422,15 @@ namespace Calculator
             return this.Mode.PrevButtonSender.Equals("+") || this.Mode.PrevButtonSender.Equals("-") ||
             this.Mode.PrevButtonSender.Equals("X") || this.Mode.PrevButtonSender.Equals("÷") ||
             this.Mode.PrevButtonSender.Equals("=");
+        }
+
+        // Determine if the last entry text character is an operator sign
+        private bool isLastCharAriphmeticOperation()
+        {
+            if(this.Mode.ResultText == null) 
+                return false;
+            string c = this.Mode.ResultText.Trim()[this.Mode.ResultText.Length - 1].ToString();
+            return c.Equals("+") || c.Equals("-") || c.Equals("X") || c.Equals("÷") || c.Equals("=");
         }
 
         // Format entry memory log as entry id, entry log pair.l Ex: EntryId=EntryLog
