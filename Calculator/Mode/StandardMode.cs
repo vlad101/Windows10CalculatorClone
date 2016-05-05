@@ -27,6 +27,9 @@ namespace Calculator.Mode
         // Store history log
         public HistoryLog HistoryLog { get; set; }
 
+        // Store the value to check if exp operations can be used
+        public bool allowExpOps { get; set; }
+
         // Store last operation after equals operation is used
         public string PrevOperatorOnEquals { get; set; }
         public string PrevEntryTextOnEquals { get; set; }
@@ -36,6 +39,9 @@ namespace Calculator.Mode
         {
             // Declare previous button sender
             this.PrevButtonSender = "";
+
+            // Allow exponents
+            this.allowExpOps = true;
         }
 
         #region Ariphmetic Operations Methods

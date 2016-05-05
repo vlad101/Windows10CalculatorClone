@@ -72,6 +72,12 @@ namespace Calculator
             }
 
             // Update entry text
+            if (this.Mode.EntryText.Equals("Invalid Input"))
+            {
+                this.Mode.ResultText = "";
+                this.Mode.EntryText = "";
+            }
+
             this.Mode.EntryText = FormatUtils.updateEntryText(this.Mode.EntryText, numBtn.Text);
 
             // Clear leading zero
@@ -169,17 +175,42 @@ namespace Calculator
                         break;
                     case "\u221A": // square root
 
-                        // Perform Exponent operation
-                        this.PerformExponentOperation(0.5);
+                        double num = -1;
+
+                        if(Double.TryParse(this.Mode.EntryText, out num))
+                        {
+                            num = Double.Parse(this.Mode.EntryText);
+                        }
+
+                        // Do not allow negative values with square root
+                        if (this.Mode.EntryText != null)
+                        {
+                            if (num >= 0)
+                            {
+                                // Perform Exponent operation
+                                this.PerformExponentOperation(0.5);
+
+                                // Set exponent operation
+                                operation = "Power";
+                            }
+                            else
+                            {
+                                // Set result text entry
+                                this.Mode.ResultText = this.Mode.ResultText + "sqrt(" + this.Mode.EntryText + ")";
+
+                                // Set entry text entry
+                                this.Mode.EntryText = "Invalid Input";
+
+                                // Allow exponent operation
+                                this.Mode.allowExpOps = false;
+                            }
+                        }
 
                         // Refresh entry textbox
                         this.refreshEntryText();
 
                         // Refresh result textbox
                         this.refreshResultText();
-
-                        // Set exponent operation
-                        operation = "Power";
 
                         break;
                     // Sign change operation
@@ -788,7 +819,7 @@ namespace Calculator
         {
             DataHistory sql = new DataHistory();
 
-            if (this.Mode.HistoryLog.HistoryLogEntry == null)
+            if (this.Mode.HistoryLog == null)
                 return false;
 
             return sql.InsertHistoryEntry(this.Mode.HistoryLog.HistoryLogEntry);
@@ -1051,17 +1082,23 @@ namespace Calculator
 
         #endregion
 
-        #region Perfom Ariphmetic, Exponent and Equals Operations
+        #region Perfom Ariphmetic, Exponent and Equals Oper
 
         // Perform ariphmetic operation
         private void PerformAriphmeticOperation(OperationType operation)
         {
-           this.Mode.ArithmeticOperation(operation);
+            // Set ariphmetic operation
+            this.Mode.ArithmeticOperation(operation);
+
             // Refresh entry and result textboxes
             this.refreshEntryText();
             this.refreshResultText();
+
             // Clear entry text value
-           this.Mode.EntryText = "";
+            this.Mode.EntryText = "";
+
+            // Allow exp operation
+            this.Mode.allowExpOps = true;
         }
 
         // Perform exponent operation
@@ -1083,32 +1120,44 @@ namespace Calculator
             }
 
             this.Mode.EntryText = FormatUtils.TrimDouble(this.Mode.EntryText);
-
-            if (this.Mode.EntryText.Length == 0)
+            
+            if(this.Mode.allowExpOps)
             {
-                // Set result entry text
-                this.Mode.ResultText = this.Mode.ResultText + expStr + "(" + 0 + ")";
-
-                // Set entry text to the cube entry text value
-                this.Mode.EntryText = "0";
-            }
-            else
-            {
-                if (!this.Mode.PrevButtonSender.Equals("Power"))
+                if (this.Mode.EntryText.Length == 0)
                 {
-                    // Set result entry text
-                    this.Mode.ResultText = this.Mode.ResultText + expStr + "(" + this.Mode.EntryText + ")";
+                    // Allow exp operation
+                    this.Mode.allowExpOps = false;
 
-                    // Set entry text to the exponent entry text value
-                    if (expStr != "sqrt")
+                    // Set result entry text
+                    this.Mode.ResultText = this.Mode.ResultText + expStr + "(" + 0 + ")";
+
+                    // Set entry text to the cube entry text value
+                    this.Mode.EntryText = "0";
+                }
+                else
+                {
+                    if (!this.Mode.PrevButtonSender.Equals("Power"))
                     {
-                        // Exponent
-                        this.Mode.EntryText = Math.Pow(double.Parse(this.Mode.EntryText.Replace(",", "")), exp).ToString();
-                    }
-                    else
-                    {
-                        // Square root
-                        this.Mode.EntryText = Math.Sqrt(double.Parse(this.Mode.EntryText.Replace(",", ""))).ToString();
+                        if (this.isLastCharAriphmeticOperation() || this.Mode.EntryText != null)
+                        {
+                            // Set result entry text
+                            this.Mode.ResultText = this.Mode.ResultText + expStr + "(" + this.Mode.EntryText + ")";
+
+                            // Set entry text to the exponent entry text value
+                            if (expStr != "sqrt")
+                            {
+                                // Exponent
+                                this.Mode.EntryText = Math.Pow(double.Parse(this.Mode.EntryText.Replace(",", "")), exp).ToString();
+                            }
+                            else
+                            {
+                                // Square root
+                                this.Mode.EntryText = Math.Sqrt(double.Parse(this.Mode.EntryText.Replace(",", ""))).ToString();
+                            }
+
+                            // Allow exp operation
+                            this.Mode.allowExpOps = false;
+                        }
                     }
                 }
             }
@@ -1128,6 +1177,9 @@ namespace Calculator
                         // Create a history log
                         this.CreateLog(Mode.HistoryLog.HistoryLogEntry);
                     }
+
+                    // Allow exp operation
+                    this.Mode.allowExpOps = true;
                 }
             }
             else
@@ -1147,14 +1199,15 @@ namespace Calculator
 
                         // Refresh result textbox
                         this.refreshResultText();
+
+                        // Allow exp operation
+                        this.Mode.allowExpOps = true;
                     }
                 }
             }
 
             // Refresh entry textbox
             this.refreshEntryText();
-
-
 
             // Insert data to the database
             this.InsertHistoryLogDB();
@@ -1427,10 +1480,14 @@ namespace Calculator
         // Determine if the last entry text character is an operator sign
         private bool isLastCharAriphmeticOperation()
         {
-            if(this.Mode.ResultText == null) 
-                return false;
-            string c = this.Mode.ResultText.Trim()[this.Mode.ResultText.Length - 1].ToString();
-            return c.Equals("+") || c.Equals("-") || c.Equals("X") || c.Equals("÷") || c.Equals("=");
+            try 
+            {
+                string c = this.Mode.ResultText.Trim()[this.Mode.ResultText.Trim().Length - 1].ToString();
+                return c.Equals("+") || c.Equals("-") || c.Equals("X") || c.Equals("÷") || c.Equals("=");
+            } catch(Exception e)
+            {
+                return true;
+            }
         }
 
         // Format entry memory log as entry id, entry log pair.l Ex: EntryId=EntryLog
