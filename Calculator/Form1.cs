@@ -72,6 +72,7 @@ namespace Calculator
             }
 
             // Update entry text
+            // If entry text is an invalid input, clear result and entry text
             if (this.Mode.EntryText.Equals("Invalid Input"))
             {
                 this.Mode.ResultText = "";
