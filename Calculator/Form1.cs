@@ -433,8 +433,12 @@ namespace Calculator
                         this.labelFlowLayoutPanelStatus.Text = historyLogCount + " history log(s) added";
                     }
                     else
-                    {
-                        this.labelFlowLayoutPanelStatus.Text = "There's no history yet";
+                    {                        
+                        if(this.flowLayoutPanelHistory.Visible)
+                        {
+                            this.labelFlowLayoutPanelStatus.Text = "There's no history yet";
+                    
+                        }
                     }
                     break;
                 case FlowLayoutPanelStatus.Memory:
@@ -444,7 +448,10 @@ namespace Calculator
                     }
                     else
                     {
-                        this.labelFlowLayoutPanelStatus.Text = "There's nothing saved in memory";
+                        if(this.flowLayoutPanelMemory.Visible)
+                        {
+                            this.labelFlowLayoutPanelStatus.Text = "There's nothing saved in memory";
+                        }
                     }
                     break;
             }
