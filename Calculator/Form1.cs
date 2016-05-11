@@ -74,7 +74,10 @@ namespace Calculator
             // Update entry text
             // If entry text is an invalid input, clear result and entry text
             // If the prev operation button was power, clear result and entry text and allow power operations
-            if (this.Mode.EntryText.Equals("Invalid Input") || !this.Mode.allowExpOps)
+            if (this.Mode.EntryText.Equals("Invalid Input") || 
+                    this.Mode.EntryText.Equals("Cannot divide by zero") || 
+                        this.Mode.EntryText.Equals("NaN") ||
+                            !this.Mode.allowExpOps)
             {
                 this.Mode.ResultText = "";
                 this.Mode.EntryText = "";
@@ -115,6 +118,17 @@ namespace Calculator
             if (this.Mode.EntryText == null)
             {
                 this.Mode.EntryText = "0";
+            }
+
+            // If entry text is an invalid input, clear result and entry text
+            // If the prev operation button was power, clear result and entry text and allow power operations
+            if (this.Mode.EntryText.Equals("Invalid Input") 
+                    || this.Mode.EntryText.Equals("Cannot divide by zero")
+                        || this.Mode.EntryText.Equals("NaN"))
+            {
+                this.Mode.ResultText = "";
+                this.Mode.EntryText = "";
+                this.Mode.allowExpOps = true;
             }
 
             // Get last updated memory log entry id
@@ -176,6 +190,22 @@ namespace Calculator
                         operation = "Power";
 
                         break;
+
+                    case "1 / x":
+                        // Perform Exponent operation
+                        this.PerformExponentOperation(-1);
+
+                        // Refresh entry textbox
+                        this.refreshEntryText();
+
+                        // Refresh result textbox
+                        this.refreshResultText();
+
+                        // Set exponent operation
+                        operation = "Power";
+
+                        break;
+
                     case "\u221A": // square root
 
                         double num = -1;
@@ -1125,6 +1155,10 @@ namespace Calculator
             else if (exp == 0.5)
             {
                 expStr = "sqrt";
+            }
+            else if (exp == -1)
+            {
+                expStr = "reciproc";
             }
 
             this.Mode.EntryText = FormatUtils.TrimDouble(this.Mode.EntryText);

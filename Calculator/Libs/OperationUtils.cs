@@ -34,19 +34,31 @@ namespace Calculator.Libs
                 expression = expression.Replace("sqrt(", "squareroot(");
                 expression = CreateExponentExpression(expression, 0.5);
             }
+
+            // Negative one exponent [reciprocal]
+            if (expression.Contains("reciproc("))
+            {
+                expression = CreateExponentExpression(expression, -1);
+            }
             
             // If expression contains X, replace it with multiplication sign
             expression = expression.Replace("X", "*");
 
             // Cannot divide by zero; \u221E is ∞ (infinity)
             if (expression.Contains("\0"))
+            {
                 return "\u221E";
+            }
             try
             {
                 DataTable table = new DataTable();
                 table.Columns.Add("expression", typeof(string), expression);
                 DataRow row = table.NewRow();
                 table.Rows.Add(row);
+                if (row["expression"].ToString().Equals("Infinity"))
+                {
+                    return "Cannot divide by zero";
+                }
                 return (string)row["expression"];
             }
             catch (Exception exc)
@@ -118,6 +130,11 @@ namespace Calculator.Libs
             {
                 expStr = "cube";
                 padding = 5;
+            }
+            else if (exponent == -1)
+            {
+                expStr = "reciproc";
+                padding = 9;
             }
 
             List<String> listValuesToExp = new List<string>();
