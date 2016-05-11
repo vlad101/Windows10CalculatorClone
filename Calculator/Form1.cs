@@ -73,12 +73,14 @@ namespace Calculator
 
             // Update entry text
             // If entry text is an invalid input, clear result and entry text
-            if (this.Mode.EntryText.Equals("Invalid Input"))
+            // If the prev operation button was power, clear result and entry text and allow power operations
+            if (this.Mode.EntryText.Equals("Invalid Input") || !this.Mode.allowExpOps)
             {
                 this.Mode.ResultText = "";
                 this.Mode.EntryText = "";
+                this.Mode.allowExpOps = true;
             }
-
+            
             this.Mode.EntryText = FormatUtils.updateEntryText(this.Mode.EntryText, numBtn.Text);
 
             // Clear leading zero
@@ -249,12 +251,10 @@ namespace Calculator
                     case "MR":
                         // Memory recall
                         this.Mode.EntryText = Libs.FormatUtils.FormatText(this.GetMemoryEntryById(lastMemoryId));
-                        this.Mode.ResultText = "";
                         // Refresh entry and result textbox
                         if (this.Mode.EntryText != null)
                         {
                             this.refreshEntryText();
-                            this.refreshResultText();
                         }
                         break;
                     case "MS":
@@ -771,9 +771,9 @@ namespace Calculator
         private void CreateLogStyle(NonFocusButton buttonLog)
         {
             buttonLog.Width = 183;
-            buttonLog.Height = 60;
+            buttonLog.Height = 40;
             buttonLog.Margin = new Padding(3, 0, 0, 3);
-            buttonLog.Font = new Font("Microsoft Sans Serif", 10.00F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
+            buttonLog.Font = new Font("Microsoft Sans Serif", 9.00F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
             buttonLog.TextAlign = ContentAlignment.MiddleRight;
             buttonLog.FlatStyle = FlatStyle.Flat;
             buttonLog.FlatAppearance.BorderColor = Color.Gray;
@@ -785,7 +785,7 @@ namespace Calculator
             buttonLog.Width = 59;
             buttonLog.Height = 23;
             buttonLog.Margin = new Padding(3, 0, 0, 5);
-            buttonLog.Font = new Font("Microsoft Sans Serif", 8.00F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
+            buttonLog.Font = new Font("Microsoft Sans Serif", 7.00F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
             buttonLog.TextAlign = ContentAlignment.MiddleCenter;
             buttonLog.FlatStyle = FlatStyle.Flat;
             buttonLog.FlatAppearance.BorderColor = Color.Gray;
